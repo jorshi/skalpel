@@ -1,0 +1,81 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<JUCERPROJECT id="XaTUjo" name="Loom" projectType="audioplug" version="1.0.0"
+              bundleIdentifier="com.napsky.Loom" includeBinaryInAppConfig="1"
+              buildVST="1" buildVST3="0" buildAU="1" buildAUv3="0" buildRTAS="0"
+              buildAAX="0" pluginName="Loom" pluginDesc="Loom" pluginManufacturer="Napsky"
+              pluginManufacturerCode="Manu" pluginCode="Xatu" pluginChannelConfigs=""
+              pluginIsSynth="1" pluginWantsMidiIn="1" pluginProducesMidiOut="0"
+              pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0" pluginAUExportPrefix="LoomAU"
+              pluginRTASCategory="" aaxIdentifier="com.yourcompany.Loom" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
+              jucerVersion="4.3.1" companyName="napsky">
+  <MAINGROUP id="bdoCZ7" name="Loom">
+    <GROUP id="{2A5344C4-6F3D-D15C-A82A-F8E308E69ED8}" name="Source">
+      <FILE id="Jkv4tH" name="AnalysisMrs.cpp" compile="1" resource="0" file="Source/AnalysisMrs.cpp"/>
+      <FILE id="Jjd1t6" name="AnalysisMrs.h" compile="0" resource="0" file="Source/AnalysisMrs.h"/>
+      <FILE id="dTKQUF" name="Analysis.cpp" compile="1" resource="0" file="Source/Analysis.cpp"/>
+      <FILE id="bwF9lA" name="Analysis.h" compile="0" resource="0" file="Source/Analysis.h"/>
+      <FILE id="ypKDZj" name="DeterministicSynth.cpp" compile="1" resource="0"
+            file="Source/DeterministicSynth.cpp"/>
+      <FILE id="AVZiE5" name="DeterministicSynth.h" compile="0" resource="0"
+            file="Source/DeterministicSynth.h"/>
+      <FILE id="DUP9BQ" name="PluginProcessor.cpp" compile="1" resource="0"
+            file="Source/PluginProcessor.cpp"/>
+      <FILE id="UMiNSI" name="PluginProcessor.h" compile="0" resource="0"
+            file="Source/PluginProcessor.h"/>
+      <FILE id="lIZnEM" name="PluginEditor.cpp" compile="1" resource="0"
+            file="Source/PluginEditor.cpp"/>
+      <FILE id="tRuYJo" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      <FILE id="bE2YdI" name="SineElement.cpp" compile="1" resource="0" file="Source/SineElement.cpp"/>
+      <FILE id="vMFLae" name="SineElement.h" compile="0" resource="0" file="Source/SineElement.h"/>
+    </GROUP>
+  </MAINGROUP>
+  <EXPORTFORMATS>
+    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="essentia&#10;marsyas&#10;"
+               extraCompilerFlags="" extraDefs="">
+      <CONFIGURATIONS>
+        <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Loom" osxCompatibility="10.11 SDK"
+                       headerPath="/usr/local/include" libraryPath="/usr/local/lib"/>
+        <CONFIGURATION name="Release" isDebug="0" optimisation="3" targetName="Loom"
+                       osxCompatibility="10.11 SDK" headerPath="/usr/local/include"
+                       libraryPath="/usr/local/lib"/>
+      </CONFIGURATIONS>
+      <MODULEPATHS>
+        <MODULEPATH id="juce_core" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_events" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_graphics" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_data_structures" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_gui_basics" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_gui_extra" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_cryptography" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_video" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_opengl" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_basics" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_devices" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_formats" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_processors" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../../../Archive/juce-grapefruit-osx/modules"/>
+      </MODULEPATHS>
+    </XCODE_MAC>
+  </EXPORTFORMATS>
+  <MODULES>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0"/>
+  </MODULES>
+  <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
+  <LIVE_SETTINGS>
+    <OSX headerPath="/usr/local/include"/>
+  </LIVE_SETTINGS>
+</JUCERPROJECT>

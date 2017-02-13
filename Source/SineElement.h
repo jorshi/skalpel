@@ -1,0 +1,79 @@
+/*
+  ==============================================================================
+
+    SineElement.h
+    Created: 11 Feb 2017 2:09:40pm
+    Author:  Jordie Shier 
+
+  ==============================================================================
+*/
+
+#ifndef SINEELEMENT_H_INCLUDED
+#define SINEELEMENT_H_INCLUDED
+
+#include "../JuceLibraryCode/JuceHeader.h"
+#include "marsyas/system/MarSystemManager.h"
+
+using namespace Marsyas;
+
+class SineElement
+{
+public:
+    SineElement();
+    SineElement(mrs_real freq, mrs_real amp, mrs_real phase);
+    ~SineElement();
+    
+    // Getters
+    mrs_real getFreq() { return _freq; };
+    mrs_real getAmp() { return _amp; };
+    mrs_real getPhase() { return _phase; };
+    mrs_natural getTrack() { return _track; };
+    
+    // Setters
+    void setFreq(mrs_real freq) { _freq = freq; };
+    void setAmp(mrs_real amp) { _amp = amp; };
+    void setPhase(mrs_real phase) { _phase = phase; };
+    void setTrack(mrs_natural track) { _track = track; };
+    
+private:
+    mrs_real _freq;
+    mrs_real _amp;
+    mrs_real _phase;
+    mrs_natural _track;
+};
+
+
+class SineModel
+{
+public:
+    typedef std::vector<std::vector<SineElement>> SineMatrix;
+    
+    SineModel();
+    ~SineModel();
+    
+    // Setters
+    void setSampleRate(mrs_real sr) { _sampleRate = sr; };
+    void setFrameSize(mrs_natural fs) { _frameSize = fs; };
+    void setSineModel(SineMatrix newModel) { _sineModel = newModel; };
+    
+    // Add a new frame to the end of the current model
+    void addFrame(std::vector<SineElement>);
+    
+    // Getters
+    mrs_real getSampleRate() { return _sampleRate; };
+    mrs_real getFrameSize() { return _frameSize; };
+    const SineMatrix& getModel() { return _sineModel; };
+    
+    // Get iterators for the sine model
+    std::vector<std::vector<SineElement>>::iterator begin() { return _sineModel.begin(); };
+    std::vector<std::vector<SineElement>>::iterator end()   { return _sineModel.end(); };
+
+private:
+    SineMatrix _sineModel;
+    mrs_real _sampleRate;
+    mrs_natural _frameSize;
+};
+
+
+
+#endif  // SINEELEMENT_H_INCLUDED

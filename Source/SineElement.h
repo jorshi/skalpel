@@ -46,6 +46,7 @@ private:
 class SineModel
 {
 public:
+    typedef std::vector<SineElement> SineFrame;
     typedef std::vector<std::vector<SineElement>> SineMatrix;
     
     SineModel();
@@ -62,11 +63,16 @@ public:
     // Getters
     mrs_real getSampleRate() { return _sampleRate; };
     mrs_real getFrameSize() { return _frameSize; };
+    const SineFrame& getFrame(int frame) const { return _sineModel.at(frame); };
     const SineMatrix& getModel() { return _sineModel; };
     
     // Get iterators for the sine model
     std::vector<std::vector<SineElement>>::iterator begin() { return _sineModel.begin(); };
     std::vector<std::vector<SineElement>>::iterator end()   { return _sineModel.end(); };
+    
+    // Const iterators
+    std::vector<std::vector<SineElement>>::const_iterator begin() const { return _sineModel.begin(); };
+    std::vector<std::vector<SineElement>>::const_iterator end() const { return _sineModel.end(); };
 
 private:
     SineMatrix _sineModel;

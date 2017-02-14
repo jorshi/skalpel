@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AnalysisMrs.h"
+#include "SinusoidalSynth.h"
 
 
 //==============================================================================

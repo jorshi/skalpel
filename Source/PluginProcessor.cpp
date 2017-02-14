@@ -30,11 +30,11 @@ LoomAudioProcessor::LoomAudioProcessor()
     analysis = new AnalysisMrs;
     
     for (int i = 0; i < maxVoices; ++i)
-        synth->addVoice (new DeterministicVoice());
+        synth->addVoice (new SinusoidalSynthVoice());
     
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
-    SynthesiserSound::Ptr newSound = new DeterministicSound(midiNotes, 69);
+    SynthesiserSound::Ptr newSound = new SinusoidalSynthSound(midiNotes, 69);
     sound = newSound;
     
     synth->addSound(sound);

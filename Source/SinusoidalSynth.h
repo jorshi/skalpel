@@ -1,49 +1,56 @@
 /*
   ==============================================================================
 
-    DeterministicSynth.h
+    SinusoidalSynth.h
     Created: 7 Feb 2017 2:06:44pm
     Author:  Jordie Shier 
 
   ==============================================================================
 */
 
-#ifndef DETERMINISTICSYNTH_H_INCLUDED
-#define DETERMINISTICSYNTH_H_INCLUDED
+#ifndef SINUSOIDALSYNTH_H_INCLUDED
+#define SINUSOIDALSYNTH_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "SineElement.h"
+#include "marsyas/system/MarSystemManager.h"
+#include "marsyas/system/MarSystem.h"
 
 
-class DeterministicSound : public SynthesiserSound
+class SinusoidalSynthSound : public SynthesiserSound
 {
 public:
     
-    DeterministicSound(const BigInteger& notes, int midiNoteForNormalPitch);
+    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch);
     
-    ~DeterministicSound();
+    ~SinusoidalSynthSound();
     
     bool appliesToNote (int midiNoteNumber) override;
     bool appliesToChannel (int midiChannel) override;
     
+    const SineModel::SineFrame* getFrameAt(int frame) const;
+    
 private:
-    friend class DeterministicVoice;
+    friend class SinusoidalSynthVoice;
     
     BigInteger midiNotes;
     int midiRootNote;
     
-    JUCE_LEAK_DETECTOR(DeterministicSound)
+    SineModel testModel;
+    
+    JUCE_LEAK_DETECTOR(SinusoidalSynthSound)
 };
 
 
-class DeterministicVoice : public SynthesiserVoice
+class SinusoidalSynthVoice : public SynthesiserVoice
 {
 public:
     //==============================================================================
-    /** Creates a SamplerVoice. */
-    DeterministicVoice();
+    /** Creates a Sinusoidal Synth Voice. */
+    SinusoidalSynthVoice();
     
     /** Destructor. */
-    ~DeterministicVoice();
+    ~SinusoidalSynthVoice();
     
     //==============================================================================
     bool canPlaySound (SynthesiserSound*) override;
@@ -56,6 +63,15 @@ public:
     
     void renderNextBlock (AudioSampleBuffer&, int startSample, int numSamples) override;
     
+    void updateWindow(mrs_natural size);
+    
+    
+    // Marsyas fill Blackman Harris window
+    void windowingFillBlackmanHarris(realvec& envelope);
+    
+    // Marsyas fill Triangle Window
+    void windowingFillTriangle(realvec& envelope);
+    
     
 private:
     //==============================================================================
@@ -64,10 +80,12 @@ private:
     double angleDelta;
     float lgain, rgain, attackReleaseLevel, attackDelta, releaseDelta;
     bool isInAttack, isInRelease;
+    int currentFrame;
+    mrs_realvec _window;
     
-    JUCE_LEAK_DETECTOR (DeterministicVoice)
+    JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };
 
 
 
-#endif  // DETERMINISTICSYNTH_H_INCLUDED
+#endif  // SINUSOIDALSYNTH_H_INCLUDED

@@ -14,7 +14,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SineElement.h"
 #include "marsyas/system/MarSystemManager.h"
-#include "marsyas/system/MarSystem.h"
+#include "SynthesisUtils.h"
+
 
 
 class SinusoidalSynthSound : public SynthesiserSound
@@ -30,6 +31,9 @@ public:
     
     const SineModel::SineFrame* getFrameAt(int frame) const;
     
+    // Fill spectrum for a requested frame
+    void fillSpectrum(std::vector<FFT::Complex>&, int frame) const;
+    
 private:
     friend class SinusoidalSynthVoice;
     
@@ -37,6 +41,7 @@ private:
     int midiRootNote;
     
     SineModel testModel;
+    mrs_realvec bh1001;
     
     JUCE_LEAK_DETECTOR(SinusoidalSynthSound)
 };
@@ -63,25 +68,12 @@ public:
     
     void renderNextBlock (AudioSampleBuffer&, int startSample, int numSamples) override;
     
-    void updateWindow(mrs_natural size);
-    
-    
-    // Marsyas fill Blackman Harris window
-    void windowingFillBlackmanHarris(realvec& envelope);
-    
-    // Marsyas fill Triangle Window
-    void windowingFillTriangle(realvec& envelope);
-    
     
 private:
-    //==============================================================================
-    double cyclesPerSample;
-    double currentAngle;
-    double angleDelta;
-    float lgain, rgain, attackReleaseLevel, attackDelta, releaseDelta;
-    bool isInAttack, isInRelease;
+    //=============================================================================
     int currentFrame;
     mrs_realvec _window;
+    FFT ifft;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

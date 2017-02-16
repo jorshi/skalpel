@@ -13,8 +13,8 @@
 
 // Constructor
 SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch)
-        : midiNotes(notes),
-          midiRootNote(midiNoteForNormalPitch)
+: midiNotes(notes), midiRootNote(midiNoteForNormalPitch)
+
 {
     SineModel::SineFrame testFrame;
     testFrame.emplace_back(440, -6.0, 0);
@@ -25,6 +25,11 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
     {
         testModel.addFrame(testFrame);
     }
+    
+    // Create a Blackman Harris windowing for sampling
+    bh1001.create(1001);
+    SynthUtils::windowingFillBlackmanHarris(bh1001);
+    
 };
 
 // Destructor
@@ -50,18 +55,55 @@ const SineModel::SineFrame* SinusoidalSynthSound::getFrameAt(int frame) const
     return &testModel.getFrame(frame);
 }
 
+void SinusoidalSynthSound::fillSpectrum(std::vector<FFT::Complex>& spectrum, int frame) const
+{
+    if (frame >= std::distance(testModel.begin(), testModel.end()))
+    {
+        spectrum.clear();
+        return;
+    }
+    
+    const SineModel::SineFrame& sineFrame = testModel.getFrame(frame);
+    const mrs_real modelRate = testModel.getSampleRate();
+    const mrs_real nyquistBin = spectrum.size() / 2;
+    
+    
+    // Create the spectral signal
+    for (auto sine = sineFrame.begin(); sine != sineFrame.end(); ++sine)
+    {
+        mrs_real binLoc =  (sine->getFreq() / modelRate) * spectrum.size();
+        mrs_natural binInt = std::round(binLoc);
+        mrs_real binRem = binLoc - binInt;
+        
+        // Convert the decibels back to magnitude
+        mrs_real mag = pow(10, sine->getAmp()/20);
+        
+        // Going to make a 9 bin wide Blackman Harris window
+        if (binLoc >= 5 && binLoc < nyquistBin-4)
+        {
+            for (int i = -4; i < 5; ++i)
+            {
+                spectrum.at(binInt + i).r += mag*bh1001((int)((binRem+i)*100) + 501)*cos(sine->getPhase());
+                spectrum.at(binInt + i).i += mag*bh1001((int)((binRem+i)*100) + 501)*sin(sine->getPhase());
+            }
+        }
+    }
+        
+    
+    
+    
+    
+}
+
+
+
 /*
 
 */
 
 //==============================================================================
 SinusoidalSynthVoice::SinusoidalSynthVoice()
-: cyclesPerSample(0.0),
-currentAngle(0.0),
-angleDelta(0.0),
-lgain (0.0f), rgain (0.0f),
-attackReleaseLevel (0), attackDelta (0), releaseDelta (0),
-isInAttack (false), isInRelease (false), currentFrame(0)
+: currentFrame(0), ifft(log2(512), true)
 {
 }
 
@@ -82,8 +124,6 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
     if (const SinusoidalSynthSound* const sound = dynamic_cast<const SinusoidalSynthSound*> (s))
     {
         currentFrame = 0;
-        //cyclesPerSample = pow (2.0, (midiNoteNumber - sound->midiRootNote) / 12.0) * 440 / getSampleRate();
-        //angleDelta = cyclesPerSample * 2.0 * double_Pi;
     }
     else
     {
@@ -95,7 +135,6 @@ void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 {
     clearCurrentNote();
     currentFrame = 0;
-    //angleDelta = 0.0;
 }
 
 void SinusoidalSynthVoice::pitchWheelMoved (const int /*newValue*/)
@@ -117,70 +156,33 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
         float* outL = outputBuffer.getWritePointer (0, startSample);
         float* outR = outputBuffer.getNumChannels() > 1 ? outputBuffer.getWritePointer (1, startSample) : nullptr;
         
-        updateWindow(outputBuffer.getNumSamples());
-        
         const float level = 0.125f;
         
-        const SineModel::SineFrame* const frameModel = playingSound->getFrameAt(currentFrame);
         
-        if (frameModel == nullptr)
+        std::vector<FFT::Complex> spectralFrame(512);
+        playingSound->fillSpectrum(spectralFrame, currentFrame);
+        
+        if (spectralFrame.size() == 0)
         {
             clearCurrentNote();
         }
         
+        std::vector<FFT::Complex> timeDomain(512);
+        ifft.perform(spectralFrame.data(), timeDomain.data());
+        
+        //for (auto sample = timeDomain.begin(); sample != timeDomain.end(); ++sample)
+        //{
+        //    *outL = sample->r;
+        //    *outR = sample->r;
+        //    ++outL;
+        //    ++outR;
+        //}
+        
+        
         ++currentFrame;
-        
-    }
-}
-
-
-void SinusoidalSynthVoice::updateWindow(mrs_natural size)
-{
-    // Cached triangle window is already the corrent size
-    if (size == _window.getSize())
-        return;
-    
-    // Blackman Harris Window
-    mrs_realvec bhWindow;
-    bhWindow.create(size);
-    windowingFillBlackmanHarris(bhWindow);
-    
-    // Triangle Window
-    mrs_realvec tWindow;
-    tWindow.create(size);
-    windowingFillTriangle(tWindow);
-    
-    mrs_real bSum = bhWindow.sum();
-    for (int i = 0; i < size; ++i)
-    {
-        
-    }
-    
-    
-    
-}
-
-
-void SinusoidalSynthVoice::windowingFillBlackmanHarris(realvec& envelope)
-{
-    mrs_natural N = envelope.getSize();
-    mrs_real a0 = 0.35875, a1 = 0.48829, a2 = 0.14128, a3 = 0.01168;
-    for (mrs_natural t = 0; t < N; t++)
-    {
-        envelope(t) = a0  - a1 * cos(2.0 * PI * t / (N - 1.0))
-        + a2 * cos(4.0 * PI * t / (N - 1.0))
-        - a3 * cos(6.0 * PI * t / (N - 1.0));
     }
 }
 
 
 
-void SinusoidalSynthVoice::windowingFillTriangle(realvec& envelope)
-{
-    mrs_natural N = envelope.getSize();
-    for (mrs_natural t = 0; t < N; t++)
-    {
-        envelope(t) = 2.0/N * (N/2.0 - std::abs(t - (N - 1.0)/2.0));
-    }
-}
 

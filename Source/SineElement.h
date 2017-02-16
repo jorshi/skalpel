@@ -24,10 +24,10 @@ public:
     ~SineElement();
     
     // Getters
-    mrs_real getFreq() { return _freq; };
-    mrs_real getAmp() { return _amp; };
-    mrs_real getPhase() { return _phase; };
-    mrs_natural getTrack() { return _track; };
+    mrs_real getFreq() const { return _freq; };
+    mrs_real getAmp() const  { return _amp; };
+    mrs_real getPhase() const { return _phase; };
+    mrs_natural getTrack() const { return _track; };
     
     // Setters
     void setFreq(mrs_real freq) { _freq = freq; };
@@ -61,8 +61,8 @@ public:
     void addFrame(std::vector<SineElement>);
     
     // Getters
-    mrs_real getSampleRate() { return _sampleRate; };
-    mrs_real getFrameSize() { return _frameSize; };
+    mrs_real getSampleRate() const { return _sampleRate; };
+    mrs_real getFrameSize() const { return _frameSize; };
     const SineFrame& getFrame(int frame) const { return _sineModel.at(frame); };
     const SineMatrix& getModel() { return _sineModel; };
     

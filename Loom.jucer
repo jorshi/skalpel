@@ -26,6 +26,10 @@
               file="Source/SinusoidalSynth.cpp"/>
         <FILE id="udC28E" name="SinusoidalSynth.h" compile="0" resource="0"
               file="Source/SinusoidalSynth.h"/>
+        <FILE id="kNgQmu" name="SynthesisUtils.cpp" compile="1" resource="0"
+              file="Source/SynthesisUtils.cpp"/>
+        <FILE id="uI4fzd" name="SynthesisUtils.h" compile="0" resource="0"
+              file="Source/SynthesisUtils.h"/>
       </GROUP>
       <FILE id="DUP9BQ" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

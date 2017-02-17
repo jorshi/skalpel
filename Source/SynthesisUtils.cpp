@@ -34,5 +34,30 @@ namespace SynthUtils {
             envelope(t) = 2.0/N * (N/2.0 - std::abs(t - (N - 1.0)/2.0));
         }
     }
+    
+    void createSynthesisWindow(realvec& envelope)
+    {
+        windowingFillBlackmanHarris(envelope);
+        
+        // Create a triangle window
+        mrs_realvec triangle;
+        triangle.create(envelope.getSize());
+        windowingFillTriangle(triangle);
+        
+        mrs_real bhSum(0.0);
+        
+        // Calculate sum of the blackman harris window
+        for (int i = 0; i < envelope.getSize(); ++i)
+        {
+            bhSum += envelope(i);
+        }
+        
+        // Normalize blackman harris and multiply with triangle
+        for (int i = 0; i < envelope.getSize(); ++i)
+        {
+            envelope(i) = envelope(i)/bhSum;
+            envelope(i) = envelope(i)*triangle(i);
+        }
+    }
 }
 

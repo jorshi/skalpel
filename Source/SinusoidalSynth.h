@@ -72,11 +72,24 @@ public:
 private:
     //=============================================================================
     int currentFrame;
+    
+    int _hopSize;
+    int _hopIndex;
+    int _windowSize;
+    int _overlapIndex;
+    
     mrs_realvec _window;
+    mrs_realvec _synthWindow;
+    
+    std::vector<std::vector<FFT::Complex>> _frames;
+    std::vector<FFT::Complex> _spectrum;
+
     FFT ifft;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };
+
+void cleanComplex(FFT::Complex& a);
 
 
 

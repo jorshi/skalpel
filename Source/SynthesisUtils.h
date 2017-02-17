@@ -20,6 +20,7 @@ namespace SynthUtils {
 
     void windowingFillBlackmanHarris(Marsyas::realvec&);
     void windowingFillTriangle(Marsyas::realvec&);
+    void createSynthesisWindow(realvec&);
 
 }
 

@@ -17,20 +17,35 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
 
 {
     SineModel::SineFrame testFrame;
-    testFrame.emplace_back(440, -6.0, 0);
+    testFrame.emplace_back(1000, -12.0, 0);
     
-    testModel.setFrameSize(2048);
-    testModel.setSampleRate(44100.0);
-    for (int i = 0; i < 100; ++i)
-    {
-        testModel.addFrame(testFrame);
-    }
+    //testModel.setFrameSize(2048);
+    //testModel.setSampleRate(44100.0);
+    //for (int i = 0; i < 100; ++i)
+    //{
+    //    testModel.addFrame(testFrame);
+    //}
     
     // Create a Blackman Harris windowing for sampling
     bh1001.create(1001);
     SynthUtils::windowingFillBlackmanHarris(bh1001);
     
 };
+
+// Constructor with a new model
+SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, const SineModel& model)
+: midiNotes(notes), midiRootNote(midiNoteForNormalPitch)
+
+{
+    testModel = model;
+    
+    // Create a Blackman Harris windowing for sampling
+    bh1001.create(1001);
+    SynthUtils::windowingFillBlackmanHarris(bh1001);
+    
+};
+
+
 
 // Destructor
 SinusoidalSynthSound::~SinusoidalSynthSound() {};
@@ -116,7 +131,7 @@ SinusoidalSynthVoice::SinusoidalSynthVoice()
 {
     // Create the synthesis window
     _synthWindow.create(512);
-    SynthUtils::createSynthesisWindow(_synthWindow);
+    SynthUtils::createSynthesisWindow(_synthWindow, _hopSize);
     std::cout << _synthWindow << "\n";
     
     // Setup windows for overlap add
@@ -197,6 +212,8 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                 *outL = 0.0;
                 for (int i = 0; i < 4; ++i)
                 {
+                    int frameNum = (_overlapIndex - i + 4) % 4;
+                    int index = _hopIndex + (_hopSize*i);
                     *outL += _frames.at((_overlapIndex - i + 4) % 4).at(_hopIndex + (_hopSize*i)).r;
                 }
                 *outR = *outL;
@@ -217,6 +234,11 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                 playingSound->fillSpectrum(_spectrum, currentFrame);
                 
                 
+                //for (auto bin = _spectrum.begin(); bin != _spectrum.end(); ++bin)
+                //{
+                //    std::cout << bin->r << "+j" << bin->i << " ";
+                //}
+                
                 if (_spectrum.size() == 0)
                 {
                     // No more samples to render! Clear note and set samples to zero
@@ -225,18 +247,24 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                     // This is annoying!! TODO fix this
                     _spectrum.resize(512);
                     currentFrame = 0;
+                    _hopIndex = _hopSize;
                     
                     // Need to clear out all the samples!
+                    for (auto frame = _frames.begin(); frame != _frames.end(); ++frame)
+                    {
+                        std::for_each(frame->begin(), frame->end(), cleanComplex);
+                    }
+                } else {
+                    
                     std::for_each(_frames.at(_overlapIndex).begin(),
                                   _frames.at(_overlapIndex).end(),
                                   cleanComplex);
-                } else {
-                
                     ifft.perform(_spectrum.data(), _frames.at(_overlapIndex).data());
                     
                     std::rotate(_frames.at(_overlapIndex).begin(),
                                 _frames.at(_overlapIndex).begin()+256,
                                 _frames.at(_overlapIndex).end());
+                    
                     
                     for (int i = 0; i < _frames.at(_overlapIndex).size(); ++i)
                     {
@@ -248,6 +276,11 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
             }
         }
 
+        
+        //std::cout << "end of samples\n\n";
+        
+        //std::cout << _synthWindow << "\n";
+        
         
         ++currentFrame;
     }

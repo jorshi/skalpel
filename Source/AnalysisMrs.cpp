@@ -36,10 +36,10 @@ void AnalysisMrs::newAnalysis()
     }
     
     // Run sineusoidal analysis
-    SineModel sineModel;
-    peakDetection(sineModel, fileName);
-    sineTracking(sineModel);
-    cleanModel(sineModel);
+    _analysisModel = SineModel();
+    peakDetection(_analysisModel, fileName);
+    sineTracking(_analysisModel);
+    cleanModel(_analysisModel);
     
 }
 

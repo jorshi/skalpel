@@ -181,6 +181,12 @@ void LoomAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 void LoomAudioProcessor::newAnalysis()
 {
     analysis->newAnalysis();
+    synth->clearSounds();
+    
+    BigInteger midiNotes;
+    midiNotes.setRange(0, 126, true);
+    sound = new SinusoidalSynthSound(midiNotes, 69, analysis->getAnalysisModel());
+    synth->addSound(sound);
 }
 
 //==============================================================================

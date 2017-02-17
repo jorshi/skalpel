@@ -23,6 +23,7 @@ class SinusoidalSynthSound : public SynthesiserSound
 public:
     
     SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch);
+    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, const SineModel&);
     
     ~SinusoidalSynthSound();
     
@@ -33,6 +34,8 @@ public:
     
     // Fill spectrum for a requested frame
     void fillSpectrum(std::vector<FFT::Complex>&, int frame) const;
+    
+    void replaceModel(SineModel& newModel) { testModel = newModel; };
     
 private:
     friend class SinusoidalSynthVoice;

@@ -26,10 +26,14 @@ public:
     
     void newAnalysis();
     
+    const SineModel& getAnalysisModel() const { return _analysisModel; };
+    
 private:
     void peakDetection(SineModel&, String);
     void sineTracking(SineModel&);
     void cleanModel(SineModel&);
+    
+    SineModel _analysisModel;
 };
 
 

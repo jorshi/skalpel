@@ -56,7 +56,7 @@ public:
     void setSampleRate(mrs_real sr) { _sampleRate = sr; };
     void setFrameSize(mrs_natural fs) { _frameSize = fs; };
     void setSineModel(SineMatrix newModel) { _sineModel = newModel; };
-    void setHopSize(mrs_natrual h) { _hopSize = h; };
+    void setHopSize(mrs_natural h) { _hopSize = h; };
     
     // Add a new frame to the end of the current model
     void addFrame(std::vector<SineElement>);
@@ -64,7 +64,7 @@ public:
     // Getters
     mrs_real getSampleRate() const { return _sampleRate; };
     mrs_natural getFrameSize() const { return _frameSize; };
-    mrs_natueal getHopSize() const { return _hopSize; };
+    mrs_natural getHopSize() const { return _hopSize; };
     const SineFrame& getFrame(int frame) const { return _sineModel.at(frame); };
     const SineMatrix& getModel() { return _sineModel; };
     

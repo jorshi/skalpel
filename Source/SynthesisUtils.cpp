@@ -63,8 +63,7 @@ namespace SynthUtils {
         // Normalize blackman harris and multiply with triangle
         for (int i = 0; i < envelope.getSize(); ++i)
         {
-            //envelope(i) = envelope(i)/bhSum;
-            envelope(i) = fullWindow(i)/envelope(i);
+            envelope(i) = (fullWindow(i)/envelope(i));
         }
     }
 }

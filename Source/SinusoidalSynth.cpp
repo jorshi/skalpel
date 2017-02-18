@@ -202,82 +202,86 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
         float* outR = outputBuffer.getNumChannels() > 1 ? outputBuffer.getWritePointer (1, startSample) : nullptr;
         
         const float level = 0.125f;
+  
+        
         
        
-        while (numSamples > 0)
-        {
-            // Fill output
-            if (_hopIndex < _hopSize)
-            {
-                *outL = 0.0;
-                for (int i = 0; i < 4; ++i)
-                {
-                    int frameNum = (_overlapIndex - i + 4) % 4;
-                    int index = _hopIndex + (_hopSize*i);
-                    *outL += _frames.at((_overlapIndex - i + 4) % 4).at(_hopIndex + (_hopSize*i)).r;
-                }
-                *outR = *outL;
-                
-                ++outL;
-                ++outR;
-                ++_hopIndex;
-                --numSamples;
-            }
-            
-            // Need to calculate more windows
-            else
-            {
-                // Increment overlap index
-                _overlapIndex = (_overlapIndex + 1) % 4;
-                
-                // Get next spectral frame
-                playingSound->fillSpectrum(_spectrum, currentFrame);
-                
-                
-                //for (auto bin = _spectrum.begin(); bin != _spectrum.end(); ++bin)
-                //{
-                //    std::cout << bin->r << "+j" << bin->i << " ";
-                //}
-                
-                if (_spectrum.size() == 0)
-                {
-                    // No more samples to render! Clear note and set samples to zero
-                    clearCurrentNote();
-                    
-                    // This is annoying!! TODO fix this
-                    _spectrum.resize(512);
-                    currentFrame = 0;
-                    _hopIndex = _hopSize;
-                    
-                    // Need to clear out all the samples!
-                    for (auto frame = _frames.begin(); frame != _frames.end(); ++frame)
-                    {
-                        std::for_each(frame->begin(), frame->end(), cleanComplex);
-                    }
-                } else {
-                    
-                    std::for_each(_frames.at(_overlapIndex).begin(),
-                                  _frames.at(_overlapIndex).end(),
-                                  cleanComplex);
-                    ifft.perform(_spectrum.data(), _frames.at(_overlapIndex).data());
-                    
-                    std::rotate(_frames.at(_overlapIndex).begin(),
-                                _frames.at(_overlapIndex).begin()+256,
-                                _frames.at(_overlapIndex).end());
-                    
-                    
-                    for (int i = 0; i < _frames.at(_overlapIndex).size(); ++i)
-                    {
-                        _frames.at(_overlapIndex).at(i).r *= _synthWindow(i);
-                    }
-                }
-                
-                _hopIndex = 0;
-            }
-        }
+//        while (numSamples > 0)
+//        {
+//            // Fill output
+//            if (_hopIndex < _hopSize)
+//            {
+//                *outL = 0.0;
+//                for (int i = 0; i < 4; ++i)
+//                {
+//                    int frameNum = (_overlapIndex - i + 4) % 4;
+//                    int index = _hopIndex + (_hopSize*i);
+//                    *outL += _frames.at((_overlapIndex - i + 4) % 4).at(_hopIndex + (_hopSize*i)).r;
+//                }
+//                *outR = *outL;
+//                
+//                std::cout << *outL << " ";
+//                
+//                ++outL;
+//                ++outR;
+//                ++_hopIndex;
+//                --numSamples;
+//            }
+//            
+//            // Need to calculate more windows
+//            else
+//            {
+//                // Increment overlap index
+//                _overlapIndex = (_overlapIndex + 1) % 4;
+//                
+//                // Get next spectral frame
+//                playingSound->fillSpectrum(_spectrum, currentFrame);
+//                
+//                
+//                //for (auto bin = _spectrum.begin(); bin != _spectrum.end(); ++bin)
+//                //{
+//                //    std::cout << bin->r << "+j" << bin->i << " ";
+//                //}
+//                
+//                if (_spectrum.size() == 0)
+//                {
+//                    // No more samples to render! Clear note and set samples to zero
+//                    clearCurrentNote();
+//                    
+//                    // This is annoying!! TODO fix this
+//                    _spectrum.resize(512);
+//                    currentFrame = 0;
+//                    _hopIndex = _hopSize;
+//                    
+//                    // Need to clear out all the samples!
+//                    for (auto frame = _frames.begin(); frame != _frames.end(); ++frame)
+//                    {
+//                        std::for_each(frame->begin(), frame->end(), cleanComplex);
+//                    }
+//                } else {
+//                    
+//                    std::for_each(_frames.at(_overlapIndex).begin(),
+//                                  _frames.at(_overlapIndex).end(),
+//                                  cleanComplex);
+//                    ifft.perform(_spectrum.data(), _frames.at(_overlapIndex).data());
+//                    
+//                    std::rotate(_frames.at(_overlapIndex).begin(),
+//                                _frames.at(_overlapIndex).begin()+256,
+//                                _frames.at(_overlapIndex).end());
+//                    
+//                    
+//                    for (int i = 0; i < _frames.at(_overlapIndex).size(); ++i)
+//                    {
+//                        _frames.at(_overlapIndex).at(i).r *= _synthWindow(i);
+//                    }
+//                }
+//                
+//                _hopIndex = 0;
+//            }
+//        }
 
         
-        //std::cout << "end of samples\n\n";
+        std::cout << "end of samples\n\n";
         
         //std::cout << _synthWindow << "\n";
         

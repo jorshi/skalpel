@@ -10,8 +10,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "DeterministicSynth.h"
-#include "AnalysisMrs.h"
 
 //==============================================================================
 LoomAudioProcessor::LoomAudioProcessor()

@@ -52,15 +52,8 @@ namespace SynthUtils {
             fullWindow(i + hopSize) = triangle(i);
         }
         
-        mrs_real bhSum(0.0);
-        
-        // Calculate sum of the blackman harris window
-        for (int i = 0; i < envelope.getSize(); ++i)
-        {
-            bhSum += envelope(i);
-        }
-        
         // Normalize blackman harris and multiply with triangle
+        // TODO: this loop can be merged with above loop
         for (int i = 0; i < envelope.getSize(); ++i)
         {
             envelope(i) = (fullWindow(i)/envelope(i));

@@ -20,31 +20,47 @@ class SinusoidalSynthSound : public SynthesiserSound
 {
 public:
     
-    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch);
-    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, const SineModel&);
+    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, int frameSize);
+    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, const SineModel&, int frameSize);
     
     ~SinusoidalSynthSound();
     
     bool appliesToNote (int midiNoteNumber) override;
     bool appliesToChannel (int midiChannel) override;
     
-    const SineModel::SineFrame* getFrameAt(int frame) const;
+    const int& getFrameSize() const { return _frameSize; };
+
     
     void fillSpectrum(std::vector<FFT::Complex>&, int frame) const;
     
     // Get a time domain frame at a requested time location
-    void getSignal(mrs_realvec&, mrs_real) const;
+    bool getSignal(mrs_realvec&, mrs_real, int) const;
     
     void replaceModel(SineModel& newModel) { _model = newModel; };
     
 private:
     friend class SinusoidalSynthVoice;
     
+    
+    // Reset all real and imaginary spectrum values to 0
+    void resetSpectrum();
+    
     BigInteger _midiNotes;
     int _midiRootNote;
     
     SineModel _model;
     mrs_realvec _bh1001;
+    mrs_realvec _synthWindow;
+
+    int _frameSize;
+    mrs_real _nyquistBin;
+    
+    // Signals for holding spectral and time domain signals
+    std::vector<FFT::Complex> _spectrum;
+    std::vector<FFT::Complex> _timeSignal;
+    
+    // Pointer to FFT class
+    FFT* _fftFunction;
     
     JUCE_LEAK_DETECTOR(SinusoidalSynthSound)
 };

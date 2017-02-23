@@ -47,14 +47,18 @@ private:
     int _hopIndex;
     int _windowSize;
     int _overlapIndex;
+    int _readPos;
+    int _writePos;
+    
+    mrs_real _location;
     
     mrs_realvec _window;
     mrs_realvec _synthWindow;
     
+    mrs_realvec _buffer;
+    
     std::vector<std::vector<FFT::Complex>> _frames;
     std::vector<FFT::Complex> _spectrum;
-    
-    FFT ifft;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

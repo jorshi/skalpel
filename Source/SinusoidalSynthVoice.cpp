@@ -17,7 +17,7 @@ _hopSize(128),
 _windowSize(512),
 _overlapIndex(0),
 _spectrum(512),
-ifft(log2(512), true)
+_location(0.0)
 {
     // Create the synthesis window
     _synthWindow.create(512);
@@ -31,6 +31,8 @@ ifft(log2(512), true)
     }
     
     _hopIndex = _hopSize;
+    _writePos = 0;
+    _readPos = 0;
 }
 
 SinusoidalSynthVoice::~SinusoidalSynthVoice()
@@ -49,7 +51,14 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
 {
     if (const SinusoidalSynthSound* const sound = dynamic_cast<const SinusoidalSynthSound*> (s))
     {
+        _hopSize = sound->getFrameSize() / 4;
+        _buffer.create(sound->getFrameSize());
+        
         currentFrame = 0;
+        _location = 0.0;
+        _readPos = 0;
+        _writePos = 0;
+        _hopIndex = _hopSize;
     }
     else
     {
@@ -64,6 +73,8 @@ void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
     _hopIndex = _hopSize;
     _overlapIndex = 0;
     _spectrum.resize(512);
+    _location = 0.0;
+    _readPos = 0;
 }
 
 void SinusoidalSynthVoice::pitchWheelMoved (const int /*newValue*/)
@@ -88,89 +99,64 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
         const float level = 0.125f;
         
         
+        int numCalculated = 0;
         
+        while (numCalculated < numSamples)
+        {
+            // Get a new frame
+            if (_hopIndex >= _hopSize)
+            {
+                mrs_realvec output;
+                output.allocate(playingSound->getFrameSize());
+                
+                if (playingSound->getSignal(output, _location, getSampleRate()))
+                {
+                    // Do overlap add
+                    for (int i = 0; i < playingSound->getFrameSize(); ++i)
+                    {
+                        if (i < _hopSize)
+                        {
+                            _buffer((_writePos + i) % playingSound->getFrameSize()) = 0.0;
+                        }
+                        else
+                        {
+                            _buffer((_writePos + i) % playingSound->getFrameSize()) += output(i);
+                        }
+                    }
+                }
+                else
+                {
+                    clearCurrentNote();
+                    for (int i = 0; i < _hopSize; ++i)
+                    {
+                        _buffer(_writePos + i) = 0.0;
+                    }
+                }
+                
+                // Update write pointer and read pointer
+                _writePos = (_writePos + _hopSize) % playingSound->getFrameSize();
+                _readPos = (_readPos + _hopSize) % playingSound->getFrameSize();
+                
+                _location += (_hopSize / getSampleRate());
+                _hopIndex = 0;
+            }
+            else
+            {
+                *(outL + numCalculated + startSample) = _buffer(_readPos + _hopIndex);
+                *(outR + numCalculated + startSample) = _buffer(_readPos + _hopIndex);
+                numCalculated++;
+                _hopIndex++;
+            }
+            
+        }
         
-        //        while (numSamples > 0)
-        //        {
-        //            // Fill output
-        //            if (_hopIndex < _hopSize)
-        //            {
-        //                *outL = 0.0;
-        //                for (int i = 0; i < 4; ++i)
-        //                {
-        //                    int frameNum = (_overlapIndex - i + 4) % 4;
-        //                    int index = _hopIndex + (_hopSize*i);
-        //                    *outL += _frames.at((_overlapIndex - i + 4) % 4).at(_hopIndex + (_hopSize*i)).r;
-        //                }
-        //                *outR = *outL;
-        //
-        //                std::cout << *outL << " ";
-        //
-        //                ++outL;
-        //                ++outR;
-        //                ++_hopIndex;
-        //                --numSamples;
-        //            }
-        //
-        //            // Need to calculate more windows
-        //            else
-        //            {
-        //                // Increment overlap index
-        //                _overlapIndex = (_overlapIndex + 1) % 4;
-        //
-        //                // Get next spectral frame
-        //                playingSound->fillSpectrum(_spectrum, currentFrame);
-        //
-        //
-        //                //for (auto bin = _spectrum.begin(); bin != _spectrum.end(); ++bin)
-        //                //{
-        //                //    std::cout << bin->r << "+j" << bin->i << " ";
-        //                //}
-        //
-        //                if (_spectrum.size() == 0)
-        //                {
-        //                    // No more samples to render! Clear note and set samples to zero
-        //                    clearCurrentNote();
-        //
-        //                    // This is annoying!! TODO fix this
-        //                    _spectrum.resize(512);
-        //                    currentFrame = 0;
-        //                    _hopIndex = _hopSize;
-        //
-        //                    // Need to clear out all the samples!
-        //                    for (auto frame = _frames.begin(); frame != _frames.end(); ++frame)
-        //                    {
-        //                        std::for_each(frame->begin(), frame->end(), cleanComplex);
-        //                    }
-        //                } else {
-        //
-        //                    std::for_each(_frames.at(_overlapIndex).begin(),
-        //                                  _frames.at(_overlapIndex).end(),
-        //                                  cleanComplex);
-        //                    ifft.perform(_spectrum.data(), _frames.at(_overlapIndex).data());
-        //
-        //                    std::rotate(_frames.at(_overlapIndex).begin(),
-        //                                _frames.at(_overlapIndex).begin()+256,
-        //                                _frames.at(_overlapIndex).end());
-        //                    
-        //                    
-        //                    for (int i = 0; i < _frames.at(_overlapIndex).size(); ++i)
-        //                    {
-        //                        _frames.at(_overlapIndex).at(i).r *= _synthWindow(i);
-        //                    }
-        //                }
-        //                
-        //                _hopIndex = 0;
-        //            }
-        //        }
+        for (int i = 0; i < numSamples; ++i)
+        {
+            //std::cout << *(outL + startSample + i) << " ";
+        }
         
-        
-        std::cout << "end of samples\n\n";
-        
-        //std::cout << _synthWindow << "\n";
-        
-        
-        ++currentFrame;
+        //std::cout << "Rendered Samples\n";
     }
+    
 }
 

@@ -158,7 +158,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     }
     
     sineModel.setSampleRate(sampleRate);
-    sineModel.setFrameSize(windowSize);
+    sineModel.setFrameSize(hopSize);
     
     delete network;
 }
@@ -263,7 +263,7 @@ void AnalysisMrs::cleanModel(SineModel& sineModel)
 {
     
     // Min duration in seconds
-    mrs_real minDuration = 0.1;
+    mrs_real minDuration = 0.02;
     mrs_real frameLength = sineModel.getFrameSize()/sineModel.getSampleRate();
     int minFrames = (int)std::ceil(minDuration/frameLength);
     

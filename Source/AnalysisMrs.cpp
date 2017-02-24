@@ -48,7 +48,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
 {
     MarSystemManager mng;
     
-    int hopSize = 1024;
+    int hopSize = 128;
     int frameSize = 2048;
     
     mrs_real sampleRate;

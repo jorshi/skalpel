@@ -117,7 +117,7 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
         mrs_real mag = pow(10, sine->getAmp()/20);
         mrs_real phase = sine->getPhase() + 2*PI*sine->getFreq()*offset/renderRate;
         phase = std::fmod(phase, PI);
-        //phase = sine->getPhase();
+        phase = sine->getPhase();
         
         // Going to make a 9 bin wide Blackman Harris window
         if (binLoc >= 5 && binLoc < _nyquistBin-4)
@@ -189,11 +189,15 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     
     _fftFunction->perform(spectrum.data(), timeDomain.data());
     
+    mrs_real w = (440.0/renderRate)*2*PI;
+    mrs_real phi = loc*440.0*2*PI;
     
     for (int i = 0; i < _frameSize; ++i)
     {
         //std::cout << timeDomain.at((i + (_frameSize / 2)) % _frameSize).r << " ";
         timeVec(i) = timeDomain.at((i + (_frameSize / 2)) % _frameSize).r * _synthWindow(i);
+        timeVec(i) = 0.5*sin(w*i + phi) * _synthWindow(i);
+        
     }
     
     return true;

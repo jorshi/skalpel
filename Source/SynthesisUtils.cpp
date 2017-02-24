@@ -56,7 +56,7 @@ namespace SynthUtils {
         // TODO: this loop can be merged with above loop
         for (int i = 0; i < envelope.getSize(); ++i)
         {
-            envelope(i) = (fullWindow(i)/envelope(i));
+            envelope(i) = fullWindow(i);
         }
     }
 }

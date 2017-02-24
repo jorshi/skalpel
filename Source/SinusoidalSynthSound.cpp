@@ -179,6 +179,24 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
             }
         }
     }
+
+    mrs_real w = (renderRate/_frameSize);
+    mrs_real phi = loc*440.0*2*PI;
+    
+    //TESTING
+    for (int i = 0; i < _nyquistBin; ++i)
+    {
+        if (i == 5)
+        {
+            spectrum.at(i).r = 0.5*cos(w*loc*2*PI);
+            spectrum.at(i).i = 0.5*sin(w*loc*2*PI);
+        }
+        else
+        {
+            spectrum.at(i).r = 0.0;
+            spectrum.at(i).i = 0.0;
+        }
+    }
     
     // Conjugate for bins above the nyquist frequency
     for (int i = 1; i < _nyquistBin; ++i)
@@ -189,14 +207,13 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     
     _fftFunction->perform(spectrum.data(), timeDomain.data());
     
-    mrs_real w = (440.0/renderRate)*2*PI;
-    mrs_real phi = loc*440.0*2*PI;
+
     
     for (int i = 0; i < _frameSize; ++i)
     {
         //std::cout << timeDomain.at((i + (_frameSize / 2)) % _frameSize).r << " ";
         timeVec(i) = timeDomain.at((i + (_frameSize / 2)) % _frameSize).r * _synthWindow(i);
-        timeVec(i) = 0.5*sin(w*i + phi) * _synthWindow(i);
+        //timeVec(i) = 0.5*sin(w*i + phi) * _synthWindow(i);
         
     }
     

@@ -84,5 +84,9 @@ private:
 };
 
 
+// TESTING
+SineModel getTestModel();
+
+
 
 #endif  // SINEELEMENT_H_INCLUDED

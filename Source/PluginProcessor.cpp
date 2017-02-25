@@ -30,9 +30,10 @@ LoomAudioProcessor::LoomAudioProcessor()
     for (int i = 0; i < maxVoices; ++i)
         synth->addVoice (new SinusoidalSynthVoice());
     
+
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
-    SynthesiserSound::Ptr newSound = new SinusoidalSynthSound(midiNotes, 69, 512);
+    SynthesiserSound::Ptr newSound = new SinusoidalSynthSound(midiNotes, 69, getTestModel(), 512);
     sound = newSound;
     
     synth->addSound(sound);

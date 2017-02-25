@@ -152,10 +152,10 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
         
         for (int i = 0; i < numSamples; ++i)
         {
-            //std::cout << *(outL + startSample + i) << " ";
+            std::cout << *(outL + startSample + i) << " ";
         }
         
-        //std::cout << "Rendered Samples\n";
+        //std::cout << "Rendered Samples\n\n";
     }
     
 }

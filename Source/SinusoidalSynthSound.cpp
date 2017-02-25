@@ -180,40 +180,56 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
         }
     }
 
-    mrs_real w = (renderRate/_frameSize);
+    mrs_real w = 440.0/renderRate*2*PI;
     mrs_real phi = loc*440.0*2*PI;
     
-    //TESTING
-    for (int i = 0; i < _nyquistBin; ++i)
-    {
-        if (i == 5)
-        {
-            spectrum.at(i).r = 0.5*cos(w*loc*2*PI);
-            spectrum.at(i).i = 0.5*sin(w*loc*2*PI);
-        }
-        else
-        {
-            spectrum.at(i).r = 0.0;
-            spectrum.at(i).i = 0.0;
-        }
-    }
-    
+
     // Conjugate for bins above the nyquist frequency
     for (int i = 1; i < _nyquistBin; ++i)
     {
         spectrum.at(_nyquistBin + i).r = spectrum.at(_nyquistBin - i).r;
         spectrum.at(_nyquistBin + i).i = -spectrum.at(_nyquistBin - i).i;
     }
+   
+    for (auto bin = spectrum.begin(); bin != spectrum.end(); ++bin)
+    {
+        std::cout << bin->r << "+" << bin->i << "i ";
+    }
     
+    std::cout << "CalculatedEndFrame\n\n";
+    
+//    mrs_realvec bh;
+//    bh.create(_frameSize);
+//    SynthUtils::windowingFillBlackmanHarris(bh);
+//    
+//    std::vector<FFT::Complex> textTime(_frameSize);
+//    for (int i = 0; i < _frameSize; ++i)
+//    {
+//        textTime.at(i).r = 0.5*sin(w*i + phi);
+//    }
+//    
+//    FFT forwardFFT(std::log2(_frameSize), false);
+//
+//    forwardFFT.perform(textTime.data(), spectrum.data());
+//    
+//    for (auto bin = spectrum.begin(); bin != spectrum.end(); ++bin)
+//    {
+//        std::cout << bin->r << "+" << bin->i << "i ";
+//    }
+//    
+//    std::cout << "EndFrame\n\n";
+//    
     _fftFunction->perform(spectrum.data(), timeDomain.data());
-    
+//    
 
     
     for (int i = 0; i < _frameSize; ++i)
     {
-        //std::cout << timeDomain.at((i + (_frameSize / 2)) % _frameSize).r << " ";
-        timeVec(i) = timeDomain.at((i + (_frameSize / 2)) % _frameSize).r * _synthWindow(i);
+        //std::cout << timeDomain.at((i + (_frameSize / 2)) % _frameSize).r / _frameSize * _synthWindow(i) << " ";
+        //timeVec(i) = timeDomain.at((i + (_frameSize / 2)) % _frameSize).r / _frameSize * _synthWindow(i);
         //timeVec(i) = 0.5*sin(w*i + phi) * _synthWindow(i);
+        //timeVec(i) = (timeDomain.at(i).r / _frameSize) * _synthWindow(i);
+        std::cout << _synthWindow(i) << " ";
         
     }
     

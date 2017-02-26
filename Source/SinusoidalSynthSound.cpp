@@ -31,6 +31,12 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
     
     _synthWindow.create(_frameSize);
     SynthUtils::createSynthesisWindow(_synthWindow, _frameSize/4);
+    
+//    for (int i = 0; i < _frameSize; ++i)
+//    {
+//        std::cout << _synthWindow(i) << " ";
+//    }
+    std::cout << _synthWindow << " Synth Window\n\n";
 };
 
 
@@ -43,7 +49,11 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
 {
     // Create a Blackman Harris windowing for sampling
     _bh1001.create(1001);
-    SynthUtils::windowingFillBlackmanHarris(_bh1001);
+    //SynthUtils::windowingFillBlackmanHarris(_bh1001);
+    for (int i = 0; i < 1001; ++i)
+    {
+        _bh1001(i) = SynthUtils::BHCONST.at(i);
+    }
     
     _nyquistBin = _frameSize/2;
     
@@ -56,6 +66,8 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
     
     _synthWindow.create(_frameSize);
     SynthUtils::createSynthesisWindow(_synthWindow, _frameSize/4);
+    
+    std::cout << _bh1001 << " Synth Window\n\n";
 };
 
 
@@ -111,7 +123,7 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     {
         mrs_real binLoc =  (sine->getFreq() / renderRate) * _frameSize;
         mrs_natural binInt = std::round(binLoc);
-        mrs_real binRem = binLoc - binInt;
+        mrs_real binRem = binInt - binLoc;
         
         // Convert the decibels back to magnitude
         mrs_real mag = pow(10, sine->getAmp()/20);
@@ -191,12 +203,12 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
         spectrum.at(_nyquistBin + i).i = -spectrum.at(_nyquistBin - i).i;
     }
    
-    for (auto bin = spectrum.begin(); bin != spectrum.end(); ++bin)
-    {
-        std::cout << bin->r << "+" << bin->i << "i ";
-    }
+//    for (auto bin = spectrum.begin(); bin != spectrum.end(); ++bin)
+//    {
+//        std::cout << bin->r << "+" << bin->i << "i ";
+//    }
     
-    std::cout << "CalculatedEndFrame\n\n";
+    //std::cout << "CalculatedEndFrame\n\n";
     
 //    mrs_realvec bh;
 //    bh.create(_frameSize);
@@ -226,10 +238,10 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     for (int i = 0; i < _frameSize; ++i)
     {
         //std::cout << timeDomain.at((i + (_frameSize / 2)) % _frameSize).r / _frameSize * _synthWindow(i) << " ";
-        //timeVec(i) = timeDomain.at((i + (_frameSize / 2)) % _frameSize).r / _frameSize * _synthWindow(i);
+        timeVec(i) = timeDomain.at((i + (_frameSize / 2)) % _frameSize).r / _frameSize * _synthWindow(i);
         //timeVec(i) = 0.5*sin(w*i + phi) * _synthWindow(i);
         //timeVec(i) = (timeDomain.at(i).r / _frameSize) * _synthWindow(i);
-        std::cout << _synthWindow(i) << " ";
+        //std::cout << _synthWindow(i) << " ";
         
     }
     

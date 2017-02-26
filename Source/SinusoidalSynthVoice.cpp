@@ -22,7 +22,6 @@ _location(0.0)
     // Create the synthesis window
     _synthWindow.create(512);
     SynthUtils::createSynthesisWindow(_synthWindow, _hopSize);
-    std::cout << _synthWindow << "\n";
     
     // Setup windows for overlap add
     for (int i = 0; i < 4; ++i)
@@ -150,10 +149,10 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
             
         }
         
-        for (int i = 0; i < numSamples; ++i)
-        {
-            std::cout << *(outL + startSample + i) << " ";
-        }
+//        for (int i = 0; i < numSamples; ++i)
+//        {
+//            std::cout << *(outL + startSample + i) << " ";
+//        }
         
         //std::cout << "Rendered Samples\n\n";
     }

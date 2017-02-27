@@ -104,7 +104,7 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     
     // Get the frame closest to the requested time
     mrs_real requestedPos = (loc * _model.getSampleRate()) / _model.getFrameSize();
-    int requestedFrame = std::floor(requestedPos);
+    int requestedFrame = std::round(requestedPos);
     mrs_real offset = (int)((requestedPos - requestedFrame) * _model.getFrameSize());
     
     // Out of frames from the model

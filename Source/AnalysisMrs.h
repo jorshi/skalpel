@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "marsyas/system/MarSystemManager.h"
+#include "SynthesisUtils.h"
 #include "SineElement.h"
 #include <vector>
 #include <algorithm>
@@ -26,10 +27,14 @@ public:
     
     void newAnalysis();
     
+    const SineModel& getAnalysisModel() const { return _analysisModel; };
+    
 private:
     void peakDetection(SineModel&, String);
     void sineTracking(SineModel&);
     void cleanModel(SineModel&);
+    
+    SineModel _analysisModel;
 };
 
 

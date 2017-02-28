@@ -10,8 +10,6 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "DeterministicSynth.h"
-#include "AnalysisMrs.h"
 
 //==============================================================================
 LoomAudioProcessor::LoomAudioProcessor()
@@ -32,9 +30,10 @@ LoomAudioProcessor::LoomAudioProcessor()
     for (int i = 0; i < maxVoices; ++i)
         synth->addVoice (new SinusoidalSynthVoice());
     
+
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
-    SynthesiserSound::Ptr newSound = new SinusoidalSynthSound(midiNotes, 69);
+    SynthesiserSound::Ptr newSound = new SinusoidalSynthSound(midiNotes, 69, getTestModel(), 512);
     sound = newSound;
     
     synth->addSound(sound);
@@ -181,6 +180,12 @@ void LoomAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 void LoomAudioProcessor::newAnalysis()
 {
     analysis->newAnalysis();
+    synth->clearSounds();
+    
+    BigInteger midiNotes;
+    midiNotes.setRange(0, 126, true);
+    sound = new SinusoidalSynthSound(midiNotes, 69, analysis->getAnalysisModel(), 512);
+    synth->addSound(sound);
 }
 
 //==============================================================================

@@ -13,7 +13,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AnalysisMrs.h"
-#include "SinusoidalSynth.h"
+#include "SinusoidalSynthSound.h"
+#include "SinusoidalSynthVoice.h"
 
 
 //==============================================================================

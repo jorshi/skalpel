@@ -44,6 +44,33 @@ void SineModel::addFrame(std::vector<SineElement> newFrame)
     _sineModel.emplace_back(newFrame);
 }
 
+SineModel getTestModel()
+{
+    mrs_natural hopSize = 128;
+    mrs_real rate = 44100.0;
+    
+    SineModel testModel;
+    testModel.setHopSize(hopSize);
+    testModel.setFrameSize(hopSize);
+    testModel.setSampleRate(rate);
+    
+    mrs_real freq = 440.0;
+    mrs_real phase = 0.0;
+    mrs_real phaseInc = (hopSize/rate)*freq*2*PI;
+    
+    
+    
+    for (int i = 0; i < 100; ++i)
+    {
+        SineElement newElement(440.0, -12.0, phase);
+        phase += phaseInc;
+        SineModel::SineFrame newFrame;
+        newFrame.push_back(newElement);
+        testModel.addFrame(newFrame);
+    }
+    
+    return testModel;
+}
 
 
 

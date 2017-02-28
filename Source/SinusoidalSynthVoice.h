@@ -1,54 +1,21 @@
 /*
   ==============================================================================
 
-    SinusoidalSynth.h
-    Created: 7 Feb 2017 2:06:44pm
+    SinusoidalSynthVoice.h
+    Created: 17 Feb 2017 4:03:11pm
     Author:  Jordie Shier 
 
   ==============================================================================
 */
 
-#ifndef SINUSOIDALSYNTH_H_INCLUDED
-#define SINUSOIDALSYNTH_H_INCLUDED
+#ifndef SINUSOIDALSYNTHVOICE_H_INCLUDED
+#define SINUSOIDALSYNTHVOICE_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SineElement.h"
 #include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
-
-
-
-class SinusoidalSynthSound : public SynthesiserSound
-{
-public:
-    
-    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch);
-    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, const SineModel&);
-    
-    ~SinusoidalSynthSound();
-    
-    bool appliesToNote (int midiNoteNumber) override;
-    bool appliesToChannel (int midiChannel) override;
-    
-    const SineModel::SineFrame* getFrameAt(int frame) const;
-    
-    // Fill spectrum for a requested frame
-    void fillSpectrum(std::vector<FFT::Complex>&, int frame) const;
-    
-    void replaceModel(SineModel& newModel) { testModel = newModel; };
-    
-private:
-    friend class SinusoidalSynthVoice;
-    
-    BigInteger midiNotes;
-    int midiRootNote;
-    
-    SineModel testModel;
-    mrs_realvec bh1001;
-    
-    JUCE_LEAK_DETECTOR(SinusoidalSynthSound)
-};
-
+#include "SinusoidalSynthSound.h"
 
 class SinusoidalSynthVoice : public SynthesiserVoice
 {
@@ -80,20 +47,20 @@ private:
     int _hopIndex;
     int _windowSize;
     int _overlapIndex;
+    int _readPos;
+    int _writePos;
+    
+    mrs_real _location;
     
     mrs_realvec _window;
     mrs_realvec _synthWindow;
     
+    mrs_realvec _buffer;
+    
     std::vector<std::vector<FFT::Complex>> _frames;
     std::vector<FFT::Complex> _spectrum;
-
-    FFT ifft;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };
 
-void cleanComplex(FFT::Complex& a);
-
-
-
-#endif  // SINUSOIDALSYNTH_H_INCLUDED
+#endif  // SINUSOIDALSYNTHVOICE_H_INCLUDED

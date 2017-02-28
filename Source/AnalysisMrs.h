@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "marsyas/system/MarSystemManager.h"
+#include "SynthesisUtils.h"
 #include "SineElement.h"
 #include <vector>
 #include <algorithm>

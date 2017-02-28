@@ -95,9 +95,6 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
         float* outL = outputBuffer.getWritePointer (0, startSample);
         float* outR = outputBuffer.getNumChannels() > 1 ? outputBuffer.getWritePointer (1, startSample) : nullptr;
         
-        const float level = 0.125f;
-        
-        
         int numCalculated = 0;
         
         while (numCalculated < numSamples)
@@ -146,16 +143,6 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                 numCalculated++;
                 _hopIndex++;
             }
-            
         }
-        
-//        for (int i = 0; i < numSamples; ++i)
-//        {
-//            std::cout << *(outL + startSample + i) << " ";
-//        }
-        
-        //std::cout << "Rendered Samples\n\n";
     }
-    
 }
-

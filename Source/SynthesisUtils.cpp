@@ -37,6 +37,20 @@ namespace SynthUtils {
         }
     }
     
+    void windowingFillRaisedCosine(realvec& envelope, mrs_real alpha, mrs_real beta)
+    {
+        mrs_natural N = envelope.getSize();
+        for (mrs_natural t = 0; t < N; t++)
+        {
+            envelope(t) = alpha - beta * cos(2.0 * PI * t / (N - 1.0));
+        }
+    }
+    
+    void windowingFillHamming(realvec& envelope)
+    {
+        windowingFillRaisedCosine(envelope, 0.54, 0.46);
+    }
+    
     void createSynthesisWindow(realvec& envelope, mrs_natural hopSize)
     {
         windowingFillBlackmanHarris(envelope);
@@ -63,5 +77,7 @@ namespace SynthUtils {
             envelope(i) = fullWindow(i)/(envelope(i)/bhSum);
         }
     }
+    
+
 }
 

@@ -10,6 +10,8 @@
 
 #include "SynthesisUtils.h"
 
+
+
 namespace SynthUtils {
     
     
@@ -35,29 +37,47 @@ namespace SynthUtils {
         }
     }
     
-    void createSynthesisWindow(realvec& envelope)
+    void windowingFillRaisedCosine(realvec& envelope, mrs_real alpha, mrs_real beta)
+    {
+        mrs_natural N = envelope.getSize();
+        for (mrs_natural t = 0; t < N; t++)
+        {
+            envelope(t) = alpha - beta * cos(2.0 * PI * t / (N - 1.0));
+        }
+    }
+    
+    void windowingFillHamming(realvec& envelope)
+    {
+        windowingFillRaisedCosine(envelope, 0.54, 0.46);
+    }
+    
+    void createSynthesisWindow(realvec& envelope, mrs_natural hopSize)
     {
         windowingFillBlackmanHarris(envelope);
         
         // Create a triangle window
         mrs_realvec triangle;
-        triangle.create(envelope.getSize());
+        triangle.create(hopSize*2);
         windowingFillTriangle(triangle);
         
-        mrs_real bhSum(0.0);
+        mrs_realvec fullWindow;
+        fullWindow.create(envelope.getSize());
         
-        // Calculate sum of the blackman harris window
-        for (int i = 0; i < envelope.getSize(); ++i)
+        for (int i = 0; i < triangle.getSize(); ++i)
         {
-            bhSum += envelope(i);
+            fullWindow(i + hopSize) = triangle(i);
         }
+        
+        mrs_real bhSum = envelope.sum();
         
         // Normalize blackman harris and multiply with triangle
+        // TODO: this loop can be merged with above loop
         for (int i = 0; i < envelope.getSize(); ++i)
         {
-            envelope(i) = envelope(i)/bhSum;
-            envelope(i) = envelope(i)*triangle(i);
+            envelope(i) = fullWindow(i)/(envelope(i)/bhSum);
         }
     }
+    
+
 }
 

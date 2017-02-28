@@ -36,10 +36,10 @@ void AnalysisMrs::newAnalysis()
     }
     
     // Run sineusoidal analysis
-    SineModel sineModel;
-    peakDetection(sineModel, fileName);
-    sineTracking(sineModel);
-    cleanModel(sineModel);
+    _analysisModel = SineModel();
+    peakDetection(_analysisModel, fileName);
+    sineTracking(_analysisModel);
+    cleanModel(_analysisModel);
     
 }
 
@@ -48,8 +48,17 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
 {
     MarSystemManager mng;
     
-    int hopSize = 1024;
+    const mrs_real noiseFloor = 1e-14;
+    
+    int hopSize = 128;
     int frameSize = 2048;
+    
+    // Complex vectors for frequency domain calculations
+    std::vector<FFT::Complex> timeDomain(frameSize);
+    std::vector<FFT::Complex> spectral(frameSize);
+    
+    // Forward FFT class
+    FFT forwardFFT(std::log2(frameSize), false);
     
     mrs_real sampleRate;
     
@@ -65,80 +74,108 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     network->addMarSystem(mng.create("SoundFileSource/input"));
     network->addMarSystem(mng.create("MixToMono/mono"));
     network->addMarSystem(mng.create("ShiftInput/shift"));
-    network->addMarSystem(mng.create("Windowing/win"));
-    network->addMarSystem(mng.create("Spectrum/spec"));
+    network->addMarSystem(mng.create("Windowing/window"));
     network->addMarSystem(mng.create("Gain/gain"));
     
     network->updControl("mrs_natural/inSamples", hopSize);
     network->updControl("SoundFileSource/input/mrs_string/filename", filename.toStdString());
     network->updControl("ShiftInput/shift/mrs_natural/winSize", frameSize);
-    network->updControl("Windowing/win/mrs_natural/zeroPadding", zeroPaddedWindow - frameSize);
-    network->updControl("Windowing/win/mrs_string/type", "Hanning");
+    network->updControl("Windowing/window/mrs_string/type", "Hamming");
+    network->updControl("Windowing/window/mrs_bool/zeroPhasing", true);
+    network->updControl("Windowing/window/mrs_bool/normalize", true);
     
-    MarControlPtr spectrum = network->getControl("Spectrum/spec/mrs_realvec/processedData");
+    MarControlPtr frame = network->getControl("Windowing/window/mrs_realvec/processedData");
     
+    // Create and normalize a Hamming window
+    mrs_realvec window(frameSize);
+    SynthUtils::windowingFillHamming(window);
     
     while(network->getControl("SoundFileSource/input/mrs_bool/hasData")->to_bool())
     {
-        // Get spectrum at this frame
-        mrs_realvec data = spectrum->to_realvec();
-        
-        mrs_real a;
-        mrs_real b;
-        
+        // Update sample rate -- shouldn't change but we need to do it in the loop
         sampleRate = network->getControl("SoundFileSource/input/mrs_real/osrate")->to_real();
         
-        mrs_realvec magnitudes;
-        mrs_realvec phases;
+        // Get spectrum at this frame
+        mrs_realvec data = frame->to_realvec();
+        
+        // Store input as a complex number for FFT
+        for (int i = 0; i < frameSize; ++i)
+        {
+            timeDomain.at(i).r = data(i);
+        }
+        
+        // Perform forward FFT
+        forwardFFT.perform(timeDomain.data(), spectral.data());
+        
+        mrs_realvec magnitudes((int)(frameSize/2));
+        mrs_realvec phases((int)(frameSize/2));
         std::vector<mrs_real> peaks;
         
         mrs_real mag = 0.0;
         mrs_real pMag = 0.0;
         mrs_real ppMag = 0.0;
-        
+
+        mrs_real phaseDiff = 0.0;
+        mrs_real phaseOffset = 0.0;
         
         std::vector<SineElement> frameElements;
         
-        // Size is half the window size after zero padding!
-        magnitudes.allocate(windowSize, 1);
-        phases.allocate(windowSize, 1);
-        
-        for (int i = 0; i < windowSize; ++i)
+        int i = 0;
+        for (auto bin = spectral.begin(); bin != (spectral.end() - (int)frameSize/2); ++bin, ++i)
         {
-            if (i==0 || i==1)
+            mag = 20*std::log10(std::sqrt(bin->r*bin->r + bin->i*bin->i));
+            
+            // Before calculating phase, clear noise
+            if (std::abs(bin->r) < noiseFloor) {bin->r = 0.0;}
+            if (std::abs(bin->i) < noiseFloor) {bin->i = 0.0;}
+            
+            // Calclute phase and then unwrap
+            phases(i) = std::atan2(bin->i, bin->r);
+            
+            // Unwrap phase
+            if (i > 0)
             {
-                a = data(i,0);
-                b = 0.0;
-            }
-            else
-            {
-                a = data(2*i,0);
-                b = data(2*i+1, 0);
+                phaseDiff = (phases(i) + phaseOffset) - phases(i-1);
+                if (phaseDiff > PI)
+                {
+                    phases(i) += (phaseOffset -= TWOPI);
+                }
+                else if (phaseDiff < -PI)
+                {
+                    phases(i) += (phaseOffset += TWOPI);
+                }
+                else
+                {
+                    phases(i) += phaseOffset;
+                }
             }
             
-            // Calculate magnitude and phase
-            mag = 20*log10f(sqrtf(a*a + b*b));
-            phases(i,0) = atan2f(b, a);
-        
             // Check if the previous bin had a local maxima
             if (ppMag < pMag && mag < pMag)
             {
                 if (pMag > thresh)
                 {
                     peaks.push_back(i-1);
-                
-                    // Peak interpolation
-                    mrs_real ipLoc = (i-1) + (0.5*(ppMag-mag)/(ppMag - 2*pMag + mag));
-                    mrs_real ipFreq = ipLoc * sampleRate / zeroPaddedWindow;
                     
+                    // Peak interpolation using Parbolic Interpolation //
+                    
+                    // Find the interpolated location, in terms of bins
+                    mrs_real ipLoc = (i-1) + (0.5*(ppMag-mag)/(ppMag - 2*pMag + mag));
+                    
+                    // Convert that location to frequency
+                    mrs_real ipFreq = ipLoc * sampleRate / frameSize;
+                    
+                    // Interpolate amplitude
                     mrs_real ipAmp = pMag - 0.25*(ppMag-mag)*(ipLoc-(i-1));
                     
+                    // Check if linear interpolation should occur between last two bins, or this
+                    // bin and the last bin
                     mrs_natural phaseIndex = 1;
                     if (ipLoc < (i-1))
                         phaseIndex = 2;
                     
                     // Linear interpolation on phase
-                    mrs_real ipPhase = phases(i-phaseIndex,0) +
+                    mrs_real ipPhase = phases(i-phaseIndex ) +
                         (ipLoc - (i-phaseIndex))*(phases(i-phaseIndex-1) - phases(i-phaseIndex));
                     
                     // Save all the detected peaks
@@ -150,7 +187,6 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
             // Save magnitudes for peak picking
             ppMag = pMag;
             pMag = mag;
-            magnitudes(i,0) = mag;
         }
 
         sineModel.addFrame(frameElements);
@@ -158,7 +194,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     }
     
     sineModel.setSampleRate(sampleRate);
-    sineModel.setFrameSize(windowSize);
+    sineModel.setFrameSize(hopSize);
     
     delete network;
 }
@@ -263,7 +299,7 @@ void AnalysisMrs::cleanModel(SineModel& sineModel)
 {
     
     // Min duration in seconds
-    mrs_real minDuration = 0.1;
+    mrs_real minDuration = 0.02;
     mrs_real frameLength = sineModel.getFrameSize()/sineModel.getSampleRate();
     int minFrames = (int)std::ceil(minDuration/frameLength);
     

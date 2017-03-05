@@ -85,42 +85,81 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     network->updControl("Windowing/window/mrs_bool/normalize", true);
     
     MarControlPtr frame = network->getControl("Windowing/window/mrs_realvec/processedData");
+    MarControlPtr shifted = network->getControl("ShiftInput/shift/mrs_realvec/processedData");
     
     // Create and normalize a Hamming window
     mrs_realvec window(frameSize);
     SynthUtils::windowingFillHamming(window);
+    window /= window.sum();
     
     while(network->getControl("SoundFileSource/input/mrs_bool/hasData")->to_bool())
     {
+        network->tick();
+        
         // Update sample rate -- shouldn't change but we need to do it in the loop
         sampleRate = network->getControl("SoundFileSource/input/mrs_real/osrate")->to_real();
         
         // Get spectrum at this frame
         mrs_realvec data = frame->to_realvec();
         
+        mrs_realvec input = shifted->to_realvec();
+
+        
         // Store input as a complex number for FFT
         for (int i = 0; i < frameSize; ++i)
         {
-            timeDomain.at(i).r = data(i);
+            timeDomain.at(i).r = input((i + (int)(frameSize/2)) % frameSize) *
+                window((i + (int)(frameSize/2)) % frameSize);
         }
         
         // Perform forward FFT
         forwardFFT.perform(timeDomain.data(), spectral.data());
         
+        // Convert real and imaginary scectrum data to magnitude and phase
         mrs_realvec magnitudes((int)(frameSize/2));
         mrs_realvec phases((int)(frameSize/2));
+        mrs_real phaseDiff = 0.0;
+        mrs_real phaseOffset = 0.0;
+
+        int i = 0;
+        for (auto bin = spectral.begin(); bin != (spectral.end() - (int)(frameSize/2)); ++bin, ++i)
+        {
+            magnitudes(i) = 20*std::log10(std::sqrt(bin->r*bin->r + bin->i*bin->i));
+            phases(i) = std::atan2(bin->i, bin->r);
+            
+            // Unwrap phase
+            if (i > 0)
+            {
+                phaseDiff = (phases(i) + phaseOffset) - phases(i-1);
+                if (phaseDiff > PI)
+                {
+                    phases(i) += (phaseOffset -= TWOPI);
+                }
+                else if (phaseDiff < -PI)
+                {
+                    phases(i) += (phaseOffset += TWOPI);
+                }
+                else
+                {
+                    phases(i) += phaseOffset;
+                }
+            }
+        }
+        
+        //std::cout << magnitudes;
+        //std::cout << phases;
+
         std::vector<mrs_real> peaks;
         
         mrs_real mag = 0.0;
         mrs_real pMag = 0.0;
         mrs_real ppMag = 0.0;
 
-        mrs_real phaseDiff = 0.0;
-        mrs_real phaseOffset = 0.0;
+
         
         std::vector<SineElement> frameElements;
         
-        int i = 0;
+        i = 0;
         for (auto bin = spectral.begin(); bin != (spectral.end() - (int)frameSize/2); ++bin, ++i)
         {
             mag = 20*std::log10(std::sqrt(bin->r*bin->r + bin->i*bin->i));
@@ -190,7 +229,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
         }
 
         sineModel.addFrame(frameElements);
-        network->tick();
+
     }
     
     sineModel.setSampleRate(sampleRate);

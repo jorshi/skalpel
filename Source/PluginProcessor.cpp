@@ -33,7 +33,7 @@ LoomAudioProcessor::LoomAudioProcessor()
 
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
-    SynthesiserSound::Ptr newSound = new SinusoidalSynthSound(midiNotes, 69, getTestModel(), 512);
+    SynthesiserSound::Ptr newSound = new SinusoidalSynthSound(midiNotes, 69, getSawModel(), 512);
     sound = newSound;
     
     synth->addSound(sound);

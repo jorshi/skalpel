@@ -102,8 +102,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
             // Get a new frame
             if (_hopIndex >= _hopSize)
             {
-                mrs_realvec output;
-                output.allocate(playingSound->getFrameSize());
+                mrs_realvec output(playingSound->getFrameSize());
                 
                 if (playingSound->getSignal(output, _location, getSampleRate()))
                 {

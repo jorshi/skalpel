@@ -122,29 +122,6 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
         mrs_real phaseOffset = 0.0;
 
         int i = 0;
-        for (auto bin = spectral.begin(); bin != (spectral.end() - (int)(frameSize/2)); ++bin, ++i)
-        {
-            magnitudes(i) = 20*std::log10(std::sqrt(bin->r*bin->r + bin->i*bin->i));
-            phases(i) = std::atan2(bin->i, bin->r);
-            
-            // Unwrap phase
-            if (i > 0)
-            {
-                phaseDiff = (phases(i) + phaseOffset) - phases(i-1);
-                if (phaseDiff > PI)
-                {
-                    phases(i) += (phaseOffset -= TWOPI);
-                }
-                else if (phaseDiff < -PI)
-                {
-                    phases(i) += (phaseOffset += TWOPI);
-                }
-                else
-                {
-                    phases(i) += phaseOffset;
-                }
-            }
-        }
         
         //std::cout << magnitudes;
         //std::cout << phases;
@@ -154,12 +131,9 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
         mrs_real mag = 0.0;
         mrs_real pMag = 0.0;
         mrs_real ppMag = 0.0;
-
-
         
         std::vector<SineElement> frameElements;
         
-        i = 0;
         for (auto bin = spectral.begin(); bin != (spectral.end() - (int)frameSize/2); ++bin, ++i)
         {
             mag = 20*std::log10(std::sqrt(bin->r*bin->r + bin->i*bin->i));
@@ -171,23 +145,23 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
             // Calclute phase and then unwrap
             phases(i) = std::atan2(bin->i, bin->r);
             
-            // Unwrap phase
-            if (i > 0)
-            {
-                phaseDiff = (phases(i) + phaseOffset) - phases(i-1);
-                if (phaseDiff > PI)
-                {
-                    phases(i) += (phaseOffset -= TWOPI);
-                }
-                else if (phaseDiff < -PI)
-                {
-                    phases(i) += (phaseOffset += TWOPI);
-                }
-                else
-                {
-                    phases(i) += phaseOffset;
-                }
-            }
+//            // Unwrap phase
+//            if (i > 0)
+//            {
+//                phaseDiff = (phases(i) + phaseOffset) - phases(i-1);
+//                if (phaseDiff > PI)
+//                {
+//                    phases(i) += (phaseOffset -= TWOPI);
+//                }
+//                else if (phaseDiff < -PI)
+//                {
+//                    phases(i) += (phaseOffset += TWOPI);
+//                }
+//                else
+//                {
+//                    phases(i) += phaseOffset;
+//                }
+//            }
             
             // Check if the previous bin had a local maxima
             if (ppMag < pMag && mag < pMag)
@@ -207,15 +181,52 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
                     // Interpolate amplitude
                     mrs_real ipAmp = pMag - 0.25*(ppMag-mag)*(ipLoc-(i-1));
                     
-                    // Check if linear interpolation should occur between last two bins, or this
-                    // bin and the last bin
-                    mrs_natural phaseIndex = 1;
-                    if (ipLoc < (i-1))
-                        phaseIndex = 2;
+//                    // Check if linear interpolation should occur between last two bins, or this
+//                    // bin and the last bin
+//                    mrs_natural phaseIndex = 1;
+//                    if (ipLoc < (i-1))
+//                        phaseIndex = 2;
+//                    
+//                    // Linear interpolation on phase
+//                    mrs_real ipPhase = phases(i-phaseIndex ) +
+//                        (ipLoc - (i-phaseIndex))*(phases(i-phaseIndex-1) - phases(i-phaseIndex));
                     
-                    // Linear interpolation on phase
-                    mrs_real ipPhase = phases(i-phaseIndex ) +
-                        (ipLoc - (i-phaseIndex))*(phases(i-phaseIndex-1) - phases(i-phaseIndex));
+                    // Phase Interpolation
+                    mrs_natural closestBin = std::round(ipLoc);
+                    mrs_real factor = ipLoc - closestBin;
+                    
+                    mrs_real ipPhase = 0.0;
+                    
+                    if (factor < 0 && closestBin > 0)
+                    {
+                        if (std::abs(phases(closestBin-1) - phases(closestBin)) < PI)
+                        {
+                            ipPhase = factor * phases(closestBin-1) + (1.0-factor) * phases(closestBin);
+                        }
+                        else
+                        {
+                            ipPhase = phases(closestBin);
+                        }
+                    }
+                    else
+                    {
+                        if (closestBin < (frameSize - 1))
+                        {
+                            if (std::abs(phases(closestBin+1) - phases(closestBin)) < PI)
+                            {
+                                ipPhase = factor * phases(closestBin+1) + (1.0-factor) * phases(closestBin);
+                            }
+                            else
+                            {
+                                ipPhase = phases(closestBin);
+                            }
+                        }
+                        else
+                        {
+                            ipPhase = phases(closestBin);
+                        }
+                    }
+                    
                     
                     // Save all the detected peaks
                     frameElements.emplace_back(ipFreq, ipAmp, ipPhase);

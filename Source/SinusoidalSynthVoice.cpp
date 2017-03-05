@@ -140,7 +140,6 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
             {
                 *(outL + numCalculated + startSample) = _buffer(_readPos + _hopIndex);
                 *(outR + numCalculated + startSample) = _buffer(_readPos + _hopIndex);
-                //std::cout << *(outL +numCalculated + startSample) << " ";
                 numCalculated++;
                 _hopIndex++;
             }

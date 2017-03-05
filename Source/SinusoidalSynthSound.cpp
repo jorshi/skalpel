@@ -123,6 +123,8 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
         phase = std::fmod(phase, PI);
         phase = sine->getPhase();
         
+        //std::cout << sine->getFreq() << " : " << phase << " : " << mag << "\n";
+        
         // Going to make a 9 bin wide Blackman Harris window
         if (binLoc >= 5 && binLoc < _nyquistBin-4)
         {

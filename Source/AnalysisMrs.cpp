@@ -85,42 +85,55 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     network->updControl("Windowing/window/mrs_bool/normalize", true);
     
     MarControlPtr frame = network->getControl("Windowing/window/mrs_realvec/processedData");
+    MarControlPtr shifted = network->getControl("ShiftInput/shift/mrs_realvec/processedData");
     
     // Create and normalize a Hamming window
     mrs_realvec window(frameSize);
     SynthUtils::windowingFillHamming(window);
+    window /= window.sum();
     
     while(network->getControl("SoundFileSource/input/mrs_bool/hasData")->to_bool())
     {
+        network->tick();
+        
         // Update sample rate -- shouldn't change but we need to do it in the loop
         sampleRate = network->getControl("SoundFileSource/input/mrs_real/osrate")->to_real();
         
         // Get spectrum at this frame
         mrs_realvec data = frame->to_realvec();
         
+        mrs_realvec input = shifted->to_realvec();
+
+        
         // Store input as a complex number for FFT
         for (int i = 0; i < frameSize; ++i)
         {
-            timeDomain.at(i).r = data(i);
+            timeDomain.at(i).r = input((i + (int)(frameSize/2)) % frameSize) *
+                window((i + (int)(frameSize/2)) % frameSize);
         }
         
         // Perform forward FFT
         forwardFFT.perform(timeDomain.data(), spectral.data());
         
+        // Convert real and imaginary scectrum data to magnitude and phase
         mrs_realvec magnitudes((int)(frameSize/2));
         mrs_realvec phases((int)(frameSize/2));
+        mrs_real phaseDiff = 0.0;
+        mrs_real phaseOffset = 0.0;
+
+        int i = 0;
+        
+        //std::cout << magnitudes;
+        //std::cout << phases;
+
         std::vector<mrs_real> peaks;
         
         mrs_real mag = 0.0;
         mrs_real pMag = 0.0;
         mrs_real ppMag = 0.0;
-
-        mrs_real phaseDiff = 0.0;
-        mrs_real phaseOffset = 0.0;
         
         std::vector<SineElement> frameElements;
         
-        int i = 0;
         for (auto bin = spectral.begin(); bin != (spectral.end() - (int)frameSize/2); ++bin, ++i)
         {
             mag = 20*std::log10(std::sqrt(bin->r*bin->r + bin->i*bin->i));
@@ -132,23 +145,23 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
             // Calclute phase and then unwrap
             phases(i) = std::atan2(bin->i, bin->r);
             
-            // Unwrap phase
-            if (i > 0)
-            {
-                phaseDiff = (phases(i) + phaseOffset) - phases(i-1);
-                if (phaseDiff > PI)
-                {
-                    phases(i) += (phaseOffset -= TWOPI);
-                }
-                else if (phaseDiff < -PI)
-                {
-                    phases(i) += (phaseOffset += TWOPI);
-                }
-                else
-                {
-                    phases(i) += phaseOffset;
-                }
-            }
+//            // Unwrap phase
+//            if (i > 0)
+//            {
+//                phaseDiff = (phases(i) + phaseOffset) - phases(i-1);
+//                if (phaseDiff > PI)
+//                {
+//                    phases(i) += (phaseOffset -= TWOPI);
+//                }
+//                else if (phaseDiff < -PI)
+//                {
+//                    phases(i) += (phaseOffset += TWOPI);
+//                }
+//                else
+//                {
+//                    phases(i) += phaseOffset;
+//                }
+//            }
             
             // Check if the previous bin had a local maxima
             if (ppMag < pMag && mag < pMag)
@@ -168,15 +181,52 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
                     // Interpolate amplitude
                     mrs_real ipAmp = pMag - 0.25*(ppMag-mag)*(ipLoc-(i-1));
                     
-                    // Check if linear interpolation should occur between last two bins, or this
-                    // bin and the last bin
-                    mrs_natural phaseIndex = 1;
-                    if (ipLoc < (i-1))
-                        phaseIndex = 2;
+//                    // Check if linear interpolation should occur between last two bins, or this
+//                    // bin and the last bin
+//                    mrs_natural phaseIndex = 1;
+//                    if (ipLoc < (i-1))
+//                        phaseIndex = 2;
+//                    
+//                    // Linear interpolation on phase
+//                    mrs_real ipPhase = phases(i-phaseIndex ) +
+//                        (ipLoc - (i-phaseIndex))*(phases(i-phaseIndex-1) - phases(i-phaseIndex));
                     
-                    // Linear interpolation on phase
-                    mrs_real ipPhase = phases(i-phaseIndex ) +
-                        (ipLoc - (i-phaseIndex))*(phases(i-phaseIndex-1) - phases(i-phaseIndex));
+                    // Phase Interpolation
+                    mrs_natural closestBin = std::round(ipLoc);
+                    mrs_real factor = ipLoc - closestBin;
+                    
+                    mrs_real ipPhase = 0.0;
+                    
+                    if (factor < 0 && closestBin > 0)
+                    {
+                        if (std::abs(phases(closestBin-1) - phases(closestBin)) < PI)
+                        {
+                            ipPhase = factor * phases(closestBin-1) + (1.0-factor) * phases(closestBin);
+                        }
+                        else
+                        {
+                            ipPhase = phases(closestBin);
+                        }
+                    }
+                    else
+                    {
+                        if (closestBin < (frameSize - 1))
+                        {
+                            if (std::abs(phases(closestBin+1) - phases(closestBin)) < PI)
+                            {
+                                ipPhase = factor * phases(closestBin+1) + (1.0-factor) * phases(closestBin);
+                            }
+                            else
+                            {
+                                ipPhase = phases(closestBin);
+                            }
+                        }
+                        else
+                        {
+                            ipPhase = phases(closestBin);
+                        }
+                    }
+                    
                     
                     // Save all the detected peaks
                     frameElements.emplace_back(ipFreq, ipAmp, ipPhase);
@@ -190,7 +240,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
         }
 
         sineModel.addFrame(frameElements);
-        network->tick();
+
     }
     
     sineModel.setSampleRate(sampleRate);

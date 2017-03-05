@@ -13,6 +13,9 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "marsyas/system/MarSystemManager.h"
+#include <boost/property_tree/xml_parser.hpp>
+#include <boost/property_tree/ptree.hpp>
+#include <boost/foreach.hpp>
 
 using namespace Marsyas;
 
@@ -86,6 +89,7 @@ private:
 
 // TESTING
 SineModel getTestModel();
+SineModel getSawModel();
 
 
 

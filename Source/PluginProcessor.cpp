@@ -178,6 +178,7 @@ void LoomAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 
 void LoomAudioProcessor::newAnalysis()
 {
+    // Testing some thing
     _analysis->newAnalysis();
     _synth.clearSounds();
     

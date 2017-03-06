@@ -29,9 +29,6 @@ public:
     bool appliesToChannel (int midiChannel) override;
     
     const int& getFrameSize() const { return _frameSize; };
-
-    
-    void fillSpectrum(std::vector<FFT::Complex>&, int frame) const;
     
     // Get a time domain frame at a requested time location
     bool getSignal(mrs_realvec&, mrs_real, int) const;
@@ -40,7 +37,6 @@ public:
     
 private:
     friend class SinusoidalSynthVoice;
-    
     
     // Reset all real and imaginary spectrum values to 0
     void resetSpectrum();
@@ -60,7 +56,7 @@ private:
     std::vector<FFT::Complex> _timeSignal;
     
     // Pointer to FFT class
-    FFT* _fftFunction;
+    ScopedPointer<FFT> _fftFunction;
     
     JUCE_LEAK_DETECTOR(SinusoidalSynthSound)
 };

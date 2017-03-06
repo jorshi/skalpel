@@ -53,31 +53,27 @@ namespace SynthUtils {
     
     void createSynthesisWindow(realvec& envelope, mrs_natural hopSize)
     {
+        // Create a normalized blackman harris window
         windowingFillBlackmanHarris(envelope);
+        envelope /= envelope.sum();
         
         // Create a triangle window
-        mrs_realvec triangle;
-        triangle.create(hopSize*2);
+        mrs_realvec triangle(hopSize*2);
         windowingFillTriangle(triangle);
         
-        mrs_realvec fullWindow;
-        fullWindow.create(envelope.getSize());
-        
-        for (int i = 0; i < triangle.getSize(); ++i)
-        {
-            fullWindow(i + hopSize) = triangle(i);
-        }
-        
-        mrs_real bhSum = envelope.sum();
-        
-        // Normalize blackman harris and multiply with triangle
-        // TODO: this loop can be merged with above loop
+        // Create a triangle window in the middle of a window twice it's size,
+        // divided by a blackman harris window
         for (int i = 0; i < envelope.getSize(); ++i)
         {
-            envelope(i) = fullWindow(i)/(envelope(i)/bhSum);
+            if (i >= hopSize && i < hopSize*3)
+            {
+                envelope(i) = triangle(i-hopSize)/envelope(i);
+            }
+            else
+            {
+                envelope(i) = 0.0;
+            }
         }
     }
-    
-
 }
 

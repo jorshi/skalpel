@@ -66,7 +66,6 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
 // Destructor
 SinusoidalSynthSound::~SinusoidalSynthSound()
 {
-    delete _fftFunction;
 };
 
 
@@ -84,7 +83,7 @@ bool SinusoidalSynthSound::appliesToChannel (int /*midiChannel*/)
 }
 
 
-
+// Get signal: returns a time domain signal of the sine model at the requested location
 bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int renderRate) const
 {
     // Get number of frames in the model return if there aren't any
@@ -97,7 +96,6 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     // Get the frame closest to the requested time
     mrs_real requestedPos = (loc * _model.getSampleRate()) / _model.getFrameSize();
     int requestedFrame = std::round(requestedPos);
-    mrs_real offset = (int)((requestedPos - requestedFrame) * _model.getFrameSize());
     
     // Out of frames from the model
     if (modelFrames <= requestedFrame)
@@ -105,6 +103,7 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
         return false;
     }
     
+    // Constant reference to the frame at this point
     const SineModel::SineFrame& frame = _model.getFrame(requestedFrame);
     
     std::vector<FFT::Complex> spectrum(_frameSize);
@@ -119,11 +118,7 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
         
         // Convert the decibels back to magnitude
         mrs_real mag = pow(10, sine->getAmp()/20);
-        mrs_real phase = sine->getPhase() + 2*PI*sine->getFreq()*offset/renderRate;
-        phase = std::fmod(phase, PI);
-        phase = sine->getPhase();
-        
-        //std::cout << sine->getFreq() << " : " << phase << " : " << mag << "\n";
+        mrs_real phase = sine->getPhase();
         
         // Going to make a 9 bin wide Blackman Harris window
         if (binLoc >= 5 && binLoc < _nyquistBin-4)
@@ -194,7 +189,8 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     }
    
     _fftFunction->perform(spectrum.data(), timeDomain.data());
-    
+  
+    // Apply synthesis window & shift
     for (int i = 0; i < _frameSize; ++i)
     {
         timeVec(i) = timeDomain.at((i + (_frameSize / 2)) % _frameSize).r / _frameSize * _synthWindow(i);

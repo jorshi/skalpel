@@ -24,19 +24,18 @@ LoomAudioProcessor::LoomAudioProcessor()
                        )
 #endif
 {
-    synth = new Synthesiser;
-    analysis = new AnalysisMrs;
+    //analysis = new AnalysisMrs;
     
     for (int i = 0; i < maxVoices; ++i)
-        synth->addVoice (new SinusoidalSynthVoice());
+        _synth.addVoice (new SinusoidalSynthVoice());
     
-
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
-    SynthesiserSound::Ptr newSound = new SinusoidalSynthSound(midiNotes, 69, getSawModel(), 512);
-    sound = newSound;
     
-    synth->addSound(sound);
+    _synth.addSound(new SinusoidalSynthSound(midiNotes, 69, getSawModel(), 512));
+    
+    // Create Analysis system
+    _analysis = new AnalysisMrs;
 }
 
 LoomAudioProcessor::~LoomAudioProcessor()
@@ -100,7 +99,7 @@ void LoomAudioProcessor::changeProgramName (int index, const String& newName)
 void LoomAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     ignoreUnused(samplesPerBlock);
-    synth->setCurrentPlaybackSampleRate(sampleRate);
+    _synth.setCurrentPlaybackSampleRate(sampleRate);
 }
 
 void LoomAudioProcessor::releaseResources()
@@ -149,7 +148,7 @@ void LoomAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
-    synth->renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+    _synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -179,13 +178,12 @@ void LoomAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 
 void LoomAudioProcessor::newAnalysis()
 {
-    analysis->newAnalysis();
-    synth->clearSounds();
+    _analysis->newAnalysis();
+    _synth.clearSounds();
     
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
-    sound = new SinusoidalSynthSound(midiNotes, 69, analysis->getAnalysisModel(), 512);
-    synth->addSound(sound);
+    _synth.addSound(new SinusoidalSynthSound(midiNotes, 69, _analysis->getAnalysisModel(), 512));
 }
 
 //==============================================================================

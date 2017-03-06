@@ -11,29 +11,20 @@
 #include "SinusoidalSynthVoice.h"
 
 
+// Default Constructor
 SinusoidalSynthVoice::SinusoidalSynthVoice()
-:   currentFrame(0),
+:
 _hopSize(128),
 _windowSize(512),
 _overlapIndex(0),
-_spectrum(512),
 _location(0.0)
 {
-    // Create the synthesis window
-    _synthWindow.create(512);
-    SynthUtils::createSynthesisWindow(_synthWindow, _hopSize);
-    
-    // Setup windows for overlap add
-    for (int i = 0; i < 4; ++i)
-    {
-        _frames.emplace_back(std::vector<FFT::Complex>(_windowSize));
-    }
-    
     _hopIndex = _hopSize;
     _writePos = 0;
     _readPos = 0;
 }
 
+// Deconstructor
 SinusoidalSynthVoice::~SinusoidalSynthVoice()
 {
 }
@@ -53,7 +44,6 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         _hopSize = sound->getFrameSize() / 4;
         _buffer.create(sound->getFrameSize());
         
-        currentFrame = 0;
         _location = 0.0;
         _readPos = 0;
         _writePos = 0;
@@ -67,13 +57,11 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
 
 void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 {
-    clearCurrentNote();
-    currentFrame = 0;
     _hopIndex = _hopSize;
     _overlapIndex = 0;
-    _spectrum.resize(512);
     _location = 0.0;
     _readPos = 0;
+    clearCurrentNote();
 }
 
 void SinusoidalSynthVoice::pitchWheelMoved (const int /*newValue*/)
@@ -96,6 +84,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
         float* outR = outputBuffer.getNumChannels() > 1 ? outputBuffer.getWritePointer (1, startSample) : nullptr;
         
         int numCalculated = 0;
+        
         
         while (numCalculated < numSamples)
         {
@@ -121,24 +110,23 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                 }
                 else
                 {
-                    clearCurrentNote();
                     for (int i = 0; i < _hopSize; ++i)
                     {
                         _buffer(_writePos + i) = 0.0;
                     }
+                    clearCurrentNote();
                 }
                 
                 // Update write pointer and read pointer
                 _writePos = (_writePos + _hopSize) % playingSound->getFrameSize();
                 _readPos = (_readPos + _hopSize) % playingSound->getFrameSize();
-                
                 _location += (_hopSize / getSampleRate());
                 _hopIndex = 0;
             }
             else
             {
-                *(outL + numCalculated + startSample) = _buffer(_readPos + _hopIndex);
-                *(outR + numCalculated + startSample) = _buffer(_readPos + _hopIndex);
+                *(outL + numCalculated) = _buffer(_readPos + _hopIndex);
+                *(outR + numCalculated) = _buffer(_readPos + _hopIndex);
                 numCalculated++;
                 _hopIndex++;
             }

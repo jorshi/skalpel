@@ -37,12 +37,9 @@ public:
     void controllerMoved (int controllerNumber, int newValue) override;
     
     void renderNextBlock (AudioSampleBuffer&, int startSample, int numSamples) override;
-    
-    
+
 private:
     //=============================================================================
-    int currentFrame;
-    
     int _hopSize;
     int _hopIndex;
     int _windowSize;
@@ -52,13 +49,8 @@ private:
     
     mrs_real _location;
     
-    mrs_realvec _window;
-    mrs_realvec _synthWindow;
-    
     mrs_realvec _buffer;
     
-    std::vector<std::vector<FFT::Complex>> _frames;
-    std::vector<FFT::Complex> _spectrum;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

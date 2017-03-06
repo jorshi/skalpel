@@ -68,9 +68,8 @@ public:
 
 private:
     //==============================================================================
-    ScopedPointer<Synthesiser> synth;
-    SynthesiserSound::Ptr sound;
-    ScopedPointer<AnalysisMrs> analysis;
+    Synthesiser _synth;
+    ScopedPointer<AnalysisMrs> _analysis;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessor)
 };

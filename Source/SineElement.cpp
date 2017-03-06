@@ -88,12 +88,6 @@ SineModel getSawModel()
     read_xml("/Users/jshier/Development/Libraries/sms-tools/software/models_interface/output.xml", pt1);
     
     
-    //BOOST_FOREACH(ptree::value_type const& v, pt.get_child("frame"))
-    //{
-    //    SineModel::SineFrame newFrame;
-    //    testModel.addFrame(newFrame);
-    //}
-    // Traverse property tree example
     BOOST_FOREACH( boost::property_tree::ptree::value_type const& node, pt1.get_child( "model.frames" ) )
     {
         boost::property_tree::ptree subtree = node.second;

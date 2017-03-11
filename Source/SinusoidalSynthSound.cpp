@@ -161,9 +161,9 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
                 // Complex Conjugate wraps nyquist bin
                 if ((binInt + i) > _nyquistBin)
                 {
-                    spectrum.at(_nyquistBin - (binInt + i)).r +=
+                    spectrum.at((binInt + i) - _nyquistBin).r +=
                         mag*_bh1001((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum.at(_nyquistBin - (binInt + i)).i +=
+                    spectrum.at((binInt + i) - _nyquistBin).i +=
                         -mag*_bh1001((int)((binRem+i)*100) + 501)*sin(phase);
                 }
                 // Real only at Nyquist

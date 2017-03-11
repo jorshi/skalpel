@@ -74,7 +74,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
 
     // Create a Marsyas system
     MarSystemManager mng;
-    MarSystem* network = mng.create("Series/analysis");
+    ScopedPointer<MarSystem> network = mng.create("Series/analysis");
     
     network->addMarSystem(mng.create("SoundFileSource/input"));
     network->addMarSystem(mng.create("MixToMono/mono"));
@@ -204,8 +204,6 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     
     sineModel.setSampleRate(sampleRate);
     sineModel.setFrameSize(hopSize);
-    
-    delete network;
 }
 
 
@@ -295,7 +293,7 @@ void AnalysisMrs::sineTracking(SineModel& sineModel)
             newSines.back().setTrack(trackId++);
         }
 
-        assert(newSines.size() == frame->size());
+        jassert(newSines.size() == frame->size());
         
         tracks.push_back(newSines);
     }

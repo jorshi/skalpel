@@ -37,8 +37,16 @@ private:
     void buttonClicked(Button* button) override;
     
     LoomAudioProcessor& processor;
-    
     TextButton openButton;
+    
+    // Colours
+    Colour bgColour;
+    Colour layer1Colour;
+    
+    // Shapes
+    Rectangle<int> header;
+    Rectangle<int> background;
+    Rectangle<int> footer;
     
 
     

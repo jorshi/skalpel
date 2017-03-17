@@ -74,7 +74,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
 
     // Create a Marsyas system
     MarSystemManager mng;
-    MarSystem* network = mng.create("Series/analysis");
+    ScopedPointer<MarSystem> network = mng.create("Series/analysis");
     
     network->addMarSystem(mng.create("SoundFileSource/input"));
     network->addMarSystem(mng.create("MixToMono/mono"));
@@ -137,7 +137,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
             phases(i) = std::atan2(bin->i, bin->r);
             
             // Check if the previous bin had a local maxima
-            if (ppMag < pMag && mag < pMag)
+            if (i > 0 && ppMag < pMag && mag < pMag)
             {
                 if (pMag > thresh)
                 {
@@ -155,38 +155,18 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
                     // Phase Interpolation
                     mrs_natural closestBin = std::round(ipLoc);
                     mrs_real factor = ipLoc - closestBin;
-                    mrs_real ipPhase = 0.0;
- 
-                    if (factor < 0 && closestBin > 0)
+                    mrs_natural ipPhaseBin = (factor < 0) ? closestBin - 1 : closestBin + 1;
+                    mrs_real ipPhase;
+                    
+                    // Only interpolate if there is not a phase jump between bins
+                    if (std::abs(phases(ipPhaseBin) - phases(closestBin)) < PI)
                     {
-                        if (std::abs(phases(closestBin-1) - phases(closestBin)) < PI)
-                        {
-                            ipPhase = factor * phases(closestBin-1) + (1.0-factor) * phases(closestBin);
-                        }
-                        else
-                        {
-                            ipPhase = phases(closestBin);
-                        }
+                        ipPhase = factor * phases(ipPhaseBin) + (1-factor)*phases(closestBin);
                     }
                     else
                     {
-                        if (closestBin < (frameSize - 1))
-                        {
-                            if (std::abs(phases(closestBin+1) - phases(closestBin)) < PI)
-                            {
-                                ipPhase = factor * phases(closestBin+1) + (1.0-factor) * phases(closestBin);
-                            }
-                            else
-                            {
-                                ipPhase = phases(closestBin);
-                            }
-                        }
-                        else
-                        {
-                            ipPhase = phases(closestBin);
-                        }
+                        ipPhase = phases(closestBin);
                     }
-                    
                     
                     // Save all the detected peaks
                     frameElements.emplace_back(ipFreq, ipAmp, ipPhase);
@@ -204,8 +184,6 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     
     sineModel.setSampleRate(sampleRate);
     sineModel.setFrameSize(hopSize);
-    
-    delete network;
 }
 
 
@@ -295,7 +273,7 @@ void AnalysisMrs::sineTracking(SineModel& sineModel)
             newSines.back().setTrack(trackId++);
         }
 
-        assert(newSines.size() == frame->size());
+        jassert(newSines.size() == frame->size());
         
         tracks.push_back(newSines);
     }

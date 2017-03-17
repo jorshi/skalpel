@@ -100,6 +100,9 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
     if (button == &analysisButton)
     {
         ScopedPointer<SineModel> newModel = analysisFactory->runAnalysis();
+        processor.swapModel(newModel);
+        newModel.release();
+
         switchState(synthesisState);
     }
     

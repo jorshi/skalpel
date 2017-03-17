@@ -13,6 +13,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "FileLoader.h"
+#include "AnalysisMrs.h"
 
 
 //==============================================================================
@@ -68,7 +70,11 @@ private:
     // Current state of UI
     UIState state;
     
-
+    // File Loader
+    FileLoader fileLoader;
+    
+    // Analysis
+    ScopedPointer<AnalysisMrs> analysisFactory;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)

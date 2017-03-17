@@ -16,6 +16,8 @@ using namespace Marsyas;
 // Default Constructor
 AnalysisMrs::AnalysisMrs() {}
 
+// Construtor with audio file passed in
+AnalysisMrs::AnalysisMrs(File input) : audioFile(input) {}
 
 // Deconstructor
 AnalysisMrs::~AnalysisMrs() {}
@@ -45,6 +47,18 @@ void AnalysisMrs::newAnalysis()
     peakDetection(_analysisModel, fileName);
     sineTracking(_analysisModel);
     cleanModel(_analysisModel);
+}
+
+SineModel* AnalysisMrs::runAnalysis()
+{
+    const String fileName = audioFile.getFullPathName();
+    SineModel* model = new SineModel;
+    
+    peakDetection(*model, fileName);
+    sineTracking(*model);
+    cleanModel(*model);
+    
+    return model;
 }
 
 

@@ -82,13 +82,24 @@ void LoomAudioProcessorEditor::resized()
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)
 {
+    
     if (button == &openButton)
     {
-        switchState(analysisState);
+        ScopedPointer<File> file;
+        if ((file = fileLoader.getNewAudioFile()) != nullptr)
+        {
+            analysisFactory = new AnalysisMrs(*file);
+            switchState(analysisState);
+        }
+        else
+        {
+            AlertWindow::showMessageBox(AlertWindow::InfoIcon, "Audio Read Error", "Could not read input audio");
+        }
     }
     
     if (button == &analysisButton)
     {
+        ScopedPointer<SineModel> newModel = analysisFactory->runAnalysis();
         switchState(synthesisState);
     }
     

@@ -14,9 +14,13 @@
       <GROUP id="{318136ED-7D16-1A86-CD7E-29E73C2400B0}" name="Analysis">
         <FILE id="Jkv4tH" name="AnalysisMrs.cpp" compile="1" resource="0" file="Source/AnalysisMrs.cpp"/>
         <FILE id="Jjd1t6" name="AnalysisMrs.h" compile="0" resource="0" file="Source/AnalysisMrs.h"/>
+        <FILE id="ES4zUR" name="FileLoader.cpp" compile="1" resource="0" file="Source/FileLoader.cpp"/>
+        <FILE id="Mq1nMz" name="FileLoader.h" compile="0" resource="0" file="Source/FileLoader.h"/>
       </GROUP>
       <GROUP id="{344A66DB-57A9-73F9-A8A5-7A6554B637B6}" name="Synthesis">
         <GROUP id="{6829FCC5-D5C4-114D-3A09-5F35C1BA508D}" name="Sinusoidal">
+          <FILE id="bE2YdI" name="SineElement.cpp" compile="1" resource="0" file="Source/SineElement.cpp"/>
+          <FILE id="vMFLae" name="SineElement.h" compile="0" resource="0" file="Source/SineElement.h"/>
           <FILE id="uOEFms" name="SinusoidalSynthSound.cpp" compile="1" resource="0"
                 file="Source/SinusoidalSynthSound.cpp"/>
           <FILE id="ICqODU" name="SinusoidalSynthSound.h" compile="0" resource="0"
@@ -38,8 +42,6 @@
       <FILE id="lIZnEM" name="PluginEditor.cpp" compile="1" resource="0"
             file="Source/PluginEditor.cpp"/>
       <FILE id="tRuYJo" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
-      <FILE id="bE2YdI" name="SineElement.cpp" compile="1" resource="0" file="Source/SineElement.cpp"/>
-      <FILE id="vMFLae" name="SineElement.h" compile="0" resource="0" file="Source/SineElement.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

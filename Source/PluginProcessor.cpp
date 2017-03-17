@@ -32,7 +32,7 @@ LoomAudioProcessor::LoomAudioProcessor()
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
     
-    _synth.addSound(new SinusoidalSynthSound(midiNotes, 69, getSawModel(), 512));
+    _synth.addSound(new SinusoidalSynthSound(midiNotes, 69, SineModel(), 512));
     
     // Create Analysis system
     _analysis = new AnalysisMrs;

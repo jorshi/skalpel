@@ -33,11 +33,28 @@ public:
     void openButtonClicked();
 
 private:
+    
+    enum UIState
+    {
+        loadFileState,
+        analysisState,
+        synthesisState
+    };
+    
     // Called when any button on UI is clicked
     void buttonClicked(Button* button) override;
     
+    // Called when the UI state changes
+    void switchState(UIState newState);
+    
+    // Remove all buttons from UI
+    void hideAllButtons();
+    
     LoomAudioProcessor& processor;
+    
     TextButton openButton;
+    TextButton analysisButton;
+    TextButton newButton;
     
     // Colours
     Colour bgColour;
@@ -47,6 +64,9 @@ private:
     Rectangle<int> header;
     Rectangle<int> background;
     Rectangle<int> footer;
+    
+    // Current state of UI
+    UIState state;
     
 
     

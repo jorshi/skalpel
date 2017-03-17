@@ -18,13 +18,20 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p)
 {
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (400, 300);
+    setSize (640, 360);
     
     openButton.setButtonText("Open");
     openButton.addListener(this);
     addAndMakeVisible(&openButton);
-
     
+    // Setup Colours
+    bgColour = Colour::fromRGB(71, 75, 81);
+    layer1Colour = Colour::fromRGB(47, 47, 47);
+    
+    // Create shapes
+    background = Rectangle<int>(0, 0, 640, 360);
+    header = Rectangle<int>(0, 0, 640, 51);
+    footer = Rectangle<int>(0, 288, 640, 69);
 }
 
 LoomAudioProcessorEditor::~LoomAudioProcessorEditor()
@@ -34,7 +41,13 @@ LoomAudioProcessorEditor::~LoomAudioProcessorEditor()
 //==============================================================================
 void LoomAudioProcessorEditor::paint (Graphics& g)
 {
-    g.fillAll (Colours::black);
+    // Draw rectangles
+    g.setColour(bgColour);
+    g.fillRect(background);
+    
+    g.setColour(layer1Colour);
+    g.fillRect(header);
+    g.fillRect(footer);
 }
 
 void LoomAudioProcessorEditor::resized()

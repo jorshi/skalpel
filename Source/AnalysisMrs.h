@@ -22,10 +22,23 @@
 class AnalysisMrs
 {
 public:
+    
+    // Defualt Constructor
     AnalysisMrs();
+    
+    // Constructor with audio file
+    AnalysisMrs(File);
+    
+    // Default Deconstructor
     ~AnalysisMrs();
     
+    // Asks for an audio file and runs analysis on the file, storing the results
+    // in the member analysis model
     void newAnalysis();
+    
+    // Run analysis on file, return a pointer to the created model object
+    // !! Not responsible for cleaning up the object !!
+    SineModel* runAnalysis();
     
     const SineModel& getAnalysisModel() const { return _analysisModel; };
     
@@ -35,6 +48,8 @@ private:
     void cleanModel(SineModel&);
     
     SineModel _analysisModel;
+    
+    File audioFile;
 };
 
 

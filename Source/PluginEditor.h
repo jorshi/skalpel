@@ -13,6 +13,8 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "PluginProcessor.h"
+#include "FileLoader.h"
+#include "AnalysisMrs.h"
 
 
 //==============================================================================
@@ -33,11 +35,28 @@ public:
     void openButtonClicked();
 
 private:
+    
+    enum UIState
+    {
+        loadFileState,
+        analysisState,
+        synthesisState
+    };
+    
     // Called when any button on UI is clicked
     void buttonClicked(Button* button) override;
     
+    // Called when the UI state changes
+    void switchState(UIState newState);
+    
+    // Remove all buttons from UI
+    void hideAllButtons();
+    
     LoomAudioProcessor& processor;
+    
     TextButton openButton;
+    TextButton analysisButton;
+    TextButton newButton;
     
     // Colours
     Colour bgColour;
@@ -48,7 +67,14 @@ private:
     Rectangle<int> background;
     Rectangle<int> footer;
     
-
+    // Current state of UI
+    UIState state;
+    
+    // File Loader
+    FileLoader fileLoader;
+    
+    // Analysis
+    ScopedPointer<AnalysisMrs> analysisFactory;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)

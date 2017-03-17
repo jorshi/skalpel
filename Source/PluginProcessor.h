@@ -12,7 +12,6 @@
 #define PLUGINPROCESSOR_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "AnalysisMrs.h"
 #include "SinusoidalSynthSound.h"
 #include "SinusoidalSynthVoice.h"
 
@@ -64,12 +63,12 @@ public:
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
     
-    void newAnalysis();
+    //==============================================================================
+    void swapModel(ScopedPointer<SineModel> newModel);
 
 private:
     //==============================================================================
     Synthesiser _synth;
-    ScopedPointer<AnalysisMrs> _analysis;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessor)
 };

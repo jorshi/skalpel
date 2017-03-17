@@ -24,18 +24,9 @@ LoomAudioProcessor::LoomAudioProcessor()
                        )
 #endif
 {
-    //analysis = new AnalysisMrs;
-    
+    // Allocate voices for synthesizer
     for (int i = 0; i < maxVoices; ++i)
         _synth.addVoice (new SinusoidalSynthVoice());
-    
-    BigInteger midiNotes;
-    midiNotes.setRange(0, 126, true);
-    
-    _synth.addSound(new SinusoidalSynthSound(midiNotes, 69, getSawModel(), 512));
-    
-    // Create Analysis system
-    _analysis = new AnalysisMrs;
 }
 
 LoomAudioProcessor::~LoomAudioProcessor()
@@ -176,14 +167,15 @@ void LoomAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
     // whose contents will have been created by the getStateInformation() call.
 }
 
-void LoomAudioProcessor::newAnalysis()
+
+// Swap the sinusoidal model out
+void LoomAudioProcessor::swapModel(ScopedPointer<SineModel> newModel)
 {
-    _analysis->newAnalysis();
     _synth.clearSounds();
     
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
-    _synth.addSound(new SinusoidalSynthSound(midiNotes, 69, _analysis->getAnalysisModel(), 512));
+    _synth.addSound(new SinusoidalSynthSound(midiNotes, 69, *newModel, 512));
 }
 
 //==============================================================================

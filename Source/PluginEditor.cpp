@@ -14,7 +14,7 @@
 
 //==============================================================================
 LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), state(loadFileState)
+    : AudioProcessorEditor (&p), processor (p), state(loadFileState), soundInterface(p.getCurrentSound())
 {
     
     setLookAndFeel(&loomLookAndFeel);
@@ -102,7 +102,7 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
         ScopedPointer<File> file;
         if ((file = fileLoader.getNewAudioFile()) != nullptr)
         {
-            analysisFactory = new AnalysisMrs(*file);
+            soundInterface.buildAnalysis(*file);
             switchState(analysisState);
         }
         else
@@ -113,10 +113,8 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
     
     if (button == &analysisButton)
     {
-        ScopedPointer<SineModel> newModel = analysisFactory->runAnalysis();
-        processor.swapModel(newModel);
-        newModel.release();
-
+        soundInterface.runAnalysis();
+        processor.swapSound(soundInterface);
         switchState(synthesisState);
     }
     

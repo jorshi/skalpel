@@ -48,6 +48,10 @@
             file="Source/PluginProcessor.cpp"/>
       <FILE id="UMiNSI" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
+      <FILE id="lVAm1U" name="SoundInterface.cpp" compile="1" resource="0"
+            file="Source/SoundInterface.cpp"/>
+      <FILE id="g0Ze7q" name="SoundInterface.h" compile="0" resource="0"
+            file="Source/SoundInterface.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

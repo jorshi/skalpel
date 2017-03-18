@@ -16,6 +16,7 @@
 #include "FileLoader.h"
 #include "AnalysisMrs.h"
 #include "LoomLookAndFeel.h"
+#include "SoundInterface.h"
 
 
 //==============================================================================
@@ -79,8 +80,8 @@ private:
     // File Loader
     FileLoader fileLoader;
     
-    // Analysis
-    ScopedPointer<AnalysisMrs> analysisFactory;
+    // For interfacing with analysis and sounds
+    SoundInterface& soundInterface;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)

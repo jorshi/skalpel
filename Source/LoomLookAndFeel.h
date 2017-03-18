@@ -20,9 +20,11 @@ public:
     // Default Constructor
     LoomLookAndFeel();
     
+    // Custom Buttons
     void drawButtonBackground (Graphics& g, Button& button, const Colour& backgroundColour,
                                bool isMouseOverButton, bool isButtonDown) override;
     
+    // Custom Button Text
     Font getTextButtonFont (TextButton&, int buttonHeight) override;
     
 private:

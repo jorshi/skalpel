@@ -26,7 +26,12 @@ LoomAudioProcessor::LoomAudioProcessor()
 {
     // Allocate voices for synthesizer
     for (int i = 0; i < maxVoices; ++i)
-        _synth.addVoice (new SinusoidalSynthVoice());
+        synth_.addVoice (new SinusoidalSynthVoice());
+    
+    // Instantiate an empty sound interface
+    sounds_.clear();
+    sounds_.insert(0, new SoundInterface);
+    currentSound_ = 0;
 }
 
 LoomAudioProcessor::~LoomAudioProcessor()
@@ -90,7 +95,7 @@ void LoomAudioProcessor::changeProgramName (int index, const String& newName)
 void LoomAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     ignoreUnused(samplesPerBlock);
-    _synth.setCurrentPlaybackSampleRate(sampleRate);
+    synth_.setCurrentPlaybackSampleRate(sampleRate);
 }
 
 void LoomAudioProcessor::releaseResources()
@@ -139,7 +144,7 @@ void LoomAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
 
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
-    _synth.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+    synth_.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
 }
 
 //==============================================================================
@@ -171,11 +176,27 @@ void LoomAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 // Swap the sinusoidal model out
 void LoomAudioProcessor::swapModel(ScopedPointer<SineModel> newModel)
 {
-    _synth.clearSounds();
+    synth_.clearSounds();
     
     BigInteger midiNotes;
     midiNotes.setRange(0, 126, true);
-    _synth.addSound(new SinusoidalSynthSound(midiNotes, 69, *newModel, 512));
+    synth_.addSound(new SinusoidalSynthSound(midiNotes, 69, *newModel, 512));
+}
+
+
+void LoomAudioProcessor::swapSound(const SoundInterface &newSound)
+{
+    synth_.clearSounds();
+
+    BigInteger midiNotes;
+    midiNotes.setRange(0, 126, true);
+    synth_.addSound(new SinusoidalSynthSound(midiNotes, 69, newSound.getSineModel(), 512));
+}
+
+
+SoundInterface& LoomAudioProcessor::getCurrentSound()
+{
+    return *sounds_[currentSound_];
 }
 
 //==============================================================================

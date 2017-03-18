@@ -15,6 +15,8 @@
 #include "PluginProcessor.h"
 #include "FileLoader.h"
 #include "AnalysisMrs.h"
+#include "LoomLookAndFeel.h"
+#include "SoundInterface.h"
 
 
 //==============================================================================
@@ -36,23 +38,21 @@ public:
 
 private:
     
-    enum UIState
-    {
-        loadFileState,
-        analysisState,
-        synthesisState
-    };
-    
     // Called when any button on UI is clicked
     void buttonClicked(Button* button) override;
     
     // Called when the UI state changes
-    void switchState(UIState newState);
+    void switchState(SoundInterface::State newState);
+    
+    void loadState();
     
     // Remove all buttons from UI
     void hideAllButtons();
     
     LoomAudioProcessor& processor;
+    
+    // Look and feel
+    LoomLookAndFeel loomLookAndFeel;
     
     TextButton openButton;
     TextButton analysisButton;
@@ -61,20 +61,19 @@ private:
     // Colours
     Colour bgColour;
     Colour layer1Colour;
+    ColourGradient gradientMain;
     
     // Shapes
     Rectangle<int> header;
     Rectangle<int> background;
     Rectangle<int> footer;
-    
-    // Current state of UI
-    UIState state;
+    Rectangle<int> middle;
     
     // File Loader
     FileLoader fileLoader;
     
-    // Analysis
-    ScopedPointer<AnalysisMrs> analysisFactory;
+    // For interfacing with analysis and sounds
+    SoundInterface& soundInterface;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)

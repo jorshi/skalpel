@@ -14,6 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SinusoidalSynthSound.h"
 #include "SinusoidalSynthVoice.h"
+#include "SoundInterface.h"
 
 
 //==============================================================================
@@ -24,7 +25,8 @@ class LoomAudioProcessor  : public AudioProcessor
 public:
     enum
     {
-        maxVoices = 8
+        maxVoices = 8,
+        maxSounds = 4
     };
     
     //==============================================================================
@@ -65,10 +67,17 @@ public:
     
     //==============================================================================
     void swapModel(ScopedPointer<SineModel> newModel);
+    void swapSound(const SoundInterface& newSound);
+    SoundInterface& getCurrentSound();
 
 private:
     //==============================================================================
-    Synthesiser _synth;
+    Synthesiser synth_;
+    OwnedArray<SoundInterface> sounds_;
+    
+    int currentSound_;
+    
+    AudioProcessorValueTreeState processorState_;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessor)
 };

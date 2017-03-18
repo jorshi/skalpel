@@ -20,6 +20,15 @@
 class SoundInterface
 {
 public:
+
+    // Current state of this interface
+    enum State
+    {
+        loadFileState,
+        analysisState,
+        runningAnalysisState,
+        synthesisState
+    };
     
     // Default Constructor
     SoundInterface();
@@ -33,12 +42,22 @@ public:
     // Run Analysis on current analysis
     void runAnalysis();
     
+    // Sine Model Getter
     const SineModel& getSineModel() const { return *sineModel_; };
+    
+    // Get current state of sound
+    State getState() const { return state_; };
+    
+    // Set current state of sound
+    void setState(State newState) { state_ = newState; };
+    
     
 private:
     
     ScopedPointer<AnalysisMrs> analysis_;
     ScopedPointer<SineModel> sineModel_;
+    
+    State state_;
     
 };
 

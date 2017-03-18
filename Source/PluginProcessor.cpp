@@ -21,7 +21,8 @@ LoomAudioProcessor::LoomAudioProcessor()
                       #endif
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
-                       )
+                       ),
+        processorState_(*this, new UndoManager)
 #endif
 {
     // Allocate voices for synthesizer

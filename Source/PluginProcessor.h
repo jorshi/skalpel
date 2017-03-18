@@ -77,6 +77,8 @@ private:
     
     int currentSound_;
     
+    AudioProcessorValueTreeState processorState_;
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessor)
 };
 

@@ -11,7 +11,7 @@
 #include "SoundInterface.h"
 
 
-SoundInterface::SoundInterface() : analysis_(nullptr)
+SoundInterface::SoundInterface() : analysis_(nullptr), state_(loadFileState)
 {
     sineModel_ = new SineModel;
 }

@@ -38,18 +38,13 @@ public:
 
 private:
     
-    enum UIState
-    {
-        loadFileState,
-        analysisState,
-        synthesisState
-    };
-    
     // Called when any button on UI is clicked
     void buttonClicked(Button* button) override;
     
     // Called when the UI state changes
-    void switchState(UIState newState);
+    void switchState(SoundInterface::State newState);
+    
+    void loadState();
     
     // Remove all buttons from UI
     void hideAllButtons();
@@ -73,9 +68,6 @@ private:
     Rectangle<int> background;
     Rectangle<int> footer;
     Rectangle<int> middle;
-    
-    // Current state of UI
-    UIState state;
     
     // File Loader
     FileLoader fileLoader;

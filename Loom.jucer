@@ -11,6 +11,15 @@
               jucerVersion="4.3.1" companyName="napsky">
   <MAINGROUP id="bdoCZ7" name="Loom">
     <GROUP id="{2A5344C4-6F3D-D15C-A82A-F8E308E69ED8}" name="Source">
+      <GROUP id="{49C20CC2-ED4F-A816-AC28-C5B2950B08B1}" name="UI">
+        <FILE id="SC9HzE" name="LoomLookAndFeel.cpp" compile="1" resource="0"
+              file="Source/LoomLookAndFeel.cpp"/>
+        <FILE id="GnwO7u" name="LoomLookAndFeel.h" compile="0" resource="0"
+              file="Source/LoomLookAndFeel.h"/>
+        <FILE id="lIZnEM" name="PluginEditor.cpp" compile="1" resource="0"
+              file="Source/PluginEditor.cpp"/>
+        <FILE id="tRuYJo" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+      </GROUP>
       <GROUP id="{318136ED-7D16-1A86-CD7E-29E73C2400B0}" name="Analysis">
         <FILE id="Jkv4tH" name="AnalysisMrs.cpp" compile="1" resource="0" file="Source/AnalysisMrs.cpp"/>
         <FILE id="Jjd1t6" name="AnalysisMrs.h" compile="0" resource="0" file="Source/AnalysisMrs.h"/>
@@ -39,9 +48,6 @@
             file="Source/PluginProcessor.cpp"/>
       <FILE id="UMiNSI" name="PluginProcessor.h" compile="0" resource="0"
             file="Source/PluginProcessor.h"/>
-      <FILE id="lIZnEM" name="PluginEditor.cpp" compile="1" resource="0"
-            file="Source/PluginEditor.cpp"/>
-      <FILE id="tRuYJo" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

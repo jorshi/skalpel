@@ -15,6 +15,7 @@
 #include "PluginProcessor.h"
 #include "FileLoader.h"
 #include "AnalysisMrs.h"
+#include "LoomLookAndFeel.h"
 
 
 //==============================================================================
@@ -54,6 +55,9 @@ private:
     
     LoomAudioProcessor& processor;
     
+    // Look and feel
+    LoomLookAndFeel loomLookAndFeel;
+    
     TextButton openButton;
     TextButton analysisButton;
     TextButton newButton;
@@ -61,11 +65,13 @@ private:
     // Colours
     Colour bgColour;
     Colour layer1Colour;
+    ColourGradient gradientMain;
     
     // Shapes
     Rectangle<int> header;
     Rectangle<int> background;
     Rectangle<int> footer;
+    Rectangle<int> middle;
     
     // Current state of UI
     UIState state;

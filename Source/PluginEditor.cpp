@@ -19,33 +19,6 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p)
     
     setLookAndFeel(&loomLookAndFeel);
     
-
-    AudioProcessorValueTreeState& tree = processor.getParams();
-    
-    Slider* newSlider;
-    sliders.add(newSlider = new Slider("analysis_win"));
-    
-    sliderAttachments.add(new AudioProcessorValueTreeState::SliderAttachment(tree, "analysis_win", *newSlider));
-    addAndMakeVisible(newSlider);
-    
-    
-    ComboBox* newCombo;
-    combos.add(newCombo = new ComboBox("analysis_win_1"));
-    AudioProcessorParameter* param = tree.getParameter("analysis_win_1");
-    
-    newCombo->addItem(param->getText(0.0f, 20), 1);
-    newCombo->addItem(param->getText(1.0f, 20), 2);
-    
-    comboAttachments.add(new AudioProcessorValueTreeState::ComboBoxAttachment(tree, "analysis_win_1", *newCombo));
-    
-    addAndMakeVisible(newCombo);
-    
-//    ToggleButton* newToggle;
-//    buttons.add(newToggle = new ToggleButton("analysis_win_1"));
-//    
-//    buttonAttachments.add(new AudioProcessorValueTreeState::ButtonAttachment(tree, "analysis_win_1", *newToggle));
-//    addAndMakeVisible(newToggle);
-    
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (640, 360);
@@ -116,10 +89,6 @@ void LoomAudioProcessorEditor::resized()
     openButton.setBounds(251, 163, 138, 34);
     analysisButton.setBounds(251, 227, 138, 34);
     newButton.setBounds(251, 227, 138, 34);
-    
-    sliders[0]->setBounds(0, 0, 100, 50);
-    combos[0]->setBounds(50, 50, 200, 50);
-    //buttons[0]->setBounds(50, 50, 50, 50);
 }
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)

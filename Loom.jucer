@@ -12,6 +12,10 @@
   <MAINGROUP id="bdoCZ7" name="Loom">
     <GROUP id="{2A5344C4-6F3D-D15C-A82A-F8E308E69ED8}" name="Source">
       <GROUP id="{49C20CC2-ED4F-A816-AC28-C5B2950B08B1}" name="UI">
+        <FILE id="RMR5K5" name="AnalysisComonent.cpp" compile="1" resource="0"
+              file="Source/AnalysisComonent.cpp"/>
+        <FILE id="S0ivXZ" name="AnalysisComonent.h" compile="0" resource="0"
+              file="Source/AnalysisComonent.h"/>
         <FILE id="SC9HzE" name="LoomLookAndFeel.cpp" compile="1" resource="0"
               file="Source/LoomLookAndFeel.cpp"/>
         <FILE id="GnwO7u" name="LoomLookAndFeel.h" compile="0" resource="0"
@@ -52,6 +56,10 @@
             file="Source/SoundInterface.cpp"/>
       <FILE id="g0Ze7q" name="SoundInterface.h" compile="0" resource="0"
             file="Source/SoundInterface.h"/>
+      <FILE id="sJO8Fl" name="ParameterManager.cpp" compile="1" resource="0"
+            file="Source/ParameterManager.cpp"/>
+      <FILE id="eW27Uk" name="ParameterManager.h" compile="0" resource="0"
+            file="Source/ParameterManager.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

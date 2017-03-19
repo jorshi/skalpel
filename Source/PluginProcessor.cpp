@@ -24,7 +24,6 @@ LoomAudioProcessor::LoomAudioProcessor()
                        )
 #endif
 {
-    
     undoManager_ = new UndoManager;
     processorState_ = new AudioProcessorValueTreeState(*this, undoManager_);
     
@@ -36,22 +35,6 @@ LoomAudioProcessor::LoomAudioProcessor()
     sounds_.clear();
     sounds_.insert(0, new SoundInterface);
     currentSound_ = 0;
-    
-    processorState_->createAndAddParameter("analysis_win", "Analysis Window Size", "Analysis Window Size", NormalisableRange<float>(5, 10, 1), 7, nullptr, nullptr);
-    
-    
-    processorState_->createAndAddParameter("analysis_win_1", "Analysis Window Size", String(),
-                                           NormalisableRange<float>(0.0f, 1.0f, 1.0f), 0.0f,
-                                           [](float value)
-                                           {
-                                               return value < 0.5 ? "Normal" : "Inverted";
-                                           },
-                                           [](const String& text)
-                                           {
-                                               if (text == "Normal") return 0.0f;
-                                               if (text == "Inverted") return 1.0f;
-                                               return 1.0f;
-                                           });
     
 }
 
@@ -225,10 +208,6 @@ AudioProcessorValueTreeState& LoomAudioProcessor::getParams()
     return *processorState_;
 }
 
-String toString(float num)
-{
-    return std::to_string(num);
-}
 //==============================================================================
 // This creates new instances of the plugin..
 AudioProcessor* JUCE_CALLTYPE createPluginFilter()

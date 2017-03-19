@@ -14,10 +14,15 @@
 using namespace Marsyas;
 
 // Default Constructor
-AnalysisMrs::AnalysisMrs() {}
+AnalysisMrs::AnalysisMrs(ParameterManager& params) : params_(params)
+{
+}
 
 // Construtor with audio file passed in
-AnalysisMrs::AnalysisMrs(File input) : audioFile(input) {}
+AnalysisMrs::AnalysisMrs(File input, ParameterManager& params) :
+    audioFile(input), params_(params)
+{
+}
 
 // Deconstructor
 AnalysisMrs::~AnalysisMrs() {}
@@ -74,7 +79,7 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     
     // Analysis Parameters TODO: should these be user adjustable?
     int hopSize = 128;
-    int frameSize = 2048;
+    int frameSize = 1 << static_cast<int>(params_.getValue("analysis_frame_size"));
     mrs_real thresh = -80.0;
     
     mrs_real sampleRate;

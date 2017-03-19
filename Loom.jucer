@@ -20,6 +20,10 @@
               file="Source/LoomLookAndFeel.cpp"/>
         <FILE id="GnwO7u" name="LoomLookAndFeel.h" compile="0" resource="0"
               file="Source/LoomLookAndFeel.h"/>
+        <FILE id="DHGns6" name="MiddleComponent.cpp" compile="1" resource="0"
+              file="Source/MiddleComponent.cpp"/>
+        <FILE id="Gyruth" name="MiddleComponent.h" compile="0" resource="0"
+              file="Source/MiddleComponent.h"/>
         <FILE id="lIZnEM" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/PluginEditor.cpp"/>
         <FILE id="tRuYJo" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>

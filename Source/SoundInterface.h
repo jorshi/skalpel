@@ -54,6 +54,7 @@ public:
     
     float getParameterValue(String);
     
+    ParameterManager& getAnalysisParams() { return analysisParams_; };
     
 private:
     

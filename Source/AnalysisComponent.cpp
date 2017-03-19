@@ -1,29 +1,29 @@
 /*
   ==============================================================================
 
-    AnalysisComonent.cpp
-    Created: 19 Mar 2017 12:33:35am
+    AnalysisComponent.cpp
+    Created: 19 Mar 2017 12:36:26am
     Author:  Jordie Shier 
 
   ==============================================================================
 */
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "AnalysisComonent.h"
+#include "AnalysisComponent.h"
 
 //==============================================================================
-AnalysisComonent::AnalysisComonent()
+AnalysisComponent::AnalysisComponent()
 {
     // In your constructor, you should add any child components, and
     // initialise any special settings that your component needs.
 
 }
 
-AnalysisComonent::~AnalysisComonent()
+AnalysisComponent::~AnalysisComponent()
 {
 }
 
-void AnalysisComonent::paint (Graphics& g)
+void AnalysisComponent::paint (Graphics& g)
 {
     /* This demo code just fills the component's background and
        draws some placeholder text to get you started.
@@ -39,11 +39,11 @@ void AnalysisComonent::paint (Graphics& g)
 
     g.setColour (Colours::lightblue);
     g.setFont (14.0f);
-    g.drawText ("AnalysisComonent", getLocalBounds(),
+    g.drawText ("AnalysisComponent", getLocalBounds(),
                 Justification::centred, true);   // draw some placeholder text
 }
 
-void AnalysisComonent::resized()
+void AnalysisComponent::resized()
 {
     // This method is where you should set the bounds of any child
     // components that your component contains..

@@ -17,6 +17,7 @@
 #include "AnalysisMrs.h"
 #include "LoomLookAndFeel.h"
 #include "SoundInterface.h"
+#include "AnalysisComponent.h"
 
 
 //==============================================================================

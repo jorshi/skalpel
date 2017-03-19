@@ -11,13 +11,10 @@
 #include "SoundInterface.h"
 
 
-SoundInterface::SoundInterface() : analysis_(nullptr), state_(loadFileState)
+SoundInterface::SoundInterface(AnalysisParameterManager* a) : analysis_(nullptr), state_(loadFileState)
 {
+    analysisParams_ = a;
     sineModel_ = new SineModel;
-    
-    // Analysis Parameters
-    analysisParams_.createParameter("analysis_frame_size", "Analysis Frame Size",
-                                    NormalisableRange<float>(9,16,1), 11);
 }
 
 
@@ -28,7 +25,7 @@ SoundInterface::~SoundInterface()
 
 void SoundInterface::buildAnalysis(File inputFile)
 {
-    analysis_ = new AnalysisMrs(inputFile, analysisParams_);
+    analysis_ = new AnalysisMrs(inputFile, *analysisParams_);
 }
 
 

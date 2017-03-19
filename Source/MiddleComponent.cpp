@@ -12,8 +12,7 @@
 #include "MiddleComponent.h"
 
 //==============================================================================
-MiddleComponent::MiddleComponent(ButtonListener* parent, SoundInterface& s) :
-    soundInterface(s), analysisComponent(s.getAnalysisParams())
+MiddleComponent::MiddleComponent(ButtonListener* parent, SoundInterface& s) : soundInterface(s)
 {
     setLookAndFeel(&loomLookAndFeel);
     
@@ -37,8 +36,7 @@ MiddleComponent::MiddleComponent(ButtonListener* parent, SoundInterface& s) :
     
     state = soundInterface.getState();
     
-    // child components
-    addAndMakeVisible(analysisComponent);
+
 }
 
 MiddleComponent::~MiddleComponent()
@@ -59,8 +57,7 @@ void MiddleComponent::resized()
     openButton.setBounds(241, 92, 138, 34);
     analysisButton.setBounds(241, 166, 138, 34);
     newButton.setBounds(241, 166, 138, 34);
-    
-    analysisComponent.setBounds(getLocalBounds());
+
 }
 
 

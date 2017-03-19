@@ -54,6 +54,7 @@ private:
     // Colours
     Colour bgColour;
     Colour layer1Colour;
+    ColourGradient gradientMain;
     
     // Shapes
     Rectangle<int> header;
@@ -68,8 +69,8 @@ private:
     SoundInterface& soundInterface;
     
     // This is where analysis and synthesis params go
-    MiddleComponent middleComponent;
-    
+    //MiddleComponent middleComponent;
+    AnalysisComponent analysisComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)
 };

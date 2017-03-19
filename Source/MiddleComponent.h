@@ -47,9 +47,6 @@ private:
     // Colours
     ColourGradient gradientMain;
     
-    // Sub components
-    AnalysisComponent analysisComponent;
-    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (MiddleComponent)
 };

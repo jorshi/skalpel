@@ -79,7 +79,8 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
     
     // Analysis Parameters TODO: should these be user adjustable?
     int hopSize = 128;
-    int frameSize = 1 << static_cast<int>(params_.getValue("analysis_frame_size"));
+    //int frameSize = 1 << static_cast<int>(params_.getValue("analysis_frame_size"));
+    int frameSize = 2048;
     mrs_real thresh = -80.0;
     
     mrs_real sampleRate;

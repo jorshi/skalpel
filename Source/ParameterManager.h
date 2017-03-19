@@ -19,24 +19,22 @@ class ParameterManager
 public:
     
     // Default Constructor
-    ParameterManager();
+    ParameterManager(int num, AudioProcessorValueTreeState* p);
     
-    // Default Deconstructor
-    ~ParameterManager();
+    virtual ~ParameterManager()=0;
+
+    // Pure virtual method to create parameters
+    virtual void createParameters()=0;
     
-    // Create a new audio float parameter
-    AudioParameterFloat* createParameter(String parameterID, String parameterName,
-                                         NormalisableRange<float>, float defaultValue, bool managed = true);
-    
-    float getValue(String parameterID) const { return *parameterMap_.at(parameterID); };
-    
+    // Map to parameters that are associated to the manager
+    String getParamId(const String paramName) const;
     
 private:
     
-    std::map<String, AudioParameterFloat*> parameterMap_;
+    const int soundNum_;
+    std::map<String, String> paramMap_;
+    AudioProcessorValueTreeState* parameters_;
     
-    // Memory Managed Parameters
-    OwnedArray<AudioParameterFloat> managedParameters_;
 };
 
 

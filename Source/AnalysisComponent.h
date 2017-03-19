@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "ParameterManager.h"
+#include "AnalysisParameterManager.h"
 #include <map>
 
 //==============================================================================
@@ -22,7 +23,7 @@ class AnalysisComponent :   public Component,
                             public ComboBoxListener
 {
 public:
-    AnalysisComponent(ParameterManager& p);
+    AnalysisComponent(ButtonListener* parent, AnalysisParameterManager* p);
     ~AnalysisComponent();
 
     void paint (Graphics&) override;
@@ -30,10 +31,14 @@ public:
     
     // Listener
     void comboBoxChanged(ComboBox* box) override;
+    
+    void addComboBox(String paramId);
 
 private:
     
-    ParameterManager& analysisParams;
+    TextButton analysisButton;
+    
+    AnalysisParameterManager* analysisParams;
     
     // Parameter Components
     std::map<String, ComboBox*> comboBoxMap;

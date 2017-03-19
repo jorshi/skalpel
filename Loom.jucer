@@ -64,6 +64,10 @@
             file="Source/ParameterManager.cpp"/>
       <FILE id="eW27Uk" name="ParameterManager.h" compile="0" resource="0"
             file="Source/ParameterManager.h"/>
+      <FILE id="Aw83P7" name="AnalysisParameterManager.cpp" compile="1" resource="0"
+            file="Source/AnalysisParameterManager.cpp"/>
+      <FILE id="yQPnB9" name="AnalysisParameterManager.h" compile="0" resource="0"
+            file="Source/AnalysisParameterManager.h"/>
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>

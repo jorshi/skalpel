@@ -16,6 +16,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AnalysisMrs.h"
 #include "SineElement.h"
+#include "AnalysisParameterManager.h"
 #include "ParameterManager.h"
 
 class SoundInterface
@@ -32,7 +33,7 @@ public:
     };
     
     // Default Constructor
-    SoundInterface();
+    SoundInterface(AnalysisParameterManager* a);
     
     // Default Deconstructor
     ~SoundInterface();
@@ -54,7 +55,7 @@ public:
     
     float getParameterValue(String);
     
-    ParameterManager& getAnalysisParams() { return analysisParams_; };
+    AnalysisParameterManager* getAnalysisParams() { return analysisParams_; };
     
 private:
     
@@ -64,7 +65,7 @@ private:
     State state_;
     
     // Parameters for the analysis phase
-    ParameterManager analysisParams_;
+    AnalysisParameterManager* analysisParams_;
     
 };
 

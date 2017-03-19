@@ -12,12 +12,14 @@
 #include "AnalysisComponent.h"
 
 //==============================================================================
-AnalysisComponent::AnalysisComponent(ParameterManager& p) : analysisParams(p)
+AnalysisComponent::AnalysisComponent(ButtonListener* parent, AnalysisParameterManager* p) : analysisParams(p)
 {
-    ComboBox* newCombo;
-    newCombo = new ComboBox("analysis_frame_size");
-    comboBoxMap.emplace("analysis_frame_size", newCombo);
-    comboBoxes.add(newCombo);
+    analysisButton.setButtonText("Run Analysis");
+    analysisButton.setComponentID("run_analysis");
+    analysisButton.addListener(parent);
+    addAndMakeVisible(&analysisButton);
+    
+    //addComboBox("analysis_frame_size");
 }
 
 AnalysisComponent::~AnalysisComponent()
@@ -30,11 +32,16 @@ void AnalysisComponent::paint (Graphics& g)
 
 void AnalysisComponent::resized()
 {
-    comboBoxMap.at("analysis_frame_size")->setBounds(106, 42, 90, 29);
+    //comboBoxMap.at("analysis_frame_size")->setBounds(106, 42, 90, 29);
+    //analysisButton.setBounds(241, 166, 138, 34);
 }
 
 
 void AnalysisComponent::comboBoxChanged(juce::ComboBox *box)
 {
-    
+}
+
+
+void AnalysisComponent::addComboBox(String paramId)
+{
 }

@@ -11,29 +11,24 @@
 #include "ParameterManager.h"
 
 // Default Constructor
-ParameterManager::ParameterManager()
+ParameterManager::ParameterManager(int num, AudioProcessorValueTreeState* p) :
+    soundNum_(num), parameters_(p)
 {
 }
 
 
-// Defualt Deconstructor
-ParameterManager::~ParameterManager()
-{
-}
+// Default Deconstructor
+ParameterManager::~ParameterManager() {};
 
-AudioParameterFloat* ParameterManager::createParameter(juce::String parameterID, juce::String parameterName, NormalisableRange<float> range, float defaultValue, bool managed)
+
+String ParameterManager::getParamId(const String paramName) const
 {
-    AudioParameterFloat* newParamater = new AudioParameterFloat(parameterID, parameterName, range, defaultValue);
-    
-    // Save parameter in map
-    
-    parameterMap_.emplace(parameterID, newParamater);
-    
-    // If we are responsible for managing this object
-    if (managed)
+    std::map<String, String>::const_iterator name = paramMap_.find(paramName);
+    if (name != paramMap_.end())
     {
-        managedParameters_.add(newParamater);
+        return name->second;
     }
     
-    return newParamater;
+    return "";
 }
+

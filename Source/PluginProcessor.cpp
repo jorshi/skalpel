@@ -31,11 +31,17 @@ LoomAudioProcessor::LoomAudioProcessor()
     for (int i = 0; i < maxVoices; ++i)
         synth_.addVoice (new SinusoidalSynthVoice());
     
+    AnalysisParameterManager* analysisParams;
+    analysisParameters_.clear();
+    analysisParameters_.insert(
+        currentSound_,
+        analysisParams =  new AnalysisParameterManager(currentSound_, processorState_)
+    );
+    
     // Instantiate an empty sound interface
     sounds_.clear();
-    sounds_.insert(0, new SoundInterface);
+    sounds_.insert(0, new SoundInterface(analysisParams));
     currentSound_ = 0;
-    
 }
 
 LoomAudioProcessor::~LoomAudioProcessor()

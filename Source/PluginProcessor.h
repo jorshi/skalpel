@@ -69,6 +69,8 @@ public:
     void swapModel(ScopedPointer<SineModel> newModel);
     void swapSound(const SoundInterface& newSound);
     SoundInterface& getCurrentSound();
+    
+    AudioProcessorValueTreeState& getParams();
 
 private:
     //==============================================================================
@@ -77,10 +79,13 @@ private:
     
     int currentSound_;
     
-    AudioProcessorValueTreeState processorState_;
+    ScopedPointer<UndoManager> undoManager_;
+    ScopedPointer<AudioProcessorValueTreeState> processorState_;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessor)
 };
+
+String toString(float);
 
 
 #endif  // PLUGINPROCESSOR_H_INCLUDED

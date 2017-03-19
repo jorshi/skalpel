@@ -75,6 +75,14 @@ private:
     // For interfacing with analysis and sounds
     SoundInterface& soundInterface;
     
+    OwnedArray<Slider> sliders;
+    OwnedArray<ComboBox> combos;
+    OwnedArray<Button> buttons;
+    
+    OwnedArray<AudioProcessorValueTreeState::SliderAttachment> sliderAttachments;
+    OwnedArray<AudioProcessorValueTreeState::ComboBoxAttachment> comboAttachments;
+    OwnedArray<AudioProcessorValueTreeState::ButtonAttachment> buttonAttachments;
+    
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)
 };

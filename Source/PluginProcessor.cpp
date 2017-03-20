@@ -158,10 +158,6 @@ void LoomAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     synth_.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
-    
-    float value = *processorState_->getRawParameterValue("analysis_window_0");
-    
-    int i = 0;
 }
 
 //==============================================================================

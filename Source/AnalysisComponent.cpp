@@ -57,12 +57,10 @@ void AnalysisComponent::addComboBoxOptions(ComboBox* box, const String paramId)
     NormalisableRange<float> range = parameters->getParameterRange(analysisParams->getParamId(paramId));
     
     float i = range.start;
-    int j = 1;
-    while(i < range.end)
+    while(i <= range.end)
     {
         box->addItem(param->getText(range.convertTo0to1(i), 20), roundToInt(i + 1.0f));
         i += range.interval;
-        ++j;
     }
 
     box->setSelectedItemIndex(roundToInt(*parameters->getRawParameterValue(analysisParams->getParamId(paramId))));

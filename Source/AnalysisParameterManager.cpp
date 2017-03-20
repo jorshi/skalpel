@@ -30,7 +30,10 @@ void AnalysisParameterManager::createParameters()
                                        {
                                            return std::to_string(1 << (int)(value + 9.0f));
                                        },
-                                       nullptr);
+                                       [](const String& text)
+                                       {
+                                           return std::log2(std::stof(text.toStdString())) - 9.0f;
+                                       });
     
     paramMap_.emplace(analysisWindowName, analysisWindowId);
 }

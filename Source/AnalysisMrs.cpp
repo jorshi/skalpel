@@ -74,6 +74,11 @@ SineModel* AnalysisMrs::runAnalysis()
  */
 void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
 {
+    AudioProcessorValueTreeState* parameters = params_.getParameters();
+    
+    Value val = parameters->getParameterAsValue(params_.getParamId("analysis_window"));
+    
+    
     // Noise Floor
     const mrs_real noiseFloor = 1e-14;
     

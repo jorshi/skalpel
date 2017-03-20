@@ -22,7 +22,7 @@ public:
     
     ~AnalysisParameterManager() override {};
     
-    void createParameters() override {};
+    void createParameters() override;
 };
 
 

@@ -29,12 +29,15 @@ public:
     // Map to parameters that are associated to the manager
     String getParamId(const String paramName) const;
     
-private:
-    
+    AudioProcessorValueTreeState* getParameters() { return parameters_; };
+
+protected:
     const int soundNum_;
     std::map<String, String> paramMap_;
     AudioProcessorValueTreeState* parameters_;
     
+private:
+
 };
 
 

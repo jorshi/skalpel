@@ -19,7 +19,14 @@ AnalysisComponent::AnalysisComponent(ButtonListener* parent, AnalysisParameterMa
     analysisButton.addListener(parent);
     addAndMakeVisible(&analysisButton);
     
+    addAndMakeVisible(windowSize);
+    comboAttachment = new ComboBoxAttachment(*analysisParams->getParameters(),
+                                             analysisParams->getParamId("analysis_window"), windowSize);
+    
+    addComboBoxOptions(&windowSize, "analysis_window");
+    
     //addComboBox("analysis_frame_size");
+    //std::cout << analysisParams->getParamId("analysis_window") << "\n";
 }
 
 AnalysisComponent::~AnalysisComponent()
@@ -33,15 +40,30 @@ void AnalysisComponent::paint (Graphics& g)
 void AnalysisComponent::resized()
 {
     //comboBoxMap.at("analysis_frame_size")->setBounds(106, 42, 90, 29);
-    //analysisButton.setBounds(241, 166, 138, 34);
-}
-
-
-void AnalysisComponent::comboBoxChanged(juce::ComboBox *box)
-{
+    analysisButton.setBounds(241, 166, 138, 34);
+    windowSize.setBounds(106, 42, 90, 29);
 }
 
 
 void AnalysisComponent::addComboBox(String paramId)
 {
+}
+
+
+void AnalysisComponent::addComboBoxOptions(ComboBox* box, const String paramId)
+{
+    AudioProcessorValueTreeState* parameters = analysisParams->getParameters();
+    AudioProcessorParameter* param = parameters->getParameter(analysisParams->getParamId(paramId));
+    NormalisableRange<float> range = parameters->getParameterRange(analysisParams->getParamId(paramId));
+    
+    float i = range.start;
+    int j = 1;
+    while(i < range.end)
+    {
+        box->addItem(param->getText(range.convertTo0to1(i), 20), roundToInt(i + 1.0f));
+        i += range.interval;
+        ++j;
+    }
+
+    box->setSelectedItemIndex(roundToInt(*parameters->getRawParameterValue(analysisParams->getParamId(paramId))));
 }

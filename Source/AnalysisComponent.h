@@ -19,8 +19,7 @@
 //==============================================================================
 /*
 */
-class AnalysisComponent :   public Component,
-                            public ComboBoxListener
+class AnalysisComponent :   public Component
 {
 public:
     AnalysisComponent(ButtonListener* parent, AnalysisParameterManager* p);
@@ -29,12 +28,12 @@ public:
     void paint (Graphics&) override;
     void resized() override;
     
-    // Listener
-    void comboBoxChanged(ComboBox* box) override;
-    
     void addComboBox(String paramId);
+    
+    void addComboBoxOptions(ComboBox* box, const String paramId);
 
 private:
+    typedef AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
     
     TextButton analysisButton;
     
@@ -43,6 +42,11 @@ private:
     // Parameter Components
     std::map<String, ComboBox*> comboBoxMap;
     OwnedArray<ComboBox> comboBoxes;
+    
+    ComboBox windowSize;
+    
+    // Combo Box Attacher
+    ScopedPointer<ComboBoxAttachment> comboAttachment;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalysisComponent)
 };

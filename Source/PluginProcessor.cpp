@@ -31,6 +31,8 @@ LoomAudioProcessor::LoomAudioProcessor()
     for (int i = 0; i < maxVoices; ++i)
         synth_.addVoice (new SinusoidalSynthVoice());
     
+    currentSound_ = 0;
+    
     AnalysisParameterManager* analysisParams;
     analysisParameters_.clear();
     analysisParameters_.insert(
@@ -40,8 +42,9 @@ LoomAudioProcessor::LoomAudioProcessor()
     
     // Instantiate an empty sound interface
     sounds_.clear();
-    sounds_.insert(0, new SoundInterface(analysisParams));
-    currentSound_ = 0;
+    sounds_.insert(currentSound_, new SoundInterface(analysisParams));
+    
+    processorState_->state = ValueTree(Identifier("LOOM"));
 }
 
 LoomAudioProcessor::~LoomAudioProcessor()
@@ -155,6 +158,10 @@ void LoomAudioProcessor::processBlock (AudioSampleBuffer& buffer, MidiBuffer& mi
     // This is the place where you'd normally do the guts of your plugin's
     // audio processing...
     synth_.renderNextBlock(buffer, midiMessages, 0, buffer.getNumSamples());
+    
+    float value = *processorState_->getRawParameterValue("analysis_window_0");
+    
+    int i = 0;
 }
 
 //==============================================================================

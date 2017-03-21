@@ -16,6 +16,9 @@
               file="Source/AnalysisComponent.cpp"/>
         <FILE id="D3hxap" name="AnalysisComponent.h" compile="0" resource="0"
               file="Source/AnalysisComponent.h"/>
+        <FILE id="sCJCVP" name="LoadComponent.cpp" compile="1" resource="0"
+              file="Source/LoadComponent.cpp"/>
+        <FILE id="ILYrZS" name="LoadComponent.h" compile="0" resource="0" file="Source/LoadComponent.h"/>
         <FILE id="SC9HzE" name="LoomLookAndFeel.cpp" compile="1" resource="0"
               file="Source/LoomLookAndFeel.cpp"/>
         <FILE id="GnwO7u" name="LoomLookAndFeel.h" compile="0" resource="0"

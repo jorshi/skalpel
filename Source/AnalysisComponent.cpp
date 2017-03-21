@@ -24,9 +24,6 @@ AnalysisComponent::AnalysisComponent(ButtonListener* parent, AnalysisParameterMa
                                              analysisParams->getParamId("analysis_window"), windowSize);
     
     addComboBoxOptions(&windowSize, "analysis_window");
-    
-    //addComboBox("analysis_frame_size");
-    //std::cout << analysisParams->getParamId("analysis_window") << "\n";
 }
 
 AnalysisComponent::~AnalysisComponent()
@@ -39,7 +36,6 @@ void AnalysisComponent::paint (Graphics& g)
 
 void AnalysisComponent::resized()
 {
-    //comboBoxMap.at("analysis_frame_size")->setBounds(106, 42, 90, 29);
     analysisButton.setBounds(241, 166, 138, 34);
     windowSize.setBounds(106, 42, 90, 29);
 }

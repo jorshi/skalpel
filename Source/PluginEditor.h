@@ -18,7 +18,7 @@
 #include "LoomLookAndFeel.h"
 #include "SoundInterface.h"
 #include "AnalysisComponent.h"
-#include "MiddleComponent.h"
+#include "LoadComponent.h"
 
 
 //==============================================================================
@@ -46,6 +46,10 @@ private:
     // Called when the UI state changes
     void switchState(SoundInterface::State newState);
     
+    void hideMiddle();
+    
+    void loadState();
+    
     LoomAudioProcessor& processor;
     
     // Look and feel
@@ -71,6 +75,7 @@ private:
     // This is where analysis and synthesis params go
     //MiddleComponent middleComponent;
     AnalysisComponent analysisComponent;
+    LoadComponent loadComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)
 };

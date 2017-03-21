@@ -20,10 +20,42 @@ AnalysisComponent::AnalysisComponent(ButtonListener* parent, AnalysisParameterMa
     addAndMakeVisible(&analysisButton);
     
     addAndMakeVisible(windowSize);
-    comboAttachment = new ComboBoxAttachment(*analysisParams->getParameters(),
-                                             analysisParams->getParamId("analysis_window"), windowSize);
-    
     addComboBoxOptions(&windowSize, "analysis_window");
+    windowAttachment = new ComboBoxAttachment(*analysisParams->getParameters(),
+                                              analysisParams->getParamId("analysis_window"),
+                                              windowSize);
+    
+    addAndMakeVisible(hopSize);
+    addComboBoxOptions(&hopSize, "analysis_hop");
+    hopAttachment = new  ComboBoxAttachment(*analysisParams->getParameters(),
+                                            analysisParams->getParamId("analysis_hop"),
+                                            hopSize);
+    
+    addAndMakeVisible(amplitudeTreshold);
+    amplitudeAttachment = new SliderAttachment(*analysisParams->getParameters(),
+                                               analysisParams->getParamId("analysis_amp_thresh"),
+                                               amplitudeTreshold);
+    
+    addAndMakeVisible(duration);
+    durationAttachment = new SliderAttachment(*analysisParams->getParameters(),
+                                              analysisParams->getParamId("analysis_duration"),
+                                              duration);
+    
+    addAndMakeVisible(freqOffset);
+    freqOffsetAttachment = new SliderAttachment(*analysisParams->getParameters(),
+                                               analysisParams->getParamId("analysis_freq_offset"),
+                                               freqOffset);
+    
+    addAndMakeVisible(freqSlope);
+    freqSlopeAttachment = new SliderAttachment(*analysisParams->getParameters(),
+                                               analysisParams->getParamId("analysis_freq_slope"),
+                                               freqSlope);
+    
+    addAndMakeVisible(sines);
+    sinesAttachment = new SliderAttachment(*analysisParams->getParameters(),
+                                           analysisParams->getParamId("analysis_sines"),
+                                           sines);
+
 }
 
 AnalysisComponent::~AnalysisComponent()
@@ -37,7 +69,16 @@ void AnalysisComponent::paint (Graphics& g)
 void AnalysisComponent::resized()
 {
     analysisButton.setBounds(241, 166, 138, 34);
-    windowSize.setBounds(106, 42, 90, 29);
+    windowSize.setBounds(35, 52, 71, 20);
+    
+    // Hop size doesn't really work right now
+    //hopSize.setBounds(35, 109, 71, 20);
+    
+    sines.setBounds(35, 109, 100, 20);
+    amplitudeTreshold.setBounds(141, 52, 200, 20);
+    duration.setBounds(141, 109, 200, 20);
+    freqOffset.setBounds(379, 52, 200, 20);
+    freqSlope.setBounds(379, 109, 200, 20);
 }
 
 

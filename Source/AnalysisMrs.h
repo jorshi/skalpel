@@ -14,7 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
-#include "ParameterManager.h"
+#include "AnalysisParameterManager.h"
 #include "SineElement.h"
 #include <vector>
 #include <algorithm>
@@ -25,10 +25,10 @@ class AnalysisMrs
 public:
     
     // Defualt Constructor
-    AnalysisMrs(ParameterManager& params);
+    AnalysisMrs(AnalysisParameterManager& params);
     
     // Constructor with audio file
-    AnalysisMrs(File input, ParameterManager& params);
+    AnalysisMrs(File input, AnalysisParameterManager& params);
     
     // Default Deconstructor
     ~AnalysisMrs();
@@ -53,7 +53,7 @@ private:
     File audioFile;
     
     // Paramters
-    ParameterManager& params_;
+    AnalysisParameterManager& params_;
 };
 
 

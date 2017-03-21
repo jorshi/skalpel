@@ -34,19 +34,34 @@ public:
 
 private:
     typedef AudioProcessorValueTreeState::ComboBoxAttachment ComboBoxAttachment;
+    typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
     
     TextButton analysisButton;
     
     AnalysisParameterManager* analysisParams;
     
-    // Parameter Components
-    std::map<String, ComboBox*> comboBoxMap;
-    OwnedArray<ComboBox> comboBoxes;
-    
+    // Combo Boxes
     ComboBox windowSize;
+    ComboBox hopSize;
+    
+    // Sliders
+    Slider amplitudeTreshold;
+    Slider duration;
+    Slider freqOffset;
+    Slider freqSlope;
+    Slider sines;
     
     // Combo Box Attacher
-    ScopedPointer<ComboBoxAttachment> comboAttachment;
+    ScopedPointer<ComboBoxAttachment> windowAttachment;
+    ScopedPointer<ComboBoxAttachment> hopAttachment;
+
+    
+    // Slider Attachments
+    ScopedPointer<SliderAttachment> amplitudeAttachment;
+    ScopedPointer<SliderAttachment> durationAttachment;
+    ScopedPointer<SliderAttachment> freqOffsetAttachment;
+    ScopedPointer<SliderAttachment> freqSlopeAttachment;
+    ScopedPointer<SliderAttachment> sinesAttachment;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (AnalysisComponent)
 };

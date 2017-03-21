@@ -17,12 +17,21 @@
 class AnalysisParameterManager : public ParameterManager
 {
 public:
-    
     AnalysisParameterManager(int num, AudioProcessorValueTreeState* p);
     
     ~AnalysisParameterManager() override {};
     
     void createParameters() override;
+    
+    int getFrameSize() const;
+    int getHopSize() const;
+    
+    bool getRawValue(const String& name, float& value) const;
+
+private:
+    const float analysisWindowOffset = 9.0f;
+    const float analysisHopSizeOffset = 6.0f;
+    
 };
 
 

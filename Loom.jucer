@@ -23,13 +23,13 @@
               file="Source/LoomLookAndFeel.cpp"/>
         <FILE id="GnwO7u" name="LoomLookAndFeel.h" compile="0" resource="0"
               file="Source/LoomLookAndFeel.h"/>
-        <FILE id="DHGns6" name="MiddleComponent.cpp" compile="1" resource="0"
-              file="Source/MiddleComponent.cpp"/>
-        <FILE id="Gyruth" name="MiddleComponent.h" compile="0" resource="0"
-              file="Source/MiddleComponent.h"/>
         <FILE id="lIZnEM" name="PluginEditor.cpp" compile="1" resource="0"
               file="Source/PluginEditor.cpp"/>
         <FILE id="tRuYJo" name="PluginEditor.h" compile="0" resource="0" file="Source/PluginEditor.h"/>
+        <FILE id="idQrzD" name="SynthesisComponent.cpp" compile="1" resource="0"
+              file="Source/SynthesisComponent.cpp"/>
+        <FILE id="MSYRkU" name="SynthesisComponent.h" compile="0" resource="0"
+              file="Source/SynthesisComponent.h"/>
       </GROUP>
       <GROUP id="{318136ED-7D16-1A86-CD7E-29E73C2400B0}" name="Analysis">
         <FILE id="Jkv4tH" name="AnalysisMrs.cpp" compile="1" resource="0" file="Source/AnalysisMrs.cpp"/>

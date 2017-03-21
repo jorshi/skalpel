@@ -19,6 +19,7 @@
 #include "SoundInterface.h"
 #include "AnalysisComponent.h"
 #include "LoadComponent.h"
+#include "SynthesisComponent.h"
 
 
 //==============================================================================
@@ -76,6 +77,7 @@ private:
     //MiddleComponent middleComponent;
     AnalysisComponent analysisComponent;
     LoadComponent loadComponent;
+    SynthesisComponent synthesisComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)
 };

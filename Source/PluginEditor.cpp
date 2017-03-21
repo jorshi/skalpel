@@ -16,7 +16,7 @@
 LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     AudioProcessorEditor (&p), processor (p), soundInterface(p.getCurrentSound()),
     analysisComponent(this, soundInterface.getAnalysisParams()),
-    loadComponent(this)
+    loadComponent(this), synthesisComponent(this)
 {
     setLookAndFeel(&loomLookAndFeel);
     
@@ -38,6 +38,7 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     // Components
     addAndMakeVisible(analysisComponent);
     addAndMakeVisible(loadComponent);
+    addAndMakeVisible(synthesisComponent);
     
     loadState();
 }
@@ -70,6 +71,7 @@ void LoomAudioProcessorEditor::resized()
 {
     analysisComponent.setBounds(10, 61, 620, 217);
     loadComponent.setBounds(10, 61, 620, 217);
+    synthesisComponent.setBounds(10, 61, 620, 217);
 }
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)
@@ -117,6 +119,7 @@ void LoomAudioProcessorEditor::hideMiddle()
 {
     analysisComponent.setVisible(false);
     loadComponent.setVisible(false);
+    synthesisComponent.setVisible(false);
 }
 
 
@@ -137,6 +140,7 @@ void LoomAudioProcessorEditor::loadState()
             break;
             
         case SoundInterface::synthesisState:
+            synthesisComponent.setVisible(true);
             break;
     }
 }

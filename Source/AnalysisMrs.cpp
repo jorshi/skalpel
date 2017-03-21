@@ -14,10 +14,15 @@
 using namespace Marsyas;
 
 // Default Constructor
-AnalysisMrs::AnalysisMrs() {}
+AnalysisMrs::AnalysisMrs(AnalysisParameterManager& params) : params_(params)
+{
+}
 
 // Construtor with audio file passed in
-AnalysisMrs::AnalysisMrs(File input) : audioFile(input) {}
+AnalysisMrs::AnalysisMrs(File input, AnalysisParameterManager& params) :
+    audioFile(input), params_(params)
+{
+}
 
 // Deconstructor
 AnalysisMrs::~AnalysisMrs() {}
@@ -69,13 +74,20 @@ SineModel* AnalysisMrs::runAnalysis()
  */
 void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
 {
+    AudioProcessorValueTreeState* parameters = params_.getParameters();
+    
+    Value val = parameters->getParameterAsValue(params_.getParamId("analysis_window"));
+    
+    
     // Noise Floor
     const mrs_real noiseFloor = 1e-14;
     
-    // Analysis Parameters TODO: should these be user adjustable?
-    int hopSize = 128;
-    int frameSize = 2048;
-    mrs_real thresh = -80.0;
+    // User defined parameters
+    int hopSize = params_.getHopSize();
+    int frameSize = params_.getFrameSize();
+    float thresh;
+    if (!params_.getRawValue("analysis_amp_thresh", thresh))
+        thresh = -80.0;
     
     mrs_real sampleRate;
     
@@ -203,10 +215,16 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
 
 void AnalysisMrs::sineTracking(SineModel& sineModel)
 {
-    mrs_real freqDevOffset = 20.0;
-    mrs_real freqDevSlope = 0.01;
-    mrs_natural trackId = 0;
+    // Get user defined parameters
+    float freqDevOffset;
+    if (!params_.getRawValue("analysis_freq_offset", freqDevOffset))
+        freqDevOffset = 20.0;
     
+    float freqDevSlope;
+    if (!params_.getRawValue("analysis_freq_slop", freqDevSlope))
+        freqDevSlope = 0.001;
+    
+    mrs_natural trackId = 0;
     std::vector<std::vector<SineElement>> tracks;
     
     // Iterate through elements of the sine model
@@ -232,7 +250,7 @@ void AnalysisMrs::sineTracking(SineModel& sineModel)
         std::sort(indexes.begin(), indexes.end(), [&](int i1, int i2) {
             return (frame->at(i1).getAmp() > frame->at(i2).getAmp());
         });
-
+        
         // Check if there were any tracks from last iteration that
         // can be continued
         if (tracks.size() > 0 && tracks.back().size() > 0)
@@ -298,11 +316,17 @@ void AnalysisMrs::sineTracking(SineModel& sineModel)
 
 void AnalysisMrs::cleanModel(SineModel& sineModel)
 {
+    // User Defined Parameters
+    float minDuration;
+    if (!params_.getRawValue("analysis_duration", minDuration))
+        minDuration = 20;
     
-    // Min duration in seconds
-    mrs_real minDuration = 0.02;
+    float numSines;
+    if(!params_.getRawValue("analysis_sines", numSines))
+        numSines = 150;
+    
     mrs_real frameLength = sineModel.getFrameSize()/sineModel.getSampleRate();
-    int minFrames = (int)std::ceil(minDuration/frameLength);
+    int minFrames = (int)std::ceil((minDuration/1000)/frameLength);
     
     std::vector<int> trackLengths;
     std::vector<std::vector<SineElement*>> trackPointers;
@@ -349,5 +373,17 @@ void AnalysisMrs::cleanModel(SineModel& sineModel)
         });
         
         frame->resize(std::distance(frame->begin(), newEnd));
+        
+        // If there are still too many sines in the frame, then remove based on amplitude
+        if (frame->size() > numSines)
+        {
+            std::sort(frame->begin(), frame->end(), [&](SineElement& a, SineElement& b) {
+                return (a.getAmp() > b.getAmp());
+            });
+            frame->resize(numSines);
+        }
+        
     }
+    
+    // If there are still too many sines for the frame, then remove some based on amplitude
 }

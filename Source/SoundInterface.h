@@ -16,6 +16,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AnalysisMrs.h"
 #include "SineElement.h"
+#include "AnalysisParameterManager.h"
+#include "ParameterManager.h"
 
 class SoundInterface
 {
@@ -31,7 +33,7 @@ public:
     };
     
     // Default Constructor
-    SoundInterface();
+    SoundInterface(AnalysisParameterManager* a);
     
     // Default Deconstructor
     ~SoundInterface();
@@ -51,6 +53,9 @@ public:
     // Set current state of sound
     void setState(State newState) { state_ = newState; };
     
+    float getParameterValue(String);
+    
+    AnalysisParameterManager* getAnalysisParams() { return analysisParams_; };
     
 private:
     
@@ -58,6 +63,9 @@ private:
     ScopedPointer<SineModel> sineModel_;
     
     State state_;
+    
+    // Parameters for the analysis phase
+    AnalysisParameterManager* analysisParams_;
     
 };
 

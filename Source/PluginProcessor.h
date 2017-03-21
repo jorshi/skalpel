@@ -15,6 +15,7 @@
 #include "SinusoidalSynthSound.h"
 #include "SinusoidalSynthVoice.h"
 #include "SoundInterface.h"
+#include "AnalysisParameterManager.h"
 
 
 //==============================================================================
@@ -69,18 +70,26 @@ public:
     void swapModel(ScopedPointer<SineModel> newModel);
     void swapSound(const SoundInterface& newSound);
     SoundInterface& getCurrentSound();
+    
+    AudioProcessorValueTreeState& getParams();
 
 private:
     //==============================================================================
+    int currentSound_;
+    
     Synthesiser synth_;
     OwnedArray<SoundInterface> sounds_;
     
-    int currentSound_;
+    // Parameter managers for analysis
+    OwnedArray<AnalysisParameterManager> analysisParameters_;
     
-    AudioProcessorValueTreeState processorState_;
+    ScopedPointer<UndoManager> undoManager_;
+    ScopedPointer<AudioProcessorValueTreeState> processorState_;
+    
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessor)
 };
+
 
 
 #endif  // PLUGINPROCESSOR_H_INCLUDED

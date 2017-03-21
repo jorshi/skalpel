@@ -21,18 +21,30 @@ LoomAudioProcessor::LoomAudioProcessor()
                       #endif
                        .withOutput ("Output", AudioChannelSet::stereo(), true)
                      #endif
-                       ),
-        processorState_(*this, new UndoManager)
+                       )
 #endif
 {
+    undoManager_ = new UndoManager;
+    processorState_ = new AudioProcessorValueTreeState(*this, undoManager_);
+    
     // Allocate voices for synthesizer
     for (int i = 0; i < maxVoices; ++i)
         synth_.addVoice (new SinusoidalSynthVoice());
     
+    currentSound_ = 0;
+    
+    AnalysisParameterManager* analysisParams;
+    analysisParameters_.clear();
+    analysisParameters_.insert(
+        currentSound_,
+        analysisParams =  new AnalysisParameterManager(currentSound_, processorState_)
+    );
+    
     // Instantiate an empty sound interface
     sounds_.clear();
-    sounds_.insert(0, new SoundInterface);
-    currentSound_ = 0;
+    sounds_.insert(currentSound_, new SoundInterface(analysisParams));
+    
+    processorState_->state = ValueTree(Identifier("LOOM"));
 }
 
 LoomAudioProcessor::~LoomAudioProcessor()
@@ -198,6 +210,11 @@ void LoomAudioProcessor::swapSound(const SoundInterface &newSound)
 SoundInterface& LoomAudioProcessor::getCurrentSound()
 {
     return *sounds_[currentSound_];
+}
+
+AudioProcessorValueTreeState& LoomAudioProcessor::getParams()
+{
+    return *processorState_;
 }
 
 //==============================================================================

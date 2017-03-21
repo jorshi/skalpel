@@ -11,8 +11,9 @@
 #include "SoundInterface.h"
 
 
-SoundInterface::SoundInterface() : analysis_(nullptr), state_(loadFileState)
+SoundInterface::SoundInterface(AnalysisParameterManager* a) : analysis_(nullptr), state_(loadFileState)
 {
+    analysisParams_ = a;
     sineModel_ = new SineModel;
 }
 
@@ -24,7 +25,7 @@ SoundInterface::~SoundInterface()
 
 void SoundInterface::buildAnalysis(File inputFile)
 {
-    analysis_ = new AnalysisMrs(inputFile);
+    analysis_ = new AnalysisMrs(inputFile, *analysisParams_);
 }
 
 

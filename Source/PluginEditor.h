@@ -17,6 +17,9 @@
 #include "AnalysisMrs.h"
 #include "LoomLookAndFeel.h"
 #include "SoundInterface.h"
+#include "AnalysisComponent.h"
+#include "LoadComponent.h"
+#include "SynthesisComponent.h"
 
 
 //==============================================================================
@@ -44,19 +47,14 @@ private:
     // Called when the UI state changes
     void switchState(SoundInterface::State newState);
     
-    void loadState();
+    void hideMiddle();
     
-    // Remove all buttons from UI
-    void hideAllButtons();
+    void loadState();
     
     LoomAudioProcessor& processor;
     
     // Look and feel
     LoomLookAndFeel loomLookAndFeel;
-    
-    TextButton openButton;
-    TextButton analysisButton;
-    TextButton newButton;
     
     // Colours
     Colour bgColour;
@@ -75,6 +73,11 @@ private:
     // For interfacing with analysis and sounds
     SoundInterface& soundInterface;
     
+    // This is where analysis and synthesis params go
+    //MiddleComponent middleComponent;
+    AnalysisComponent analysisComponent;
+    LoadComponent loadComponent;
+    SynthesisComponent synthesisComponent;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)
 };

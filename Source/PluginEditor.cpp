@@ -13,31 +13,16 @@
 
 
 //==============================================================================
-LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p)
-    : AudioProcessorEditor (&p), processor (p), soundInterface(p.getCurrentSound())
+LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
+    AudioProcessorEditor (&p), processor (p), soundInterface(p.getCurrentSound()),
+    analysisComponent(this, soundInterface.getAnalysisParams()),
+    loadComponent(this), synthesisComponent(this)
 {
-    
     setLookAndFeel(&loomLookAndFeel);
     
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
     setSize (640, 360);
-    
-    // Setup buttons
-    openButton.setButtonText("Load File");
-    openButton.addListener(this);
-    addAndMakeVisible(&openButton);
-    
-    analysisButton.setButtonText("Run Analysis");
-    analysisButton.addListener(this);
-    addAndMakeVisible(&analysisButton);
-    
-    newButton.setButtonText("New Analysis");
-    newButton.addListener(this);
-    addAndMakeVisible(&newButton);
-    
-    // Load current state (defined in sound interface)
-    loadState();
     
     // Setup Colours
     bgColour = Colour::fromRGB(71, 75, 81);
@@ -49,6 +34,13 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p)
     header = Rectangle<int>(0, 0, 640, 51);
     footer = Rectangle<int>(0, 288, 640, 74);
     middle = Rectangle<int>(10, 61, 620, 217);
+    
+    // Components
+    addAndMakeVisible(analysisComponent);
+    addAndMakeVisible(loadComponent);
+    addAndMakeVisible(synthesisComponent);
+    
+    loadState();
 }
 
 LoomAudioProcessorEditor::~LoomAudioProcessorEditor()
@@ -73,29 +65,19 @@ void LoomAudioProcessorEditor::paint (Graphics& g)
     g.drawHorizontalLine(header.getBottom(), header.getWidth() - header.getRight(), header.getRight());
     g.drawHorizontalLine(footer.getBottom() - footer.getHeight(), footer.getWidth() - footer.getRight(), footer.getRight());
     
-    // State dependent painting
-    switch (soundInterface.getState()) {
-        case SoundInterface::runningAnalysisState:
-            g.drawText("Running Analysis", 0, 0, 50, 10, Justification::centred);
-            break;
-            
-        default:
-            break;
-    }
 }
 
 void LoomAudioProcessorEditor::resized()
 {
-    openButton.setBounds(251, 163, 138, 34);
-    analysisButton.setBounds(251, 227, 138, 34);
-    newButton.setBounds(251, 227, 138, 34);
-
+    analysisComponent.setBounds(10, 61, 620, 217);
+    loadComponent.setBounds(10, 61, 620, 217);
+    synthesisComponent.setBounds(10, 61, 620, 217);
 }
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)
 {
     
-    if (button == &openButton)
+    if (button->getComponentID() == "load_file")
     {
         ScopedPointer<File> file;
         if ((file = fileLoader.getNewAudioFile()) != nullptr)
@@ -109,15 +91,14 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
         }
     }
     
-    if (button == &analysisButton)
+    if (button->getComponentID() == "run_analysis")
     {
-        //switchState(SoundInterface::runningAnalysisState);
         soundInterface.runAnalysis();
         processor.swapSound(soundInterface);
         switchState(SoundInterface::synthesisState);
     }
     
-    if (button == &newButton)
+    if (button->getComponentID() == "new_analysis")
     {
         switchState(SoundInterface::loadFileState);
     }
@@ -134,33 +115,32 @@ void LoomAudioProcessorEditor::switchState(SoundInterface::State newState)
 }
 
 
-void LoomAudioProcessorEditor::hideAllButtons()
+void LoomAudioProcessorEditor::hideMiddle()
 {
-    openButton.setVisible(false);
-    newButton.setVisible(false);
-    analysisButton.setVisible(false);
+    analysisComponent.setVisible(false);
+    loadComponent.setVisible(false);
+    synthesisComponent.setVisible(false);
 }
 
 
 void LoomAudioProcessorEditor::loadState()
 {
-    hideAllButtons();
+    hideMiddle();
     switch(soundInterface.getState())
     {
         case SoundInterface::loadFileState:
-            openButton.setVisible(true);
+            loadComponent.setVisible(true);
             break;
             
         case SoundInterface::analysisState:
-            analysisButton.setVisible(true);
+            analysisComponent.setVisible(true);
             break;
             
         case SoundInterface::runningAnalysisState:
-            repaint();
             break;
             
         case SoundInterface::synthesisState:
-            newButton.setVisible(true);
+            synthesisComponent.setVisible(true);
             break;
     }
 }

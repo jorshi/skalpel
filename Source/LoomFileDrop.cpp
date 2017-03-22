@@ -28,6 +28,9 @@ void LoomFileDrop::paint (Graphics& g)
     Rectangle<float> buttonArea(0, 0, getWidth(), getHeight());
     g.setColour(buttonEdgeColour);
     g.drawRoundedRectangle(buttonArea, 7.0f, 1.5f);
+    
+    g.setColour(LoomLookAndFeel::buttonTextColour);
+    g.drawText("Drop Audio File", buttonArea, Justification::centred);
 }
 
 void LoomFileDrop::resized()
@@ -36,7 +39,12 @@ void LoomFileDrop::resized()
 
 bool LoomFileDrop::isInterestedInFileDrag(const juce::StringArray &files)
 {
-    return true;
+    if (files.size() != 1)
+    {
+        return false;
+    }
+    
+    return soundInterface.willAcceptFile(files[0]);
 }
 
 void LoomFileDrop::filesDropped(const juce::StringArray &files, int x, int y)

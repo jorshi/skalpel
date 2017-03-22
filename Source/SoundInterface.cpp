@@ -65,3 +65,8 @@ void SoundInterface::loadFile(const juce::String &fileName)
         AlertWindow::showMessageBox(AlertWindow::InfoIcon, "Audio Read Error", "Could not read input audio");
     }
 }
+
+bool SoundInterface::willAcceptFile(const juce::String &fileName)
+{
+    return fileLoader_.fileExtensionOkay(fileName);
+}

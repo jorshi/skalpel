@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SoundInterface.h"
+#include "LoomLookAndFeel.h"
 
 //==============================================================================
 /*

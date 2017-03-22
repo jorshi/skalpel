@@ -53,3 +53,11 @@ bool FileLoader::canReadFile(juce::File& file)
     
     return false;
 }
+
+
+bool FileLoader::fileExtensionOkay(const juce::String &filename)
+{
+    File file(filename);
+    const String extensions = formatManager.getWildcardForAllFormats().removeCharacters("*");
+    return file.hasFileExtension(extensions);
+}

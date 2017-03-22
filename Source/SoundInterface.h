@@ -58,8 +58,12 @@ public:
     
     AnalysisParameterManager* getAnalysisParams() { return analysisParams_; };
     
+    // Load audio from file and load into a new analysis object
     void loadFile();
     void loadFile(const String& fileName);
+    
+    // Pre-load check to see if a filename looks okay
+    bool willAcceptFile(const String& fileName);
     
 private:
     

@@ -17,7 +17,7 @@ LoadComponent::LoadComponent(ButtonListener* parent, ActionListener* parentActio
 {
     setLookAndFeel(&loomLookAndFeel);
     
-    openButton.setButtonText("Load File");
+    openButton.setButtonText("Browse");
     openButton.setComponentID("load_file");
     openButton.addListener(parent);
     addAndMakeVisible(&openButton);
@@ -39,7 +39,7 @@ void LoadComponent::paint (Graphics& g)
 
 void LoadComponent::resized()
 {
-    openButton.setBounds(195, 165, 231, 34);
+    openButton.setBounds(145, 165, 330, 34);
     loomFileDrop.setBounds(145, 20, 330, 128);
 }
 

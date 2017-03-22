@@ -36,3 +36,32 @@ void SoundInterface::runAnalysis()
         sineModel_ = analysis_->runAnalysis();
     }
 }
+
+
+void SoundInterface::loadFile()
+{
+    ScopedPointer<File> file;
+    if ((file = fileLoader_.getNewAudioFile()) != nullptr)
+    {
+        buildAnalysis(*file);
+        state_ = analysisState;
+    }
+    else
+    {
+        AlertWindow::showMessageBox(AlertWindow::InfoIcon, "Audio Read Error", "Could not read input audio");
+    }
+}
+
+void SoundInterface::loadFile(const juce::String &fileName)
+{
+    ScopedPointer<File> file = new File(fileName);
+    if (fileLoader_.canReadFile(*file))
+    {
+        buildAnalysis(*file);
+        state_ = analysisState;
+    }
+    else
+    {
+        AlertWindow::showMessageBox(AlertWindow::InfoIcon, "Audio Read Error", "Could not read input audio");
+    }
+}

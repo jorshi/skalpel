@@ -12,8 +12,11 @@
 #include "LoomFileDrop.h"
 
 //==============================================================================
-LoomFileDrop::LoomFileDrop() : buttonEdgeColour(Colour::fromRGB(124, 141, 165))
+LoomFileDrop::LoomFileDrop(ActionListener* parent, SoundInterface& s) :
+    buttonEdgeColour(Colour::fromRGB(124, 141, 165)), soundInterface(s)
 {
+    broadcaster.removeAllActionListeners();
+    broadcaster.addActionListener(parent);
 }
 
 LoomFileDrop::~LoomFileDrop()
@@ -38,5 +41,11 @@ bool LoomFileDrop::isInterestedInFileDrag(const juce::StringArray &files)
 
 void LoomFileDrop::filesDropped(const juce::StringArray &files, int x, int y)
 {
+    soundInterface.loadFile(files[0]);
+    broadcaster.sendActionMessage("reload_state");
+}
 
+void LoomFileDrop::actionListenerCallback(const String &message)
+{
+    broadcaster.sendActionMessage(message);
 }

@@ -16,7 +16,7 @@
 LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     AudioProcessorEditor (&p), processor (p), soundInterface(p.getCurrentSound()),
     analysisComponent(this, soundInterface.getAnalysisParams()),
-    loadComponent(this), synthesisComponent(this)
+    loadComponent(this, this, soundInterface), synthesisComponent(this)
 {
     setLookAndFeel(&loomLookAndFeel);
     
@@ -79,16 +79,8 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
     
     if (button->getComponentID() == "load_file")
     {
-        ScopedPointer<File> file;
-        if ((file = fileLoader.getNewAudioFile()) != nullptr)
-        {
-            soundInterface.buildAnalysis(*file);
-            switchState(SoundInterface::analysisState);
-        }
-        else
-        {
-            AlertWindow::showMessageBox(AlertWindow::InfoIcon, "Audio Read Error", "Could not read input audio");
-        }
+        soundInterface.loadFile();
+        loadState();
     }
     
     if (button->getComponentID() == "run_analysis")
@@ -142,6 +134,15 @@ void LoomAudioProcessorEditor::loadState()
         case SoundInterface::synthesisState:
             synthesisComponent.setVisible(true);
             break;
+    }
+}
+
+
+void LoomAudioProcessorEditor::actionListenerCallback(const String& message)
+{
+    if (message == "reload_state")
+    {
+        loadState();
     }
 }
 

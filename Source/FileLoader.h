@@ -26,6 +26,9 @@ public:
     // Loads a new audio file
     File* getNewAudioFile();
     
+    // Confirms whether we can read this file or not
+    bool canReadFile(File& file);
+    
 private:
     
     AudioFormatManager formatManager;

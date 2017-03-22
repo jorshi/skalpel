@@ -29,20 +29,27 @@ File* FileLoader::getNewAudioFile()
                          "*.wav");
     
     // Open file and make sure it is a valid audio file
-    // TODO: keep the reader here for the analysis phase as opposed to
-    // loading the audio file and then turning around and doing the work
-    // again??
     if(chooser.browseForFileToOpen())
     {
         File* file = new File(chooser.getResult());
-        ScopedPointer<AudioFormatReader> reader = formatManager.createReaderFor(*file);
-        
-        if (reader != nullptr)
+        if (canReadFile(*file))
         {
             return file;
         }
     }
     
-    
     return nullptr;
+}
+
+
+bool FileLoader::canReadFile(juce::File& file)
+{
+    ScopedPointer<AudioFormatReader> reader = formatManager.createReaderFor(file);
+    
+    if (reader != nullptr)
+    {
+        return true;
+    }
+    
+    return false;
 }

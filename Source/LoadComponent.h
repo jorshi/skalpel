@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "LoomLookAndFeel.h"
+#include "LoomFileDrop.h"
 
 //==============================================================================
 /*
@@ -29,6 +30,7 @@ public:
 private:
     LoomLookAndFeel loomLookAndFeel;
     TextButton openButton;
+    LoomFileDrop loomFileDrop;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoadComponent)
 };

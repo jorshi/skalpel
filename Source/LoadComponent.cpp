@@ -20,6 +20,8 @@ LoadComponent::LoadComponent(ButtonListener* parent)
     openButton.setComponentID("load_file");
     openButton.addListener(parent);
     addAndMakeVisible(&openButton);
+    
+    addAndMakeVisible(&loomFileDrop);
 }
 
 LoadComponent::~LoadComponent()
@@ -32,5 +34,6 @@ void LoadComponent::paint (Graphics& g)
 
 void LoadComponent::resized()
 {
-    openButton.setBounds(241, 92, 138, 34);
+    openButton.setBounds(195, 165, 231, 34);
+    loomFileDrop.setBounds(145, 20, 330, 128);
 }

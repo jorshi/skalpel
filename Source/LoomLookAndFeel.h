@@ -27,11 +27,11 @@ public:
     // Custom Button Text
     Font getTextButtonFont (TextButton&, int buttonHeight) override;
     
-private:
-    
     // Colours
     Colour buttonEdgeColour;
     Colour buttonTextColour;
+
+private:
     
 };
 

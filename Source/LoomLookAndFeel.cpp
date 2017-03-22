@@ -10,10 +10,7 @@
 
 #include "LoomLookAndFeel.h"
 
-
-LoomLookAndFeel::LoomLookAndFeel() :
-    buttonEdgeColour(Colour::fromRGB(124, 141, 165)),
-    buttonTextColour(Colour::fromRGB(168, 168, 168))
+LoomLookAndFeel::LoomLookAndFeel()
 {
     setColour(TextButton::textColourOnId, Colours::aliceblue);
     setColour(TextButton::textColourOffId, buttonTextColour);
@@ -32,3 +29,8 @@ Font LoomLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 {
     return Font (jmin (13.5f, buttonHeight * 0.6f));
 }
+
+// Setup our colours
+const Colour LoomLookAndFeel::buttonEdgeColour = Colour::fromRGB(124, 141, 165);
+const Colour LoomLookAndFeel::buttonTextColour = Colour::fromRGB(168, 168, 168);
+

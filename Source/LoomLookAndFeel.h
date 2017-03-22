@@ -27,11 +27,11 @@ public:
     // Custom Button Text
     Font getTextButtonFont (TextButton&, int buttonHeight) override;
     
+    // Colours    
+    static const Colour buttonEdgeColour;
+    static const Colour buttonTextColour;
+
 private:
-    
-    // Colours
-    Colour buttonEdgeColour;
-    Colour buttonTextColour;
     
 };
 

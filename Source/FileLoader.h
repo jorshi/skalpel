@@ -26,6 +26,12 @@ public:
     // Loads a new audio file
     File* getNewAudioFile();
     
+    // Confirms whether we can read this file or not
+    bool canReadFile(File& file);
+    
+    // Checks if we can read a given file extension
+    bool fileExtensionOkay(const String& filename);
+    
 private:
     
     AudioFormatManager formatManager;

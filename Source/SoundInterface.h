@@ -18,6 +18,7 @@
 #include "SineElement.h"
 #include "AnalysisParameterManager.h"
 #include "ParameterManager.h"
+#include "FileLoader.h"
 
 class SoundInterface
 {
@@ -57,12 +58,21 @@ public:
     
     AnalysisParameterManager* getAnalysisParams() { return analysisParams_; };
     
+    // Load audio from file and load into a new analysis object
+    void loadFile();
+    void loadFile(const String& fileName);
+    
+    // Pre-load check to see if a filename looks okay
+    bool willAcceptFile(const String& fileName);
+    
 private:
     
     ScopedPointer<AnalysisMrs> analysis_;
     ScopedPointer<SineModel> sineModel_;
     
     State state_;
+    
+    FileLoader fileLoader_;
     
     // Parameters for the analysis phase
     AnalysisParameterManager* analysisParams_;

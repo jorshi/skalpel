@@ -26,7 +26,8 @@
 /**
 */
 class LoomAudioProcessorEditor  : public AudioProcessorEditor,
-                                  public Button::Listener
+                                  public Button::Listener,
+                                  public ActionListener
 {
 public:
     LoomAudioProcessorEditor (LoomAudioProcessor&);
@@ -43,6 +44,9 @@ private:
     
     // Called when any button on UI is clicked
     void buttonClicked(Button* button) override;
+    
+    // Called when a child notifies of a change
+    void actionListenerCallback(const String& message) override;
     
     // Called when the UI state changes
     void switchState(SoundInterface::State newState);
@@ -74,7 +78,6 @@ private:
     SoundInterface& soundInterface;
     
     // This is where analysis and synthesis params go
-    //MiddleComponent middleComponent;
     AnalysisComponent analysisComponent;
     LoadComponent loadComponent;
     SynthesisComponent synthesisComponent;

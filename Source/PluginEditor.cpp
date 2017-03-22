@@ -11,6 +11,7 @@
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
 
+//TODO: convert this button listener with broadcasts from children to use the new action listener
 
 //==============================================================================
 LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :

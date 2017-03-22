@@ -12,6 +12,7 @@
 #define ANALYSISCOMPONENT_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "LoomLookAndFeel.h"
 #include "ParameterManager.h"
 #include "AnalysisParameterManager.h"
 #include <map>

@@ -64,6 +64,8 @@ AnalysisComponent::~AnalysisComponent()
 
 void AnalysisComponent::paint (Graphics& g)
 {
+    g.setColour(LoomLookAndFeel::loomTextColour);
+    g.drawText("Analysis Parameters", 0, 10, getWidth(), 15, Justification::centred);
 }
 
 void AnalysisComponent::resized()

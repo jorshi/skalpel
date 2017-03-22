@@ -33,4 +33,12 @@ Font LoomLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 // Setup our colours
 const Colour LoomLookAndFeel::buttonEdgeColour = Colour::fromRGB(124, 141, 165);
 const Colour LoomLookAndFeel::buttonTextColour = Colour::fromRGB(168, 168, 168);
+const Colour LoomLookAndFeel::loomTextColour = Colour::fromRGB(102, 105, 108);
+
+// Custom Typeface
+const Typeface::Ptr LoomLookAndFeel::daysOneTypeFace = Typeface::createSystemTypefaceFor(BinaryData::DaysOneRegular_ttf, BinaryData::DaysOneRegular_ttfSize);
+
+
+
+
 

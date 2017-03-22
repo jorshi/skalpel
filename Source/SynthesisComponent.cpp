@@ -16,7 +16,7 @@ SynthesisComponent::SynthesisComponent(ButtonListener* parent)
 {
     setLookAndFeel(&loomLookAndFeel);
     
-    newButton.setButtonText("New Analysis");
+    newButton.setButtonText("New");
     newButton.setComponentID("new_analysis");
     newButton.addListener(parent);
     addAndMakeVisible(&newButton);
@@ -32,5 +32,5 @@ void SynthesisComponent::paint (Graphics& g)
 
 void SynthesisComponent::resized()
 {
-    newButton.setBounds(241, 166, 138, 34);
+    newButton.setBounds(555, 11, 50, 27);
 }

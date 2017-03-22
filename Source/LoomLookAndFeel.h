@@ -30,8 +30,18 @@ public:
     // Colours    
     static const Colour buttonEdgeColour;
     static const Colour buttonTextColour;
+    static const Colour loomTextColour;
+    
+    // Custom Typeface
+    static const Typeface::Ptr daysOneTypeFace;
 
 private:
+    
+
+    
+
+    
+    
     
 };
 

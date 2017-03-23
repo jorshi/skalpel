@@ -44,6 +44,8 @@ const Colour LoomLookAndFeel::loomTextColour = Colour::fromRGB(102, 105, 108);
 // Custom Typeface
 const Typeface::Ptr LoomLookAndFeel::daysOneTypeFace = Typeface::createSystemTypefaceFor(BinaryData::DaysOneRegular_ttf, BinaryData::DaysOneRegular_ttfSize);
 
+const Typeface::Ptr LoomLookAndFeel::zapfDingbatsTypeface = Typeface::createSystemTypefaceFor(BinaryData::ZapfDingbats_ttf, BinaryData::ZapfDingbats_ttfSize);
+
 
 
 

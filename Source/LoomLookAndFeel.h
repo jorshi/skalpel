@@ -37,6 +37,7 @@ public:
     
     // Custom Typeface
     static const Typeface::Ptr daysOneTypeFace;
+    static const Typeface::Ptr zapfDingbatsTypeface;
 
 private:
     

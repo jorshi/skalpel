@@ -12,6 +12,7 @@
 #define ANALYSISCOMPONENT_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "LoomLookAndFeel.h"
 #include "ParameterManager.h"
 #include "AnalysisParameterManager.h"
 #include <map>
@@ -50,6 +51,13 @@ private:
     Slider freqOffset;
     Slider freqSlope;
     Slider sines;
+    
+    // Labels
+    Label windowLabel;
+    Label amplitudeLabel;
+    Label durationLabel;
+    Label freqOffsetLabel;
+    Label sinesLabel;
     
     // Combo Box Attacher
     ScopedPointer<ComboBoxAttachment> windowAttachment;

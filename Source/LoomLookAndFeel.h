@@ -27,11 +27,25 @@ public:
     // Custom Button Text
     Font getTextButtonFont (TextButton&, int buttonHeight) override;
     
+    // Custom Label Font
+    Font getLabelFont (Label& label) override;
+    
     // Colours    
     static const Colour buttonEdgeColour;
     static const Colour buttonTextColour;
+    static const Colour loomTextColour;
+    
+    // Custom Typeface
+    static const Typeface::Ptr daysOneTypeFace;
+    static const Typeface::Ptr zapfDingbatsTypeface;
 
 private:
+    
+
+    
+
+    
+    
     
 };
 

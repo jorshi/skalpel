@@ -52,6 +52,13 @@ private:
     Slider freqSlope;
     Slider sines;
     
+    // Labels
+    Label windowLabel;
+    Label amplitudeLabel;
+    Label durationLabel;
+    Label freqOffsetLabel;
+    Label sinesLabel;
+    
     // Combo Box Attacher
     ScopedPointer<ComboBoxAttachment> windowAttachment;
     ScopedPointer<ComboBoxAttachment> hopAttachment;

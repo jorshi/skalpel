@@ -27,6 +27,9 @@ public:
     // Custom Button Text
     Font getTextButtonFont (TextButton&, int buttonHeight) override;
     
+    // Custom Label Font
+    Font getLabelFont (Label& label) override;
+    
     // Colours    
     static const Colour buttonEdgeColour;
     static const Colour buttonTextColour;

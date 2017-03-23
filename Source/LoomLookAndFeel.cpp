@@ -14,6 +14,7 @@ LoomLookAndFeel::LoomLookAndFeel()
 {
     setColour(TextButton::textColourOnId, Colours::aliceblue);
     setColour(TextButton::textColourOffId, buttonTextColour);
+    setColour(Label::textColourId, buttonTextColour);
 }
 
 
@@ -28,6 +29,11 @@ void LoomLookAndFeel::drawButtonBackground (Graphics& g, Button& button, const C
 Font LoomLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 {
     return Font (jmin (13.5f, buttonHeight * 0.6f));
+}
+
+Font LoomLookAndFeel::getLabelFont(Label& label)
+{
+    return Font (13.5f);
 }
 
 // Setup our colours

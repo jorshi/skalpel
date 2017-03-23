@@ -39,7 +39,12 @@ public:
     void renderNextBlock (AudioSampleBuffer&, int startSample, int numSamples) override;
 
 private:
+    
+    void renderNextFrame (mrs_realvec& buffer);
+    
+    
     //=============================================================================
+    // TODO: rename all class members correctly
     int _hopSize;
     int _hopIndex;
     int _windowSize;

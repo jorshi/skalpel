@@ -41,14 +41,12 @@ public:
     // !! Not responsible for cleaning up the object !!
     SineModel* runAnalysis();
     
-    const SineModel& getAnalysisModel() const { return _analysisModel; };
-    
 private:
-    void peakDetection(SineModel&, String);
-    void sineTracking(SineModel&);
-    void cleanModel(SineModel&);
+    void peakDetection(SineModel::Ptr, String);
+    void sineTracking(SineModel::Ptr);
+    void cleanModel(SineModel::Ptr);
     
-    SineModel _analysisModel;
+    SineModel::Ptr analysisModel_;
     
     File audioFile;
     

@@ -15,6 +15,8 @@
 #include "SineElement.h"
 #include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
+#include "SoundInterface.h"
+
 
 class SinusoidalSynthSound : public SynthesiserSound
 {
@@ -33,7 +35,15 @@ public:
     // Get a time domain frame at a requested time location
     bool getSignal(mrs_realvec&, mrs_real, int) const;
     
+    // Switch out the Sine Model being rendered
     void replaceModel(SineModel& newModel) { _model = newModel; };
+    
+    // Point to a new sinusoidal model to include in synthesis
+    void addModel(const SineModel* newModel, int soundNum);
+    
+    // Remove pointer to one of the sound models
+    void removeModel(int soundNum);
+    
     
 private:
     friend class SinusoidalSynthVoice;
@@ -54,6 +64,9 @@ private:
     // Signals for holding spectral and time domain signals
     std::vector<FFT::Complex> _spectrum;
     std::vector<FFT::Complex> _timeSignal;
+    
+    // Sine models representing this sound
+    std::vector<const SineModel*> sineModels_;
     
     // Pointer to FFT class
     ScopedPointer<FFT> _fftFunction;

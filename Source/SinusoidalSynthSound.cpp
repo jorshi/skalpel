@@ -198,3 +198,20 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     
     return true;
 }
+
+
+void SinusoidalSynthSound::addModel(const SineModel* newModel, int soundNum)
+{
+    if (sineModels_.size() - 1 < soundNum)
+    {
+        sineModels_.resize(soundNum + 1);
+        sineModels_.at(soundNum) = newModel;
+    }
+}
+
+
+void SinusoidalSynthSound::removeModel(int soundNum)
+{
+    sineModels_.at(soundNum) = nullptr;
+}
+

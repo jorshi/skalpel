@@ -91,6 +91,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
             // Get a new frame
             if (_hopIndex >= _hopSize)
             {
+                // TODO: do we need allocate memory here?
                 mrs_realvec output(playingSound->getFrameSize());
                 
                 if (playingSound->getSignal(output, _location, getSampleRate()))
@@ -133,3 +134,10 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
         }
     }
 }
+
+
+void SinusoidalSynthVoice::renderNextFrame(mrs_realvec &buffer)
+{
+    
+}
+

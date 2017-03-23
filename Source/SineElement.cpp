@@ -37,106 +37,13 @@ SineModel::SineModel() : _sampleRate(0.0), _frameSize(0)
     _sineModel = SineModel::SineMatrix();
 }
 
+
 SineModel::~SineModel()
 {
 }
+
 
 void SineModel::addFrame(std::vector<SineElement> newFrame)
 {
     _sineModel.emplace_back(newFrame);
 }
-
-SineModel getTestModel()
-{
-    mrs_natural hopSize = 128;
-    mrs_real rate = 44100.0;
-    
-    SineModel testModel;
-    testModel.setHopSize(hopSize);
-    testModel.setFrameSize(hopSize);
-    testModel.setSampleRate(rate);
-    
-    mrs_real freq = 440.0;
-    mrs_real phase = 0.0;
-    mrs_real phaseInc = (hopSize/rate)*freq*2*PI;
-    
-    
-    
-    for (int i = 0; i < 100; ++i)
-    {
-        SineElement newElement(440.0, -12.0, phase);
-        phase += phaseInc;
-        SineModel::SineFrame newFrame;
-        newFrame.push_back(newElement);
-        testModel.addFrame(newFrame);
-    }
-    
-    return testModel;
-}
-
-SineModel getSawModel()
-{
-    mrs_natural hopSize = 128;
-    mrs_real rate = 44100.0;
-    
-    SineModel testModel;
-    testModel.setHopSize(hopSize);
-    testModel.setFrameSize(hopSize);
-    testModel.setSampleRate(rate);
-    
-    ptree pt1;
-    read_xml("/Users/jshier/Development/Libraries/sms-tools/software/models_interface/output.xml", pt1);
-    
-    
-    BOOST_FOREACH( boost::property_tree::ptree::value_type const& node, pt1.get_child( "model.frames" ) )
-    {
-        boost::property_tree::ptree subtree = node.second;
-        SineModel::SineFrame newFrame;
-        
-        if( node.first == "frame" )
-        {
-            BOOST_FOREACH( boost::property_tree::ptree::value_type const& v, subtree.get_child( "sines" ) )
-            {
-                boost::property_tree::ptree subsubtree = v.second;
-
-                SineElement newSine;
-                if (v.first == "sine")
-                {
-                    BOOST_FOREACH( boost::property_tree::ptree::value_type const& t, subsubtree.get_child( "" ) )
-                    {
-
-                        auto label = t.first;
-                        if (label == "freq")
-                        {
-                            std::string value = subsubtree.get<std::string>( label );
-                            newSine.setFreq(std::stod(value));
-                        }
-                        else if (label == "amp")
-                        {
-                            std::string value = subsubtree.get<std::string>( label );
-                            newSine.setAmp(std::stod(value));
-                        }
-                        else if (label == "phase")
-                        {
-                            std::string value = subsubtree.get<std::string>( label );
-                            newSine.setPhase(std::stod(value));
-                        }
-                        else if (label == "track")
-                        {
-                            std::string value = subsubtree.get<std::string>( label );
-                            newSine.setTrack(std::stod(value));
-                        }
-                    }
-                }
-                
-                newFrame.push_back(newSine);
-
-            }
-            testModel.addFrame(newFrame);
-        }
-    }
-    return testModel;
-}
-
-
-

@@ -33,10 +33,13 @@ LoomAudioProcessor::LoomAudioProcessor()
     for (int i = 0; i < maxVoices; ++i)
         synth_.addVoice (new SinusoidalSynthVoice());
 
-    
-    
     // Create the sound manager object
     soundManager_ = new SoundInterfaceManager(maxSounds, parameters_);
+
+    // Add Sinusoidal Synth sound to synthesizer
+    BigInteger midiNotes;
+    midiNotes.setRange(0, 126, true);
+    synth_.addSound(new SinusoidalSynthSound(midiNotes, 69, 512, soundManager_));
     
     // Initial
     currentUISound_ = 0;

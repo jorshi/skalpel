@@ -60,16 +60,22 @@ bool SinusoidalSynthSound::appliesToChannel (int /*midiChannel*/)
 bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int renderRate) const
 {
     Array<SoundInterface*> activeSounds = manager_->getActiveSounds();
+    if (activeSounds.size() < 1)
+    {
+        return false;
+    }
+    
+    SineModel::ConstPtr model = activeSounds[0]->getSineModel();
     
     // Get number of frames in the model return if there aren't any
-    int modelFrames = std::distance(_model.begin(), _model.end());
+    int modelFrames = std::distance(model->begin(), model->end());
     if (modelFrames < 1)
     {
         return false;
     }
     
     // Get the frame closest to the requested time
-    mrs_real requestedPos = (loc * _model.getSampleRate()) / _model.getFrameSize();
+    mrs_real requestedPos = (loc * model->getSampleRate()) / model->getFrameSize();
     int requestedFrame = std::round(requestedPos);
     
     // Out of frames from the model
@@ -79,7 +85,7 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     }
     
     // Constant reference to the frame at this point
-    const SineModel::SineFrame& frame = _model.getFrame(requestedFrame);
+    const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
     
     std::vector<FFT::Complex> spectrum(_frameSize);
     std::vector<FFT::Complex> timeDomain(_frameSize);

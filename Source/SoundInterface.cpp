@@ -37,6 +37,7 @@ void SoundInterface::runAnalysis()
     {
         currentSineModel_ = analysis_->runAnalysis();
         sineModels_.add(currentSineModel_);
+        isActive_ = true;
     }
 }
 

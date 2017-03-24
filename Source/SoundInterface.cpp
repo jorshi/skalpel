@@ -14,7 +14,8 @@
 SoundInterface::SoundInterface(AnalysisParameterManager* a) : analysis_(nullptr), state_(loadFileState)
 {
     analysisParams_ = a;
-    sineModel_ = new SineModel;
+    currentSineModel_ = new SineModel;
+    sineModels_.add(&currentSineModel_);
 }
 
 
@@ -33,7 +34,8 @@ void SoundInterface::runAnalysis()
 {
     if (analysis_ != nullptr)
     {
-        sineModel_ = analysis_->runAnalysis();
+        currentSineModel_ = analysis_->runAnalysis();
+        sineModels_.add(&currentSineModel_);
     }
 }
 

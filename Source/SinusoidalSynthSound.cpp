@@ -34,35 +34,6 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
 };
 
 
-// Constructor with a new model
-SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, const SineModel& model, int frameSize)
-:   _midiNotes(notes),
-    _midiRootNote(midiNoteForNormalPitch),
-    _model(model),
-    _frameSize(frameSize)
-{
-    // Create a Blackman Harris windowing for sampling
-    _bh1001.create(1001);
-    //SynthUtils::windowingFillBlackmanHarris(_bh1001);
-    for (int i = 0; i < 1001; ++i)
-    {
-        _bh1001(i) = SynthUtils::BHCONST.at(i);
-    }
-    
-    _nyquistBin = _frameSize/2;
-    
-    // Allocate memory for the complex signals
-    _spectrum.resize(_frameSize);
-    _timeSignal.resize(_frameSize);
-    
-    // Inverse FFT of frame size
-    _fftFunction = new FFT(std::log2(_frameSize), true);
-    
-    _synthWindow.create(_frameSize);
-    SynthUtils::createSynthesisWindow(_synthWindow, _frameSize/4);
-};
-
-
 // Destructor
 SinusoidalSynthSound::~SinusoidalSynthSound()
 {
@@ -200,18 +171,14 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
 }
 
 
-void SinusoidalSynthSound::addModel(const SineModel* newModel, int soundNum)
+void SinusoidalSynthSound::addModel(SineModel::ConstPtr newModel, int soundNum)
 {
-    if (sineModels_.size() - 1 < soundNum)
-    {
-        sineModels_.resize(soundNum + 1);
-        sineModels_.at(soundNum) = newModel;
-    }
+    sineModels_.set(soundNum, &newModel);
 }
 
 
 void SinusoidalSynthSound::removeModel(int soundNum)
 {
-    sineModels_.at(soundNum) = nullptr;
+    sineModels_.remove(soundNum);
 }
 

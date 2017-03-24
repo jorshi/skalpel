@@ -28,33 +28,7 @@ AnalysisMrs::AnalysisMrs(File input, AnalysisParameterManager& params) :
 AnalysisMrs::~AnalysisMrs() {}
 
 
-// Get a new wave file and run sinusoidal analysis
-void AnalysisMrs::newAnalysis()
-{
-    // Get new audio file
-    FileChooser chooser ("Choose audio file ...",
-                         File::nonexistent,
-                         "*.wav");
-    
-    String fileName;
-    if(chooser.browseForFileToOpen())
-    {
-        File file(chooser.getResult());
-        fileName = file.getFullPathName();
-    }
-    else
-    {
-        return;
-    }
-    
-    // Run sineusoidal analysis
-    analysisModel_ = new SineModel();
-    peakDetection(analysisModel_, fileName);
-    sineTracking(analysisModel_);
-    cleanModel(analysisModel_);
-}
-
-SineModel* AnalysisMrs::runAnalysis()
+SineModel::Ptr AnalysisMrs::runAnalysis()
 {
     const String fileName = audioFile.getFullPathName();
     SineModel::Ptr model = new SineModel;

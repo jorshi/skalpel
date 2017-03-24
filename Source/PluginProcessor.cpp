@@ -189,21 +189,11 @@ void LoomAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 // Swap the sinusoidal model out
 void LoomAudioProcessor::swapModel(ScopedPointer<SineModel> newModel)
 {
-    synth_.clearSounds();
-    
-    BigInteger midiNotes;
-    midiNotes.setRange(0, 126, true);
-    synth_.addSound(new SinusoidalSynthSound(midiNotes, 69, *newModel, 512));
 }
 
 
 void LoomAudioProcessor::swapSound(const SoundInterface &newSound)
 {
-    synth_.clearSounds();
-
-    BigInteger midiNotes;
-    midiNotes.setRange(0, 126, true);
-    synth_.addSound(new SinusoidalSynthSound(midiNotes, 69, newSound.getSineModel(), 512));
 }
 
 

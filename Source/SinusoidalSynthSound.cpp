@@ -173,7 +173,7 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
 
 void SinusoidalSynthSound::addModel(SineModel::ConstPtr newModel, int soundNum)
 {
-    sineModels_.set(soundNum, &newModel);
+    sineModels_.set(soundNum, newModel);
 }
 
 

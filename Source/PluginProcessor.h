@@ -14,6 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SinusoidalSynthSound.h"
 #include "SinusoidalSynthVoice.h"
+#include "SoundInterfaceManager.h"
 #include "SoundInterface.h"
 #include "AnalysisParameterManager.h"
 
@@ -76,6 +77,8 @@ public:
 private:
     //==============================================================================
     int currentSound_;
+    
+    ScopedPointer<SoundInterfaceManager> soundManager_;
     
     Synthesiser synth_;
     OwnedArray<SoundInterface> sounds_;

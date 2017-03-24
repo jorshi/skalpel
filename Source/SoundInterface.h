@@ -72,7 +72,7 @@ private:
     ScopedPointer<AnalysisMrs> analysis_;
     
     // Reference counted pointers to Sine Models for this interface
-    ReferenceCountedArray<SineModel::Ptr> sineModels_;
+    ReferenceCountedArray<SineModel> sineModels_;
     SineModel::Ptr currentSineModel_;
     
     

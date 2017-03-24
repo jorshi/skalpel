@@ -31,6 +31,9 @@ LoomAudioProcessor::LoomAudioProcessor()
     for (int i = 0; i < maxVoices; ++i)
         synth_.addVoice (new SinusoidalSynthVoice());
     
+    // Create the sound manager object
+    soundManager_ = new SoundInterfaceManager;
+    
     currentSound_ = 0;
     
     AnalysisParameterManager* analysisParams;

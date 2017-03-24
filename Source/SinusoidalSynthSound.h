@@ -62,7 +62,7 @@ private:
     std::vector<FFT::Complex> _timeSignal;
     
     // Sine models representing this sound
-    ReferenceCountedArray<SineModel::ConstPtr> sineModels_;
+    ReferenceCountedArray<SineModel> sineModels_;
     
     // Pointer to FFT class
     ScopedPointer<FFT> _fftFunction;

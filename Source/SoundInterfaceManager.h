@@ -28,6 +28,9 @@ public:
     
     // Get Sound Interface
     SoundInterface* getInterface(int num) { return soundInterfaces_[num]; }
+    
+    // Get an array of pointers to active sounds
+    Array<SoundInterface*> getActiveSounds();
 
 private:
     

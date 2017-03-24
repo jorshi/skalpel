@@ -11,10 +11,12 @@
 #include "SinusoidalSynthSound.h"
 
 // Empty model constructor
-SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, int frameSize)
+SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch,
+                                           int frameSize, SoundInterfaceManager* manager)
 :   _midiNotes(notes),
     _midiRootNote(midiNoteForNormalPitch),
-    _frameSize(frameSize)
+    _frameSize(frameSize),
+    manager_(manager)
 {
     // Create a Blackman Harris windowing for sampling
     _bh1001.create(1001);
@@ -57,6 +59,8 @@ bool SinusoidalSynthSound::appliesToChannel (int /*midiChannel*/)
 // Get signal: returns a time domain signal of the sine model at the requested location
 bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int renderRate) const
 {
+    Array<SoundInterface*> activeSounds = manager_->getActiveSounds();
+    
     // Get number of frames in the model return if there aren't any
     int modelFrames = std::distance(_model.begin(), _model.end());
     if (modelFrames < 1)

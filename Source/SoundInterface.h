@@ -67,6 +67,9 @@ public:
     // Pre-load check to see if a filename looks okay
     bool willAcceptFile(const String& fileName);
     
+    // Whether or not this sound can be played
+    bool isActive() { return isActive_; };
+    
 private:
     
     ScopedPointer<AnalysisMrs> analysis_;
@@ -75,13 +78,14 @@ private:
     ReferenceCountedArray<SineModel> sineModels_;
     SineModel::Ptr currentSineModel_;
     
-    
     State state_;
     
     FileLoader fileLoader_;
     
     // Parameters for the analysis phase
     AnalysisParameterManager* analysisParams_;
+    
+    bool isActive_;
     
 };
 

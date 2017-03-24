@@ -16,6 +16,7 @@ SoundInterface::SoundInterface(AnalysisParameterManager* a) : analysis_(nullptr)
     analysisParams_ = a;
     currentSineModel_ = new SineModel;
     sineModels_.add(currentSineModel_);
+    isActive_ = false;
 }
 
 

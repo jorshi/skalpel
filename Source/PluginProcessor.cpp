@@ -32,6 +32,8 @@ LoomAudioProcessor::LoomAudioProcessor()
     // Allocate voices for synthesizer
     for (int i = 0; i < maxVoices; ++i)
         synth_.addVoice (new SinusoidalSynthVoice());
+
+    
     
     // Create the sound manager object
     soundManager_ = new SoundInterfaceManager(maxSounds, parameters_);

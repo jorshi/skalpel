@@ -14,7 +14,6 @@
 SoundInterfaceManager::SoundInterfaceManager(int numSounds, AudioProcessorValueTreeState* params) :
 Thread("SoundInterface Manager Thread")
 {
-    
     SoundInterface* sound;
     AnalysisParameterManager* analysisParams;
     
@@ -28,7 +27,6 @@ Thread("SoundInterface Manager Thread")
         sound = new SoundInterface(analysisParams);
         soundInterfaces_.insert(i, sound);
     }
-    
     
     startThread();
 }
@@ -47,5 +45,20 @@ void SoundInterfaceManager::run()
         // Check to see if there are resources that can be cleaned up, also,
         // perhaps the analysis can be run on this thread!
     }
+}
+
+
+Array<SoundInterface*> SoundInterfaceManager::getActiveSounds()
+{
+    Array<SoundInterface*> activeSounds;
+    for (int i = 0; i < soundInterfaces_.size(); i++)
+    {
+        if (soundInterfaces_[i]->isActive())
+        {
+            activeSounds.add(soundInterfaces_[i]);
+        }
+    }
+    
+    return activeSounds;
 }
 

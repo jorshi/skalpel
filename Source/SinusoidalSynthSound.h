@@ -16,13 +16,16 @@
 #include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
 #include "SoundInterface.h"
+#include "SoundInterfaceManager.h"
 
 
 class SinusoidalSynthSound : public SynthesiserSound
 {
 public:
     
-    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch, int frameSize);
+    // Constructor
+    SinusoidalSynthSound(const BigInteger& notes, int midiNoteForNormalPitch,
+                         int frameSize, SoundInterfaceManager* manager);
     
     ~SinusoidalSynthSound();
     
@@ -33,6 +36,9 @@ public:
     
     // Get a time domain frame at a requested time location
     bool getSignal(mrs_realvec&, mrs_real, int) const;
+    
+    // Get a reference to all playing sinusoid models
+    ReferenceCountedArray<SineModel> getPlayingSineModels();
     
 private:
     friend class SinusoidalSynthVoice;
@@ -56,6 +62,8 @@ private:
     
     // Pointer to FFT class
     ScopedPointer<FFT> _fftFunction;
+    
+    SoundInterfaceManager* manager_;
     
     JUCE_LEAK_DETECTOR(SinusoidalSynthSound)
 };

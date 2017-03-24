@@ -40,21 +40,22 @@ public:
 
 private:
     
-    void renderNextFrame (mrs_realvec& buffer);
+    bool renderNextFrame (mrs_realvec& buffer, SinusoidalSynthSound* sound);
     
     
     //=============================================================================
-    // TODO: rename all class members correctly
-    int _hopSize;
-    int _hopIndex;
-    int _windowSize;
-    int _overlapIndex;
-    int _readPos;
-    int _writePos;
+    int hopSize_;
+    int frameSize_;
+    int hopIndex_;
+    int overlapIndex_;
+    int readPos_;
+    int writePos_;
+    int nyquistBin_;
     
-    mrs_real _location;
+    mrs_real location_;
+    mrs_realvec buffer_;
     
-    mrs_realvec _buffer;
+    ScopedPointer<FFT> inverseFFT_;
     
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)

@@ -32,13 +32,21 @@ public:
     bool appliesToNote (int midiNoteNumber) override;
     bool appliesToChannel (int midiChannel) override;
     
-    const int& getFrameSize() const { return _frameSize; };
+    const int& getFrameSize() const { return frameSize_; };
     
     // Get a time domain frame at a requested time location
     bool getSignal(mrs_realvec&, mrs_real, int) const;
     
     // Get a reference to all playing sinusoid models
-    ReferenceCountedArray<SineModel> getPlayingSineModels();
+    ReferenceCountedArray<SineModel> getPlayingSineModels() const;
+    
+    // Sample the blackman harris window
+    mrs_real getBH(int index) { return bh1001_(index); };
+    
+    // Sample the synthesis window function
+    mrs_real getSynthWindow(int index) { return synthWindow_(index); };
+    
+    
     
 private:
     friend class SinusoidalSynthVoice;
@@ -50,10 +58,10 @@ private:
     int _midiRootNote;
     
     SineModel _model;
-    mrs_realvec _bh1001;
-    mrs_realvec _synthWindow;
+    mrs_realvec bh1001_;
+    mrs_realvec synthWindow_;
 
-    int _frameSize;
+    int frameSize_;
     mrs_real _nyquistBin;
     
     // Signals for holding spectral and time domain signals

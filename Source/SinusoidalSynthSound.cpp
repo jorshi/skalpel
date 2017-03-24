@@ -15,24 +15,24 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
                                            int frameSize, SoundInterfaceManager* manager)
 :   _midiNotes(notes),
     _midiRootNote(midiNoteForNormalPitch),
-    _frameSize(frameSize),
+    frameSize_(frameSize),
     manager_(manager)
 {
     // Create a Blackman Harris windowing for sampling
-    _bh1001.create(1001);
-    SynthUtils::windowingFillBlackmanHarris(_bh1001);
+    bh1001_.create(1001);
+    SynthUtils::windowingFillBlackmanHarris(bh1001_);
     
-    _nyquistBin = _frameSize/2;
+    _nyquistBin = frameSize_/2;
     
     // Allocate memory for the complex signals
-    _spectrum.resize(_frameSize);
-    _timeSignal.resize(_frameSize);
+    _spectrum.resize(frameSize_);
+    _timeSignal.resize(frameSize_);
     
     // Inverse FFT of frame size
-    _fftFunction = new FFT(std::log2(_frameSize), true);
+    _fftFunction = new FFT(std::log2(frameSize_), true);
     
-    _synthWindow.create(_frameSize);
-    SynthUtils::createSynthesisWindow(_synthWindow, _frameSize/4);
+    synthWindow_.create(frameSize_);
+    SynthUtils::createSynthesisWindow(synthWindow_, frameSize_/4);
 };
 
 
@@ -59,13 +59,14 @@ bool SinusoidalSynthSound::appliesToChannel (int /*midiChannel*/)
 // Get signal: returns a time domain signal of the sine model at the requested location
 bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int renderRate) const
 {
-    Array<SoundInterface*> activeSounds = manager_->getActiveSounds();
-    if (activeSounds.size() < 1)
+    
+    ReferenceCountedArray<SineModel> activeModels = getPlayingSineModels();
+    if (activeModels.size() < 1)
     {
         return false;
     }
     
-    SineModel::ConstPtr model = activeSounds[0]->getSineModel();
+    SineModel::ConstPtr model = activeModels[0];
     
     // Get number of frames in the model return if there aren't any
     int modelFrames = std::distance(model->begin(), model->end());
@@ -87,13 +88,13 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     // Constant reference to the frame at this point
     const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
     
-    std::vector<FFT::Complex> spectrum(_frameSize);
-    std::vector<FFT::Complex> timeDomain(_frameSize);
+    std::vector<FFT::Complex> spectrum(frameSize_);
+    std::vector<FFT::Complex> timeDomain(frameSize_);
     
     // Create the spectral signal
     for (auto sine = frame.begin(); sine != frame.end(); ++sine)
     {
-        mrs_real binLoc =  (sine->getFreq() / renderRate) * _frameSize;
+        mrs_real binLoc =  (sine->getFreq() / renderRate) * frameSize_;
         mrs_natural binInt = std::round(binLoc);
         mrs_real binRem = binInt - binLoc;
         
@@ -106,8 +107,8 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
         {
             for (int i = -4; i < 5; ++i)
             {
-                spectrum.at(binInt + i).r += mag*_bh1001((int)((binRem+i)*100) + 501)*cos(phase);
-                spectrum.at(binInt + i).i += mag*_bh1001((int)((binRem+i)*100) + 501)*sin(phase);
+                spectrum.at(binInt + i).r += mag*bh1001_((int)((binRem+i)*100) + 501)*cos(phase);
+                spectrum.at(binInt + i).i += mag*bh1001_((int)((binRem+i)*100) + 501)*sin(phase);
             }
         }
         // Some components will wrap around 0
@@ -118,19 +119,19 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
                 // Complex Conjugate wraps around DC bin
                 if ((binInt + i) < 0)
                 {
-                    spectrum.at(-1*(binInt + i)).r += mag*_bh1001((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum.at(-1*(binInt + i)).i += -mag*_bh1001((int)((binRem+i)*100) + 501)*sin(phase);
+                    spectrum.at(-1*(binInt + i)).r += mag*bh1001_((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum.at(-1*(binInt + i)).i += -mag*bh1001_((int)((binRem+i)*100) + 501)*sin(phase);
                 }
                 // Real only at DC bin
                 else if ((binInt + i) == 0)
                 {
-                    spectrum.at(0).r += 2*mag*_bh1001((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum.at(0).r += 2*mag*bh1001_((int)((binRem+i)*100) + 501)*cos(phase);
                 }
                 // Regular
                 else
                 {
-                    spectrum.at(binInt + i).r += mag*_bh1001((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum.at(binInt + i).i += mag*_bh1001((int)((binRem+i)*100) + 501)*sin(phase);
+                    spectrum.at(binInt + i).r += mag*bh1001_((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum.at(binInt + i).i += mag*bh1001_((int)((binRem+i)*100) + 501)*sin(phase);
                 }
             }
         }
@@ -143,20 +144,20 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
                 if ((binInt + i) > _nyquistBin)
                 {
                     spectrum.at((binInt + i) - _nyquistBin).r +=
-                        mag*_bh1001((int)((binRem+i)*100) + 501)*cos(phase);
+                        mag*bh1001_((int)((binRem+i)*100) + 501)*cos(phase);
                     spectrum.at((binInt + i) - _nyquistBin).i +=
-                        -mag*_bh1001((int)((binRem+i)*100) + 501)*sin(phase);
+                        -mag*bh1001_((int)((binRem+i)*100) + 501)*sin(phase);
                 }
                 // Real only at Nyquist
                 else if ((binInt + i) == _nyquistBin)
                 {
-                    spectrum.at(_nyquistBin).r += 2*mag*_bh1001((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum.at(_nyquistBin).r += 2*mag*bh1001_((int)((binRem+i)*100) + 501)*cos(phase);
                 }
                 // Regular
                 else
                 {
-                    spectrum.at(binInt + i).r += mag*_bh1001((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum.at(binInt + i).i += mag*_bh1001((int)((binRem+i)*100) + 501)*sin(phase);
+                    spectrum.at(binInt + i).r += mag*bh1001_((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum.at(binInt + i).i += mag*bh1001_((int)((binRem+i)*100) + 501)*sin(phase);
                 }
             }
         }
@@ -172,11 +173,25 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     _fftFunction->perform(spectrum.data(), timeDomain.data());
   
     // Apply synthesis window & shift
-    for (int i = 0; i < _frameSize; ++i)
+    for (int i = 0; i < frameSize_; ++i)
     {
-        timeVec(i) = timeDomain.at((i + (_frameSize / 2)) % _frameSize).r / _frameSize * _synthWindow(i);
+        timeVec(i) = timeDomain.at((i + (frameSize_ / 2)) % frameSize_).r / frameSize_ * synthWindow_(i);
     }
     
     return true;
+}
+
+
+ReferenceCountedArray<SineModel> SinusoidalSynthSound::getPlayingSineModels() const
+{
+    ReferenceCountedArray<SineModel> models;
+    Array<SoundInterface*> activeSounds = manager_->getActiveSounds();
+    
+    for (int i = 0; i < activeSounds.size(); i++)
+    {
+        models.add(activeSounds[i]->getSineModel());
+    }
+
+    return models;
 }
 

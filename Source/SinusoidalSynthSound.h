@@ -34,13 +34,6 @@ public:
     // Get a time domain frame at a requested time location
     bool getSignal(mrs_realvec&, mrs_real, int) const;
     
-    // Point to a new sinusoidal model to include in synthesis
-    void addModel(SineModel::ConstPtr, int soundNum);
-    
-    // Remove pointer to one of the sound models
-    void removeModel(int soundNum);
-    
-    
 private:
     friend class SinusoidalSynthVoice;
     
@@ -60,9 +53,6 @@ private:
     // Signals for holding spectral and time domain signals
     std::vector<FFT::Complex> _spectrum;
     std::vector<FFT::Complex> _timeSignal;
-    
-    // Sine models representing this sound
-    ReferenceCountedArray<SineModel> sineModels_;
     
     // Pointer to FFT class
     ScopedPointer<FFT> _fftFunction;

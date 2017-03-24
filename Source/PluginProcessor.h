@@ -70,24 +70,24 @@ public:
     //==============================================================================
     void swapModel(ScopedPointer<SineModel> newModel);
     void swapSound(const SoundInterface& newSound);
-    SoundInterface& getCurrentSound();
+    
+    SoundInterface* getCurrentSound() { return soundManager_->getInterface(currentUISound_); };
     
     AudioProcessorValueTreeState& getParams();
 
 private:
     //==============================================================================
-    int currentSound_;
     
+    // Keep track of model currently showing on UI
+    int currentUISound_;
+
+    // Sound manager is responsible for all sound model and parameter management objects
     ScopedPointer<SoundInterfaceManager> soundManager_;
     
     Synthesiser synth_;
-    OwnedArray<SoundInterface> sounds_;
-    
-    // Parameter managers for analysis
-    OwnedArray<AnalysisParameterManager> analysisParameters_;
     
     ScopedPointer<UndoManager> undoManager_;
-    ScopedPointer<AudioProcessorValueTreeState> processorState_;
+    ScopedPointer<AudioProcessorValueTreeState> parameters_;
     
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessor)

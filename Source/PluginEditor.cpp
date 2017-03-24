@@ -16,7 +16,7 @@
 //==============================================================================
 LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     AudioProcessorEditor (&p), processor (p), soundInterface(p.getCurrentSound()),
-    analysisComponent(this, soundInterface.getAnalysisParams()),
+    analysisComponent(this, soundInterface->getAnalysisParams()),
     loadComponent(this, this, soundInterface), synthesisComponent(this)
 {
     setLookAndFeel(&loomLookAndFeel);
@@ -86,14 +86,14 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
     
     if (button->getComponentID() == "load_file")
     {
-        soundInterface.loadFile();
+        soundInterface->loadFile();
         loadState();
     }
     
     if (button->getComponentID() == "run_analysis")
     {
-        soundInterface.runAnalysis();
-        processor.swapSound(soundInterface);
+        soundInterface->runAnalysis();
+        //processor.swapSound(soundInterface);
         switchState(SoundInterface::synthesisState);
     }
     
@@ -106,9 +106,9 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
 
 void LoomAudioProcessorEditor::switchState(SoundInterface::State newState)
 {
-    if (soundInterface.getState() != newState)
+    if (soundInterface->getState() != newState)
     {
-        soundInterface.setState(newState);
+        soundInterface->setState(newState);
         loadState();
     }
 }
@@ -125,7 +125,7 @@ void LoomAudioProcessorEditor::hideMiddle()
 void LoomAudioProcessorEditor::loadState()
 {
     hideMiddle();
-    switch(soundInterface.getState())
+    switch(soundInterface->getState())
     {
         case SoundInterface::loadFileState:
             loadComponent.setVisible(true);

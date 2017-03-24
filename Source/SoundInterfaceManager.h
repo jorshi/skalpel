@@ -13,24 +13,30 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SoundInterface.h"
+#include "AnalysisParameterManager.h"
+
 
 class SoundInterfaceManager : private Thread
 {
 public:
     
-    // Default Construcotr
-    SoundInterfaceManager();
+    // Constructor
+    SoundInterfaceManager(int numSounds, AudioProcessorValueTreeState* params);
     
     // Default Deconstructor
     ~SoundInterfaceManager();
+    
+    // Get Sound Interface
+    SoundInterface* getInterface(int num) { return soundInterfaces_[num]; }
 
 private:
     
     // Run the thread
     void run() override;
     
-    // SoundInterfaces being managed here
+    // Sound interfaces and analysis parameters being managed here
     OwnedArray<SoundInterface> soundInterfaces_;
+    OwnedArray<AnalysisParameterManager> analysisParameters_;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SoundInterfaceManager)

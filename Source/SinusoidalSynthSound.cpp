@@ -170,15 +170,3 @@ bool SinusoidalSynthSound::getSignal(mrs_realvec& timeVec, mrs_real loc, int ren
     return true;
 }
 
-
-void SinusoidalSynthSound::addModel(SineModel::ConstPtr newModel, int soundNum)
-{
-    sineModels_.set(soundNum, newModel);
-}
-
-
-void SinusoidalSynthSound::removeModel(int soundNum)
-{
-    sineModels_.remove(soundNum);
-}
-

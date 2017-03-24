@@ -11,8 +11,25 @@
 #include "SoundInterfaceManager.h"
 
 
-SoundInterfaceManager::SoundInterfaceManager() : Thread("SoundInterface Manager Thread")
+SoundInterfaceManager::SoundInterfaceManager(int numSounds, AudioProcessorValueTreeState* params) :
+Thread("SoundInterface Manager Thread")
 {
+    
+    SoundInterface* sound;
+    AnalysisParameterManager* analysisParams;
+    
+    for (int i = 0; i < numSounds; i++)
+    {
+        // New set of analysis parameters
+        analysisParams = new AnalysisParameterManager(i, params);
+        analysisParameters_.insert(i, analysisParams);
+       
+        // New sound interface for this particular sound
+        sound = new SoundInterface(analysisParams);
+        soundInterfaces_.insert(i, sound);
+    }
+    
+    
     startThread();
 }
 

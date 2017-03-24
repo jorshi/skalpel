@@ -24,30 +24,22 @@ LoomAudioProcessor::LoomAudioProcessor()
                        )
 #endif
 {
+    // Parameters are managed in JUCE's AudioProcessorValueTreeState which also
+    // supports undo and redo
     undoManager_ = new UndoManager;
-    processorState_ = new AudioProcessorValueTreeState(*this, undoManager_);
+    parameters_ = new AudioProcessorValueTreeState(*this, undoManager_);
     
     // Allocate voices for synthesizer
     for (int i = 0; i < maxVoices; ++i)
         synth_.addVoice (new SinusoidalSynthVoice());
     
     // Create the sound manager object
-    soundManager_ = new SoundInterfaceManager;
+    soundManager_ = new SoundInterfaceManager(maxSounds, parameters_);
     
-    currentSound_ = 0;
+    // Initial
+    currentUISound_ = 0;
     
-    AnalysisParameterManager* analysisParams;
-    analysisParameters_.clear();
-    analysisParameters_.insert(
-        currentSound_,
-        analysisParams =  new AnalysisParameterManager(currentSound_, processorState_)
-    );
-    
-    // Instantiate an empty sound interface
-    sounds_.clear();
-    sounds_.insert(currentSound_, new SoundInterface(analysisParams));
-    
-    processorState_->state = ValueTree(Identifier("LOOM"));
+    parameters_->state = ValueTree(Identifier("LOOM"));
 }
 
 LoomAudioProcessor::~LoomAudioProcessor()
@@ -199,15 +191,9 @@ void LoomAudioProcessor::swapSound(const SoundInterface &newSound)
 {
 }
 
-
-SoundInterface& LoomAudioProcessor::getCurrentSound()
-{
-    return *sounds_[currentSound_];
-}
-
 AudioProcessorValueTreeState& LoomAudioProcessor::getParams()
 {
-    return *processorState_;
+    return *parameters_;
 }
 
 //==============================================================================

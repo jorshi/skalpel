@@ -98,7 +98,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                 // TODO: do we need allocate memory here?
                 mrs_realvec output(playingSound->getFrameSize());
                 
-                if (playingSound->getSignal(output, location_, getSampleRate()))
+                if (renderFrames(output, playingSound))
                 {
                     // Do overlap add
                     for (int i = 0; i < playingSound->getFrameSize(); ++i)
@@ -140,7 +140,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
 }
 
 //==============================================================================
-bool SinusoidalSynthVoice::renderNextFrame(mrs_realvec &buffer, SinusoidalSynthSound* sound)
+bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSynthSound* const sound)
 {
     ReferenceCountedArray<SineModel> activeModels = sound->getPlayingSineModels();
     if (activeModels.size() < 1)
@@ -170,12 +170,14 @@ bool SinusoidalSynthVoice::renderNextFrame(mrs_realvec &buffer, SinusoidalSynthS
     // Constant reference to the frame at this point
     const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
     
+    // TODO: Do we need to allocate memory here?
     std::vector<FFT::Complex> spectrum(frameSize_);
     std::vector<FFT::Complex> timeDomain(frameSize_);
     
     // Create the spectral signal
     for (auto sine = frame.begin(); sine != frame.end(); ++sine)
     {
+        // TODO: move variable declations out of loop!
         mrs_real binLoc =  (sine->getFreq() / getSampleRate()) * frameSize_;
         mrs_natural binInt = std::round(binLoc);
         mrs_real binRem = binInt - binLoc;

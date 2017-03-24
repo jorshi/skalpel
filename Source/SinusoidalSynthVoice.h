@@ -40,7 +40,7 @@ public:
 
 private:
     
-    bool renderNextFrame (mrs_realvec& buffer, SinusoidalSynthSound* sound);
+    bool renderFrames (mrs_realvec& buffer, const SinusoidalSynthSound* const sound);
     
     
     //=============================================================================

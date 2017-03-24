@@ -18,9 +18,12 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
     frameSize_(frameSize),
     manager_(manager)
 {
-    // Create a Blackman Harris windowing for sampling
     bh1001_.create(1001);
-    SynthUtils::windowingFillBlackmanHarris(bh1001_);
+    //SynthUtils::windowingFillBlackmanHarris(_bh1001);
+    for (int i = 0; i < 1001; ++i)
+    {
+        bh1001_(i) = SynthUtils::BHCONST.at(i);
+    }
     
     _nyquistBin = frameSize_/2;
     

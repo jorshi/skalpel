@@ -41,10 +41,10 @@ public:
     ReferenceCountedArray<SineModel> getPlayingSineModels() const;
     
     // Sample the blackman harris window
-    mrs_real getBH(int index) { return bh1001_(index); };
+    mrs_real getBH(int index) const { return bh1001_(index); };
     
     // Sample the synthesis window function
-    mrs_real getSynthWindow(int index) { return synthWindow_(index); };
+    mrs_real getSynthWindow(int index) const { return synthWindow_(index); };
     
     
     

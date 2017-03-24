@@ -34,9 +34,6 @@ public:
     
     const int& getFrameSize() const { return frameSize_; };
     
-    // Get a time domain frame at a requested time location
-    bool getSignal(mrs_realvec&, mrs_real, int) const;
-    
     // Get a reference to all playing sinusoid models
     ReferenceCountedArray<SineModel> getPlayingSineModels() const;
     
@@ -51,26 +48,11 @@ public:
 private:
     friend class SinusoidalSynthVoice;
     
-    // Reset all real and imaginary spectrum values to 0
-    void resetSpectrum();
-    
-    BigInteger _midiNotes;
-    int _midiRootNote;
-    
-    SineModel _model;
+    BigInteger midiNotes_;
+    int midiRootNote_;
+    int frameSize_;
     mrs_realvec bh1001_;
     mrs_realvec synthWindow_;
-
-    int frameSize_;
-    mrs_real _nyquistBin;
-    
-    // Signals for holding spectral and time domain signals
-    std::vector<FFT::Complex> _spectrum;
-    std::vector<FFT::Complex> _timeSignal;
-    
-    // Pointer to FFT class
-    ScopedPointer<FFT> _fftFunction;
-    
     SoundInterfaceManager* manager_;
     
     JUCE_LEAK_DETECTOR(SinusoidalSynthSound)

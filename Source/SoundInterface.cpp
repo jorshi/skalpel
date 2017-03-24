@@ -74,3 +74,17 @@ bool SoundInterface::willAcceptFile(const juce::String &fileName)
 {
     return fileLoader_.fileExtensionOkay(fileName);
 }
+
+
+void SoundInterface::checkModels()
+{
+    for (int i = sineModels_.size(); --i >= 0;)
+    {
+        SineModel::Ptr model(sineModels_.getUnchecked(i));
+        
+        if (model->getReferenceCount() == 2)
+        {
+            sineModels_.remove(i);
+        }
+    }
+}

@@ -26,6 +26,12 @@ location_(0.0)
     
     // Inverse FFT of frame size
     inverseFFT_ = new FFT(std::log2(frameSize_), true);
+    
+    spectrum_.resize(frameSize_);
+    timeDomain_.resize(frameSize_);
+    
+    output_.create(frameSize_);
+    buffer_.create(frameSize_);
 }
 
 // Deconstructor
@@ -45,9 +51,6 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
 {
     if (const SinusoidalSynthSound* const sound = dynamic_cast<const SinusoidalSynthSound*> (s))
     {
-        hopSize_ = sound->getFrameSize() / 4;
-        buffer_.create(sound->getFrameSize());
-        
         location_ = 0.0;
         readPos_ = 0;
         writePos_ = 0;
@@ -95,10 +98,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
             // Get a new frame
             if (hopIndex_ >= hopSize_)
             {
-                // TODO: do we need allocate memory here?
-                mrs_realvec output(playingSound->getFrameSize());
-                
-                if (renderFrames(output, playingSound))
+                if (renderFrames(output_, playingSound))
                 {
                     // Do overlap add
                     for (int i = 0; i < playingSound->getFrameSize(); ++i)
@@ -109,7 +109,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                         }
                         else
                         {
-                            buffer_((writePos_ + i) % playingSound->getFrameSize()) += output(i);
+                            buffer_((writePos_ + i) % playingSound->getFrameSize()) += output_(i);
                         }
                     }
                 }
@@ -130,8 +130,8 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
             }
             else
             {
-                *(outL + numCalculated) = buffer_(readPos_ + hopIndex_);
-                *(outR + numCalculated) = buffer_(readPos_ + hopIndex_);
+                *(outL + numCalculated) += buffer_(readPos_ + hopIndex_);
+                *(outR + numCalculated) += buffer_(readPos_ + hopIndex_);
                 numCalculated++;
                 hopIndex_++;
             }
@@ -170,29 +170,35 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     // Constant reference to the frame at this point
     const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
     
-    // TODO: Do we need to allocate memory here?
-    std::vector<FFT::Complex> spectrum(frameSize_);
-    std::vector<FFT::Complex> timeDomain(frameSize_);
+    // Zero out spectrum
+    std::fill(spectrum_.begin(), spectrum_.end(), FFT::Complex());
+    
+    // Declare some variables for use in processing loop
+    mrs_real binLoc;
+    mrs_natural binInt;
+    mrs_real binRem;
+    
+    mrs_real mag;
+    mrs_real phase;
     
     // Create the spectral signal
     for (auto sine = frame.begin(); sine != frame.end(); ++sine)
     {
-        // TODO: move variable declations out of loop!
-        mrs_real binLoc =  (sine->getFreq() / getSampleRate()) * frameSize_;
-        mrs_natural binInt = std::round(binLoc);
-        mrs_real binRem = binInt - binLoc;
+        binLoc =  (sine->getFreq() / getSampleRate()) * frameSize_;
+        binInt = std::round(binLoc);
+        binRem = binInt - binLoc;
         
         // Convert the decibels back to magnitude
-        mrs_real mag = pow(10, sine->getAmp()/20);
-        mrs_real phase = sine->getPhase();
+        mag = pow(10, sine->getAmp()/20);
+        phase = sine->getPhase();
         
         // Going to make a 9 bin wide Blackman Harris window
         if (binLoc >= 5 && binLoc < nyquistBin_-4)
         {
             for (int i = -4; i < 5; ++i)
             {
-                spectrum.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                spectrum.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
             }
         }
         // Some components will wrap around 0
@@ -203,19 +209,19 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
                 // Complex Conjugate wraps around DC bin
                 if ((binInt + i) < 0)
                 {
-                    spectrum.at(-1*(binInt + i)).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum.at(-1*(binInt + i)).i += -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    spectrum_.at(-1*(binInt + i)).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum_.at(-1*(binInt + i)).i += -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
                 }
                 // Real only at DC bin
                 else if ((binInt + i) == 0)
                 {
-                    spectrum.at(0).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum_.at(0).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
                 }
                 // Regular
                 else
                 {
-                    spectrum.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
                 }
             }
         }
@@ -227,21 +233,21 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
                 // Complex Conjugate wraps nyquist bin
                 if ((binInt + i) > nyquistBin_)
                 {
-                    spectrum.at((binInt + i) - nyquistBin_).r +=
+                    spectrum_.at((binInt + i) - nyquistBin_).r +=
                     mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum.at((binInt + i) - nyquistBin_).i +=
+                    spectrum_.at((binInt + i) - nyquistBin_).i +=
                     -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
                 }
                 // Real only at Nyquist
                 else if ((binInt + i) == nyquistBin_)
                 {
-                    spectrum.at(nyquistBin_).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum_.at(nyquistBin_).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
                 }
                 // Regular
                 else
                 {
-                    spectrum.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                    spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
                 }
             }
         }
@@ -250,16 +256,16 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     // Conjugate for bins above the nyquist frequency
     for (int i = 1; i < nyquistBin_; ++i)
     {
-        spectrum.at(nyquistBin_ + i).r = spectrum.at(nyquistBin_ - i).r;
-        spectrum.at(nyquistBin_ + i).i = -spectrum.at(nyquistBin_ - i).i;
+        spectrum_.at(nyquistBin_ + i).r = spectrum_.at(nyquistBin_ - i).r;
+        spectrum_.at(nyquistBin_ + i).i = -spectrum_.at(nyquistBin_ - i).i;
     }
     
-    inverseFFT_->perform(spectrum.data(), timeDomain.data());
+    inverseFFT_->perform(spectrum_.data(), timeDomain_.data());
     
     // Apply synthesis window & shift
     for (int i = 0; i < frameSize_; ++i)
     {
-        buffer(i) = timeDomain.at((i + (frameSize_ / 2)) % frameSize_).r / frameSize_ * sound->getSynthWindow(i);
+        buffer(i) = timeDomain_.at((i + (frameSize_ / 2)) % frameSize_).r / frameSize_ * sound->getSynthWindow(i);
     }
     
     return true;

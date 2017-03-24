@@ -44,6 +44,11 @@ void SoundInterfaceManager::run()
     {
         // Check to see if there are resources that can be cleaned up, also,
         // perhaps the analysis can be run on this thread!
+        for (int i = 0; i < soundInterfaces_.size(); i++)
+        {
+            soundInterfaces_.getUnchecked(i)->checkModels();
+        }
+        wait(500);
     }
 }
 

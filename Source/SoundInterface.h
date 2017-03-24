@@ -70,6 +70,9 @@ public:
     // Whether or not this sound can be played
     bool isActive() { return isActive_; };
     
+    // Checks reference counted SineModels to see if any can be freed
+    void checkModels();
+    
 private:
     
     ScopedPointer<AnalysisMrs> analysis_;

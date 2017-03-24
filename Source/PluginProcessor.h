@@ -27,7 +27,7 @@ class LoomAudioProcessor  : public AudioProcessor
 public:
     enum
     {
-        maxVoices = 8,
+        maxVoices = 4,
         maxSounds = 4
     };
     

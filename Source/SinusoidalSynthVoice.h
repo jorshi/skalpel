@@ -54,8 +54,11 @@ private:
     
     mrs_real location_;
     mrs_realvec buffer_;
+    mrs_realvec output_;
     
     ScopedPointer<FFT> inverseFFT_;
+    std::vector<FFT::Complex> spectrum_;
+    std::vector<FFT::Complex> timeDomain_;
     
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)

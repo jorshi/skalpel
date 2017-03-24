@@ -23,7 +23,7 @@ class LoomFileDrop    : public Component,
                         public ActionListener
 {
 public:
-    LoomFileDrop(ActionListener* parent, SoundInterface& s);
+    LoomFileDrop(ActionListener* parent, SoundInterface* s);
     ~LoomFileDrop();
 
     void paint (Graphics&) override;
@@ -41,7 +41,7 @@ private:
     
     Colour buttonEdgeColour;
     
-    SoundInterface& soundInterface;
+    SoundInterface* soundInterface;
     
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomFileDrop)

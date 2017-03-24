@@ -72,6 +72,10 @@
             file="Source/SoundInterface.cpp"/>
       <FILE id="g0Ze7q" name="SoundInterface.h" compile="0" resource="0"
             file="Source/SoundInterface.h"/>
+      <FILE id="zDZQOP" name="SoundInterfaceManager.cpp" compile="1" resource="0"
+            file="Source/SoundInterfaceManager.cpp"/>
+      <FILE id="Pn9jnA" name="SoundInterfaceManager.h" compile="0" resource="0"
+            file="Source/SoundInterfaceManager.h"/>
       <FILE id="sJO8Fl" name="ParameterManager.cpp" compile="1" resource="0"
             file="Source/ParameterManager.cpp"/>
       <FILE id="eW27Uk" name="ParameterManager.h" compile="0" resource="0"

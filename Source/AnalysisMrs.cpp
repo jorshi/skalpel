@@ -28,40 +28,14 @@ AnalysisMrs::AnalysisMrs(File input, AnalysisParameterManager& params) :
 AnalysisMrs::~AnalysisMrs() {}
 
 
-// Get a new wave file and run sinusoidal analysis
-void AnalysisMrs::newAnalysis()
-{
-    // Get new audio file
-    FileChooser chooser ("Choose audio file ...",
-                         File::nonexistent,
-                         "*.wav");
-    
-    String fileName;
-    if(chooser.browseForFileToOpen())
-    {
-        File file(chooser.getResult());
-        fileName = file.getFullPathName();
-    }
-    else
-    {
-        return;
-    }
-    
-    // Run sineusoidal analysis
-    _analysisModel = SineModel();
-    peakDetection(_analysisModel, fileName);
-    sineTracking(_analysisModel);
-    cleanModel(_analysisModel);
-}
-
-SineModel* AnalysisMrs::runAnalysis()
+SineModel::Ptr AnalysisMrs::runAnalysis()
 {
     const String fileName = audioFile.getFullPathName();
-    SineModel* model = new SineModel;
+    SineModel::Ptr model = new SineModel;
     
-    peakDetection(*model, fileName);
-    sineTracking(*model);
-    cleanModel(*model);
+    peakDetection(model, fileName);
+    sineTracking(model);
+    cleanModel(model);
     
     return model;
 }
@@ -72,7 +46,7 @@ SineModel* AnalysisMrs::runAnalysis()
  *  Opens an audio file and runs peak detection, filling a
  *  SineModel object with a sinusoidal model
  */
-void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
+void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename)
 {
     AudioProcessorValueTreeState* parameters = params_.getParameters();
     
@@ -205,15 +179,15 @@ void AnalysisMrs::peakDetection(SineModel& sineModel, String filename)
             pMag = mag;
         }
 
-        sineModel.addFrame(frameElements);
+        sineModel->addFrame(frameElements);
     }
     
-    sineModel.setSampleRate(sampleRate);
-    sineModel.setFrameSize(hopSize);
+    sineModel->setSampleRate(sampleRate);
+    sineModel->setFrameSize(hopSize);
 }
 
 
-void AnalysisMrs::sineTracking(SineModel& sineModel)
+void AnalysisMrs::sineTracking(SineModel::Ptr sineModel)
 {
     // Get user defined parameters
     float freqDevOffset;
@@ -228,7 +202,7 @@ void AnalysisMrs::sineTracking(SineModel& sineModel)
     std::vector<std::vector<SineElement>> tracks;
     
     // Iterate through elements of the sine model
-    for (auto frame = sineModel.begin(); frame != sineModel.end(); ++frame)
+    for (auto frame = sineModel->begin(); frame != sineModel->end(); ++frame)
     {
         // Sine elements to place for this frame
         std::vector<SineElement> newSines;
@@ -310,11 +284,11 @@ void AnalysisMrs::sineTracking(SineModel& sineModel)
         tracks.push_back(newSines);
     }
     
-    sineModel.setSineModel(tracks);
+    sineModel->setSineModel(tracks);
 }
 
 
-void AnalysisMrs::cleanModel(SineModel& sineModel)
+void AnalysisMrs::cleanModel(SineModel::Ptr sineModel)
 {
     // User Defined Parameters
     float minDuration;
@@ -325,14 +299,14 @@ void AnalysisMrs::cleanModel(SineModel& sineModel)
     if(!params_.getRawValue("analysis_sines", numSines))
         numSines = 150;
     
-    mrs_real frameLength = sineModel.getFrameSize()/sineModel.getSampleRate();
+    mrs_real frameLength = sineModel->getFrameSize()/sineModel->getSampleRate();
     int minFrames = (int)std::ceil((minDuration/1000)/frameLength);
     
     std::vector<int> trackLengths;
     std::vector<std::vector<SineElement*>> trackPointers;
     
     // Get a list of pointers to the elements of the sine tracks
-    for (auto frame = sineModel.begin(); frame != sineModel.end(); ++frame)
+    for (auto frame = sineModel->begin(); frame != sineModel->end(); ++frame)
     {
         for (auto sine = frame->begin(); sine != frame->end(); ++sine)
         {
@@ -366,7 +340,7 @@ void AnalysisMrs::cleanModel(SineModel& sineModel)
     }
     
     // Clear out all elements that didn't make the cut
-    for (auto frame = sineModel.begin(); frame != sineModel.end(); ++frame)
+    for (auto frame = sineModel->begin(); frame != sineModel->end(); ++frame)
     {
         auto newEnd = std::remove_if(frame->begin(), frame->end(), [&](SineElement& a) {
             return (a.getTrack() == -1);
@@ -382,8 +356,5 @@ void AnalysisMrs::cleanModel(SineModel& sineModel)
             });
             frame->resize(numSines);
         }
-        
     }
-    
-    // If there are still too many sines for the frame, then remove some based on amplitude
 }

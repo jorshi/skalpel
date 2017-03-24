@@ -22,7 +22,7 @@
 class LoadComponent    : public Component, public ActionListener
 {
 public:
-    LoadComponent(ButtonListener* parent, ActionListener* parentAction, SoundInterface& s);
+    LoadComponent(ButtonListener* parent, ActionListener* parentAction, SoundInterface* s);
     ~LoadComponent();
 
     void paint (Graphics&) override;
@@ -37,7 +37,7 @@ private:
 
     
     // Sound interface for this loading component
-    SoundInterface& soundInterface;
+    SoundInterface* soundInterface;
     
     // File drop component
     LoomFileDrop loomFileDrop;

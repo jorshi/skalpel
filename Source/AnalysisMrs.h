@@ -33,22 +33,14 @@ public:
     // Default Deconstructor
     ~AnalysisMrs();
     
-    // Asks for an audio file and runs analysis on the file, storing the results
-    // in the member analysis model
-    void newAnalysis();
-    
     // Run analysis on file, return a pointer to the created model object
     // !! Not responsible for cleaning up the object !!
-    SineModel* runAnalysis();
-    
-    const SineModel& getAnalysisModel() const { return _analysisModel; };
+    SineModel::Ptr runAnalysis();
     
 private:
-    void peakDetection(SineModel&, String);
-    void sineTracking(SineModel&);
-    void cleanModel(SineModel&);
-    
-    SineModel _analysisModel;
+    void peakDetection(SineModel::Ptr, String);
+    void sineTracking(SineModel::Ptr);
+    void cleanModel(SineModel::Ptr);
     
     File audioFile;
     

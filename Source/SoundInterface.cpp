@@ -14,7 +14,9 @@
 SoundInterface::SoundInterface(AnalysisParameterManager* a) : analysis_(nullptr), state_(loadFileState)
 {
     analysisParams_ = a;
-    sineModel_ = new SineModel;
+    currentSineModel_ = new SineModel;
+    sineModels_.add(currentSineModel_);
+    isActive_ = false;
 }
 
 
@@ -33,7 +35,9 @@ void SoundInterface::runAnalysis()
 {
     if (analysis_ != nullptr)
     {
-        sineModel_ = analysis_->runAnalysis();
+        currentSineModel_ = analysis_->runAnalysis();
+        sineModels_.add(currentSineModel_);
+        isActive_ = true;
     }
 }
 
@@ -69,4 +73,18 @@ void SoundInterface::loadFile(const juce::String &fileName)
 bool SoundInterface::willAcceptFile(const juce::String &fileName)
 {
     return fileLoader_.fileExtensionOkay(fileName);
+}
+
+
+void SoundInterface::checkModels()
+{
+    for (int i = sineModels_.size(); --i >= 0;)
+    {
+        SineModel::Ptr model(sineModels_.getUnchecked(i));
+        
+        if (model->getReferenceCount() == 2)
+        {
+            sineModels_.remove(i);
+        }
+    }
 }

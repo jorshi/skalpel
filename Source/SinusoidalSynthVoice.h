@@ -39,17 +39,26 @@ public:
     void renderNextBlock (AudioSampleBuffer&, int startSample, int numSamples) override;
 
 private:
+    
+    bool renderFrames (mrs_realvec& buffer, const SinusoidalSynthSound* const sound);
+    
+    
     //=============================================================================
-    int _hopSize;
-    int _hopIndex;
-    int _windowSize;
-    int _overlapIndex;
-    int _readPos;
-    int _writePos;
+    int hopSize_;
+    int frameSize_;
+    int hopIndex_;
+    int overlapIndex_;
+    int readPos_;
+    int writePos_;
+    int nyquistBin_;
     
-    mrs_real _location;
+    mrs_real location_;
+    mrs_realvec buffer_;
+    mrs_realvec output_;
     
-    mrs_realvec _buffer;
+    ScopedPointer<FFT> inverseFFT_;
+    std::vector<FFT::Complex> spectrum_;
+    std::vector<FFT::Complex> timeDomain_;
     
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)

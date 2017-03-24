@@ -46,7 +46,7 @@ public:
     void runAnalysis();
     
     // Sine Model Getter
-    const SineModel& getSineModel() const { return *sineModel_; };
+    SineModel::ConstPtr getSineModel() const { return currentSineModel_; };
     
     // Get current state of sound
     State getState() const { return state_; };
@@ -54,8 +54,10 @@ public:
     // Set current state of sound
     void setState(State newState) { state_ = newState; };
     
+    // Get a parameter value from a parameter name
     float getParameterValue(String);
-    
+
+    // Get a pointer to the analysis parameters
     AnalysisParameterManager* getAnalysisParams() { return analysisParams_; };
     
     // Load audio from file and load into a new analysis object
@@ -65,10 +67,19 @@ public:
     // Pre-load check to see if a filename looks okay
     bool willAcceptFile(const String& fileName);
     
+    // Whether or not this sound can be played
+    bool isActive() { return isActive_; };
+    
+    // Checks reference counted SineModels to see if any can be freed
+    void checkModels();
+    
 private:
     
     ScopedPointer<AnalysisMrs> analysis_;
-    ScopedPointer<SineModel> sineModel_;
+    
+    // Reference counted pointers to Sine Models for this interface
+    ReferenceCountedArray<SineModel> sineModels_;
+    SineModel::Ptr currentSineModel_;
     
     State state_;
     
@@ -76,6 +87,8 @@ private:
     
     // Parameters for the analysis phase
     AnalysisParameterManager* analysisParams_;
+    
+    bool isActive_;
     
 };
 

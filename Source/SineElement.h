@@ -46,13 +46,20 @@ private:
 };
 
 
-class SineModel
+class SineModel : public ReferenceCountedObject
 {
 public:
+    
+    // Useful types
     typedef std::vector<SineElement> SineFrame;
     typedef std::vector<std::vector<SineElement>> SineMatrix;
+    typedef ReferenceCountedObjectPtr<SineModel> Ptr;
+    typedef const ReferenceCountedObjectPtr<SineModel> ConstPtr;
     
+    // Constructor
     SineModel();
+    
+    // Destructor
     ~SineModel();
     
     // Setters
@@ -85,12 +92,5 @@ private:
     mrs_natural _frameSize;
     mrs_natural _hopSize;
 };
-
-
-// TESTING
-SineModel getTestModel();
-SineModel getSawModel();
-
-
 
 #endif  // SINEELEMENT_H_INCLUDED

@@ -20,6 +20,7 @@
 #include "AnalysisComponent.h"
 #include "LoadComponent.h"
 #include "SynthesisComponent.h"
+#include "SoundInterfaceManager.h"
 
 
 //==============================================================================
@@ -74,8 +75,11 @@ private:
     // File Loader
     FileLoader fileLoader;
     
+    
+    //SoundInterfaceManager& soundInterfaceManager;
+    
     // For interfacing with analysis and sounds
-    SoundInterface& soundInterface;
+    SoundInterface* soundInterface;
     
     // This is where analysis and synthesis params go
     AnalysisComponent analysisComponent;

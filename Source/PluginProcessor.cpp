@@ -24,27 +24,27 @@ LoomAudioProcessor::LoomAudioProcessor()
                        )
 #endif
 {
+    // Parameters are managed in JUCE's AudioProcessorValueTreeState which also
+    // supports undo and redo
     undoManager_ = new UndoManager;
-    processorState_ = new AudioProcessorValueTreeState(*this, undoManager_);
+    parameters_ = new AudioProcessorValueTreeState(*this, undoManager_);
     
     // Allocate voices for synthesizer
     for (int i = 0; i < maxVoices; ++i)
         synth_.addVoice (new SinusoidalSynthVoice());
+
+    // Create the sound manager object
+    soundManager_ = new SoundInterfaceManager(maxSounds, parameters_);
+
+    // Add Sinusoidal Synth sound to synthesizer
+    BigInteger midiNotes;
+    midiNotes.setRange(0, 126, true);
+    synth_.addSound(new SinusoidalSynthSound(midiNotes, 69, 512, soundManager_));
     
-    currentSound_ = 0;
+    // Initial
+    currentUISound_ = 0;
     
-    AnalysisParameterManager* analysisParams;
-    analysisParameters_.clear();
-    analysisParameters_.insert(
-        currentSound_,
-        analysisParams =  new AnalysisParameterManager(currentSound_, processorState_)
-    );
-    
-    // Instantiate an empty sound interface
-    sounds_.clear();
-    sounds_.insert(currentSound_, new SoundInterface(analysisParams));
-    
-    processorState_->state = ValueTree(Identifier("LOOM"));
+    parameters_->state = ValueTree(Identifier("LOOM"));
 }
 
 LoomAudioProcessor::~LoomAudioProcessor()
@@ -189,32 +189,16 @@ void LoomAudioProcessor::setStateInformation (const void* data, int sizeInBytes)
 // Swap the sinusoidal model out
 void LoomAudioProcessor::swapModel(ScopedPointer<SineModel> newModel)
 {
-    synth_.clearSounds();
-    
-    BigInteger midiNotes;
-    midiNotes.setRange(0, 126, true);
-    synth_.addSound(new SinusoidalSynthSound(midiNotes, 69, *newModel, 512));
 }
 
 
 void LoomAudioProcessor::swapSound(const SoundInterface &newSound)
 {
-    synth_.clearSounds();
-
-    BigInteger midiNotes;
-    midiNotes.setRange(0, 126, true);
-    synth_.addSound(new SinusoidalSynthSound(midiNotes, 69, newSound.getSineModel(), 512));
-}
-
-
-SoundInterface& LoomAudioProcessor::getCurrentSound()
-{
-    return *sounds_[currentSound_];
 }
 
 AudioProcessorValueTreeState& LoomAudioProcessor::getParams()
 {
-    return *processorState_;
+    return *parameters_;
 }
 
 //==============================================================================

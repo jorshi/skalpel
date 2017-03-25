@@ -55,6 +55,12 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         readPos_ = 0;
         writePos_ = 0;
         hopIndex_ = hopSize_;
+        
+        // Models producing sound
+        activeModels_ = sound->getPlayingSineModels();
+        previousElements_.resize(activeModels_.size());
+        
+        noteFreqScale_ = pow(2.0, (midiNoteNumber - sound->midiRootNote_)/12.0f);
     }
     else
     {
@@ -64,6 +70,8 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
 
 void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 {
+    activeModels_.clear();
+    previousElements_.clear();
     hopIndex_ = hopSize_;
     overlapIndex_ = 0;
     location_ = 0.0;
@@ -142,13 +150,12 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
 //==============================================================================
 bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSynthSound* const sound)
 {
-    ReferenceCountedArray<SineModel> activeModels = sound->getPlayingSineModels();
-    if (activeModels.size() < 1)
+    if (activeModels_.size() < 1)
     {
         return false;
     }
     
-    SineModel::ConstPtr model = activeModels[0];
+    SineModel::ConstPtr model = activeModels_[0];
     
     // Get number of frames in the model return if there aren't any
     int modelFrames = std::distance(model->begin(), model->end());
@@ -170,8 +177,11 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     // Constant reference to the frame at this point
     const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
     
-    // Zero out spectrum
-    std::fill(spectrum_.begin(), spectrum_.end(), FFT::Complex());
+    // Zero out first half of spectrum
+    std::for_each(spectrum_.begin(), spectrum_.begin() + nyquistBin_, [](FFT::Complex& complex){
+        complex.r = 0;
+        complex.i = 0;
+    });
     
     // Declare some variables for use in processing loop
     mrs_real freq;
@@ -181,6 +191,8 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     
     mrs_real mag;
     mrs_real phase;
+    
+    std::map<int, PrevElement>::iterator prev;
     
     // Create the spectral signal
     for (auto sine = frame.begin(); sine != frame.end(); ++sine)
@@ -192,7 +204,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         
         // Sound level frequency scaling ( get from the 
         
-        //freq *= 0.5;
+        freq *= noteFreqScale_;
         
         binLoc =  (freq / getSampleRate()) * frameSize_;
         binInt = std::round(binLoc);
@@ -200,7 +212,19 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         
         // Convert the decibels back to magnitude
         mag = pow(10, sine->getAmp()/20);
-        phase = sine->getPhase();
+        
+        // Propagate phase
+        if ((prev = previousElements_.at(0).find(sine->getTrack())) ==  previousElements_.at(0).end())
+        {
+            phase = sine->getPhase();
+            previousElements_.at(0).emplace(sine->getTrack(), PrevElement(freq, sine->getPhase()));
+        }
+        else
+        {
+            prev->second.phase += (PI * (prev->second.freq + freq) / getSampleRate()) * hopSize_;
+            prev->second.freq = freq;
+            phase = prev->second.phase;
+        }
         
         // Going to make a 9 bin wide Blackman Harris window
         if (binLoc >= 5 && binLoc < nyquistBin_-4)

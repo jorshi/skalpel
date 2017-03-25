@@ -13,9 +13,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "marsyas/system/MarSystemManager.h"
-#include <boost/property_tree/xml_parser.hpp>
-#include <boost/property_tree/ptree.hpp>
-#include <boost/foreach.hpp>
 
 using namespace Marsyas;
 
@@ -25,24 +22,29 @@ public:
     SineElement();
     SineElement(mrs_real freq, mrs_real amp, mrs_real phase);
     ~SineElement();
+
     
     // Getters
-    mrs_real getFreq() const { return _freq; };
-    mrs_real getAmp() const  { return _amp; };
-    mrs_real getPhase() const { return _phase; };
-    mrs_natural getTrack() const { return _track; };
+    mrs_real getFreq() const { return freq_; };
+    mrs_real getAmp() const  { return amp_; };
+    mrs_real getPhase() const { return phase_; };
+    mrs_natural getTrack() const { return track_; };
+    bool isFirstInTrack() const { return trackStart_; };
+    
     
     // Setters
-    void setFreq(mrs_real freq) { _freq = freq; };
-    void setAmp(mrs_real amp) { _amp = amp; };
-    void setPhase(mrs_real phase) { _phase = phase; };
-    void setTrack(mrs_natural track) { _track = track; };
-    
+    void setFreq(mrs_real freq) { freq_ = freq; };
+    void setAmp(mrs_real amp) { amp_ = amp; };
+    void setPhase(mrs_real phase) { phase_ = phase; };
+    void setTrack(mrs_natural track) { track_ = track; };
+    void setNewTrack(mrs_natural track);
+
 private:
-    mrs_real _freq;
-    mrs_real _amp;
-    mrs_real _phase;
-    mrs_natural _track;
+    mrs_real freq_;
+    mrs_real amp_;
+    mrs_real phase_;
+    mrs_natural track_;
+    bool trackStart_;
 };
 
 
@@ -63,34 +65,34 @@ public:
     ~SineModel();
     
     // Setters
-    void setSampleRate(mrs_real sr) { _sampleRate = sr; };
-    void setFrameSize(mrs_natural fs) { _frameSize = fs; };
-    void setSineModel(SineMatrix newModel) { _sineModel = newModel; };
-    void setHopSize(mrs_natural h) { _hopSize = h; };
+    void setSampleRate(mrs_real sr) { sampleRate_ = sr; };
+    void setFrameSize(mrs_natural fs) { frameSize_ = fs; };
+    void setSineModel(SineMatrix newModel) { sineModel_ = newModel; };
+    void setHopSize(mrs_natural h) { hopSize_ = h; };
     
     // Add a new frame to the end of the current model
     void addFrame(std::vector<SineElement>);
     
     // Getters
-    mrs_real getSampleRate() const { return _sampleRate; };
-    mrs_natural getFrameSize() const { return _frameSize; };
-    mrs_natural getHopSize() const { return _hopSize; };
-    const SineFrame& getFrame(int frame) const { return _sineModel.at(frame); };
-    const SineMatrix& getModel() { return _sineModel; };
+    mrs_real getSampleRate() const { return sampleRate_; };
+    mrs_natural getFrameSize() const { return frameSize_; };
+    mrs_natural getHopSize() const { return hopSize_; };
+    const SineFrame& getFrame(int frame) const { return sineModel_.at(frame); };
+    const SineMatrix& getModel() { return sineModel_; };
     
     // Get iterators for the sine model
-    std::vector<std::vector<SineElement>>::iterator begin() { return _sineModel.begin(); };
-    std::vector<std::vector<SineElement>>::iterator end()   { return _sineModel.end(); };
+    std::vector<std::vector<SineElement>>::iterator begin() { return sineModel_.begin(); };
+    std::vector<std::vector<SineElement>>::iterator end()   { return sineModel_.end(); };
     
     // Const iterators
-    std::vector<std::vector<SineElement>>::const_iterator begin() const { return _sineModel.begin(); };
-    std::vector<std::vector<SineElement>>::const_iterator end() const { return _sineModel.end(); };
+    std::vector<std::vector<SineElement>>::const_iterator begin() const { return sineModel_.begin(); };
+    std::vector<std::vector<SineElement>>::const_iterator end() const { return sineModel_.end(); };
 
 private:
-    SineMatrix _sineModel;
-    mrs_real _sampleRate;
-    mrs_natural _frameSize;
-    mrs_natural _hopSize;
+    SineMatrix sineModel_;
+    mrs_real sampleRate_;
+    mrs_natural frameSize_;
+    mrs_natural hopSize_;
 };
 
 #endif  // SINEELEMENT_H_INCLUDED

@@ -276,7 +276,7 @@ void AnalysisMrs::sineTracking(SineModel::Ptr sineModel)
         for (auto i = indexes.begin(); i != indexes.end(); ++i)
         {
             newSines.emplace_back(frame->at(*i));
-            newSines.back().setTrack(trackId++);
+            newSines.back().setNewTrack(trackId++);
         }
 
         jassert(newSines.size() == frame->size());

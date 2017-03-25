@@ -200,11 +200,29 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         // Do frequency transformations here
         freq = sine->getFreq();
         
-        // Voice level frequency scaling (if quantized to midi pitch)
-        
-        // Sound level frequency scaling ( get from the 
-        
+        // Frequency Scaling
         freq *= noteFreqScale_;
+        
+        // Frequency Stretching
+        float stretchRatio = freq / 440.0;
+        float stretchFactor = 0.0f;
+        
+        if (stretchFactor > 0.0f)
+        {
+            if (stretchRatio > 1)
+            {
+                freq = pow(freq, (stretchFactor * stretchRatio) + 1.0f);
+            }
+            else if (stretchRatio < 1)
+            {
+                freq = pow(freq, 1.0f - (stretchFactor * stretchRatio));
+            }
+        }
+        
+        // Frequency Shifting
+        float freqShift = 0.0f;
+        freq += freqShift;
+        
         
         binLoc =  (freq / getSampleRate()) * frameSize_;
         binInt = std::round(binLoc);

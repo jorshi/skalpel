@@ -21,13 +21,8 @@ class SineElement
 public:
     SineElement();
     SineElement(mrs_real freq, mrs_real amp, mrs_real phase);
-    SineElement(const SineElement& s);
-    SineElement(const SineElement&& s);
     ~SineElement();
-    
-    // Copy & Move Operator
-    SineElement& operator=(const SineElement& s);
-    SineElement& operator=(SineElement&& s);
+
     
     // Getters
     mrs_real getFreq() const { return freq_; };
@@ -36,9 +31,6 @@ public:
     mrs_natural getTrack() const { return track_; };
     bool isFirstInTrack() const { return trackStart_; };
     
-    // Get next model in track
-    const SineElement* getNext() const { return next_; };
-    const SineElement* getPrev() const { return prev_; };
     
     // Setters
     void setFreq(mrs_real freq) { freq_ = freq; };
@@ -46,19 +38,13 @@ public:
     void setPhase(mrs_real phase) { phase_ = phase; };
     void setTrack(mrs_natural track) { track_ = track; };
     void setNewTrack(mrs_natural track);
-    void setNext(SineElement* n) { next_ = n; };
-    void setPrev(SineElement* p) { prev_ = p; };
-    
-    void updateWithPrevious(SineElement* prevTrack);
-    
+
 private:
     mrs_real freq_;
     mrs_real amp_;
     mrs_real phase_;
     mrs_natural track_;
     bool trackStart_;
-    SineElement* prev_;
-    SineElement* next_;
 };
 
 

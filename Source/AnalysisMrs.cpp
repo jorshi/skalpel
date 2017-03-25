@@ -255,7 +255,7 @@ void AnalysisMrs::sineTracking(SineModel::Ptr sineModel)
                 {
                     // Save this sine element with the track index from the previous frame
                     newSines.emplace_back(frame->at(*index));
-                    newSines.back().updateWithPrevious(&tracks.back().at(track));
+                    newSines.back().setTrack(tracks.at(track).back().getTrack());
                     
                     // Remove index from tracks to assign
                     trackIndexes.erase(std::find(trackIndexes.begin(), trackIndexes.end(), track));

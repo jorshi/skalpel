@@ -40,6 +40,18 @@ public:
 
 private:
     
+    struct PrevElement
+    {
+        mrs_real freq;
+        mrs_real phase;
+        
+        PrevElement(mrs_real f, mrs_real p)
+        {
+            freq = f;
+            phase = p;
+        }
+    };
+    
     bool renderFrames (mrs_realvec& buffer, const SinusoidalSynthSound* const sound);
     
     
@@ -61,7 +73,8 @@ private:
     std::vector<FFT::Complex> timeDomain_;
     
     ReferenceCountedArray<SineModel> activeModels_;
-    std::vector<std::map<int, float>> phases_;
+    std::vector<std::map<int, PrevElement>> previousElements_;
+    
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

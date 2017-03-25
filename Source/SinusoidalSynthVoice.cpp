@@ -174,6 +174,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     std::fill(spectrum_.begin(), spectrum_.end(), FFT::Complex());
     
     // Declare some variables for use in processing loop
+    mrs_real freq;
     mrs_real binLoc;
     mrs_natural binInt;
     mrs_real binRem;
@@ -184,7 +185,16 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     // Create the spectral signal
     for (auto sine = frame.begin(); sine != frame.end(); ++sine)
     {
-        binLoc =  (sine->getFreq() / getSampleRate()) * frameSize_;
+        // Do frequency transformations here
+        freq = sine->getFreq();
+        
+        // Voice level frequency scaling (if quantized to midi pitch)
+        
+        // Sound level frequency scaling ( get from the 
+        
+        //freq *= 0.5;
+        
+        binLoc =  (freq / getSampleRate()) * frameSize_;
         binInt = std::round(binLoc);
         binRem = binInt - binLoc;
         

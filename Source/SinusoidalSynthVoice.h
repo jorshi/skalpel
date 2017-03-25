@@ -67,6 +67,7 @@ private:
     mrs_real location_;
     mrs_realvec buffer_;
     mrs_realvec output_;
+    mrs_real noteFreqScale_;
     
     ScopedPointer<FFT> inverseFFT_;
     std::vector<FFT::Complex> spectrum_;

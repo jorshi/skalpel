@@ -59,6 +59,8 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         // Models producing sound
         activeModels_ = sound->getPlayingSineModels();
         previousElements_.resize(activeModels_.size());
+        
+        noteFreqScale_ = pow(2.0, (midiNoteNumber - sound->midiRootNote_)/12.0f);
     }
     else
     {
@@ -190,6 +192,8 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     mrs_real mag;
     mrs_real phase;
     
+    std::map<int, PrevElement>::iterator prev;
+    
     // Create the spectral signal
     for (auto sine = frame.begin(); sine != frame.end(); ++sine)
     {
@@ -200,7 +204,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         
         // Sound level frequency scaling ( get from the 
         
-        freq *= 1.0;
+        freq *= noteFreqScale_;
         
         binLoc =  (freq / getSampleRate()) * frameSize_;
         binInt = std::round(binLoc);
@@ -210,17 +214,16 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         mag = pow(10, sine->getAmp()/20);
         
         // Propagate phase
-        if (sine->isFirstInTrack())
+        if ((prev = previousElements_.at(0).find(sine->getTrack())) ==  previousElements_.at(0).end())
         {
             phase = sine->getPhase();
             previousElements_.at(0).emplace(sine->getTrack(), PrevElement(freq, sine->getPhase()));
         }
         else
         {
-            PrevElement& prev = previousElements_.at(0).at(sine->getTrack());
-            prev.phase += (PI * (prev.freq + freq) / getSampleRate()) * hopSize_;
-            prev.freq = freq;
-            phase = prev.phase;
+            prev->second.phase += (PI * (prev->second.freq + freq) / getSampleRate()) * hopSize_;
+            prev->second.freq = freq;
+            phase = prev->second.phase;
         }
         
         // Going to make a 9 bin wide Blackman Harris window

@@ -60,6 +60,8 @@ private:
     std::vector<FFT::Complex> spectrum_;
     std::vector<FFT::Complex> timeDomain_;
     
+    ReferenceCountedArray<SineModel> activeModels_;
+    std::vector<std::map<int, float>> phases_;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

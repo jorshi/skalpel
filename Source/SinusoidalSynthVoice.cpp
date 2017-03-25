@@ -55,6 +55,10 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         readPos_ = 0;
         writePos_ = 0;
         hopIndex_ = hopSize_;
+        
+        // Models producing sound
+        activeModels_ = sound->getPlayingSineModels();
+        phases_.resize(activeModels_.size());
     }
     else
     {
@@ -64,6 +68,8 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
 
 void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 {
+    activeModels_.clear();
+    phases_.clear();
     hopIndex_ = hopSize_;
     overlapIndex_ = 0;
     location_ = 0.0;
@@ -142,13 +148,12 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
 //==============================================================================
 bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSynthSound* const sound)
 {
-    ReferenceCountedArray<SineModel> activeModels = sound->getPlayingSineModels();
-    if (activeModels.size() < 1)
+    if (activeModels_.size() < 1)
     {
         return false;
     }
     
-    SineModel::ConstPtr model = activeModels[0];
+    SineModel::ConstPtr model = activeModels_[0];
     
     // Get number of frames in the model return if there aren't any
     int modelFrames = std::distance(model->begin(), model->end());
@@ -170,8 +175,11 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     // Constant reference to the frame at this point
     const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
     
-    // Zero out spectrum
-    std::fill(spectrum_.begin(), spectrum_.end(), FFT::Complex());
+    // Zero out first half of spectrum
+    std::for_each(spectrum_.begin(), spectrum_.begin() + nyquistBin_, [](FFT::Complex& complex){
+        complex.r = 0;
+        complex.i = 0;
+    });
     
     // Declare some variables for use in processing loop
     mrs_real freq;
@@ -200,6 +208,18 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         
         // Convert the decibels back to magnitude
         mag = pow(10, sine->getAmp()/20);
+        
+        // Propagate phase
+        if (sine->isFirstInTrack())
+        {
+            phase = sine->getPhase();
+            phases_.at(0).emplace(sine->getTrack(), sine->getPhase());
+        }
+        else
+        {
+            //phases_.at(0).at(sine->getTrack()) +=
+        }
+        
         phase = sine->getPhase();
         
         // Going to make a 9 bin wide Blackman Harris window

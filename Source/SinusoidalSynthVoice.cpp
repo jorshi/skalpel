@@ -56,7 +56,8 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         writePos_ = 0;
         hopIndex_ = hopSize_;
         
-        // Models producing sound
+        // Models producing sound -- we just want to hold onto these while a
+        // sound is playing so that the model doesn't get switched out mid way through
         activeModels_ = sound->getPlayingSineModels();
         previousElements_.resize(activeModels_.size());
         

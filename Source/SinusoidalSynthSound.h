@@ -37,6 +37,8 @@ public:
     // Get a reference to all playing sinusoid models
     ReferenceCountedArray<SineModel> getPlayingSineModels() const;
     
+    Array<SoundInterface*> getPlayingSounds() const;
+    
     // Sample the blackman harris window
     mrs_real getBH(int index) const { return bh1001_(index); };
     

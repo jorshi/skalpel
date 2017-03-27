@@ -74,6 +74,8 @@ private:
     std::vector<FFT::Complex> timeDomain_;
     
     ReferenceCountedArray<SineModel> activeModels_;
+    Array<SoundInterface*> activeSounds_;
+    
     std::vector<std::map<int, PrevElement>> previousElements_;
     
     

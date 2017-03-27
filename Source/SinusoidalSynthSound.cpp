@@ -65,3 +65,8 @@ ReferenceCountedArray<SineModel> SinusoidalSynthSound::getPlayingSineModels() co
     return models;
 }
 
+
+Array<SoundInterface*> SinusoidalSynthSound::getPlayingSounds() const
+{
+    return manager_->getActiveSounds();
+}

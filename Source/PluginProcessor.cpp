@@ -10,7 +10,7 @@
 
 #include "PluginProcessor.h"
 #include "PluginEditor.h"
-#include "stk/ADSR.h"
+#include "Modulation.h"
 
 //==============================================================================
 LoomAudioProcessor::LoomAudioProcessor()
@@ -110,6 +110,9 @@ void LoomAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 {
     ignoreUnused(samplesPerBlock);
     synth_.setCurrentPlaybackSampleRate(sampleRate);
+
+    // Sets sample rate for all modulation sources
+    Modulation::setRate(sampleRate);
 }
 
 void LoomAudioProcessor::releaseResources()

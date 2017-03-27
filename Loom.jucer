@@ -47,6 +47,12 @@
         <FILE id="Mq1nMz" name="FileLoader.h" compile="0" resource="0" file="Source/FileLoader.h"/>
       </GROUP>
       <GROUP id="{344A66DB-57A9-73F9-A8A5-7A6554B637B6}" name="Synthesis">
+        <GROUP id="{D38AFA8D-5124-C62C-5B47-121C077DB184}" name="Modulation">
+          <FILE id="vbk3ih" name="ADSR.cpp" compile="1" resource="0" file="Source/ADSR.cpp"/>
+          <FILE id="YTWGAG" name="ADSR.h" compile="0" resource="0" file="Source/ADSR.h"/>
+          <FILE id="MbRl7O" name="Modulation.cpp" compile="1" resource="0" file="Source/Modulation.cpp"/>
+          <FILE id="R6BC12" name="Modulation.h" compile="0" resource="0" file="Source/Modulation.h"/>
+        </GROUP>
         <GROUP id="{6829FCC5-D5C4-114D-3A09-5F35C1BA508D}" name="Sinusoidal">
           <FILE id="bE2YdI" name="SineElement.cpp" compile="1" resource="0" file="Source/SineElement.cpp"/>
           <FILE id="vMFLae" name="SineElement.h" compile="0" resource="0" file="Source/SineElement.h"/>

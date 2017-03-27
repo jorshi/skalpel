@@ -87,7 +87,7 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="essentia&#10;marsyas&#10;boost_serialization"
+    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="marsyas&#10;stk"
                extraCompilerFlags="" extraDefs="">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Loom" osxCompatibility="10.11 SDK"

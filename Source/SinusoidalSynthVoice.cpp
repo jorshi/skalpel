@@ -94,12 +94,10 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
     
     if (const SinusoidalSynthSound* const playingSound = static_cast<SinusoidalSynthSound*> (getCurrentlyPlayingSound().get()))
     {
-        
         float* outL = outputBuffer.getWritePointer (0, startSample);
         float* outR = outputBuffer.getNumChannels() > 1 ? outputBuffer.getWritePointer (1, startSample) : nullptr;
         
         int numCalculated = 0;
-        
         
         while (numCalculated < numSamples)
         {
@@ -156,6 +154,9 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     }
     
     SineModel::ConstPtr model = activeModels_[0];
+   
+    // Replace the float factor with a parameter, between 0 and 1
+    mrs_real startTimeOffset = 0.25f * model->size();
     
     // Get number of frames in the model return if there aren't any
     int modelFrames = std::distance(model->begin(), model->end());
@@ -164,9 +165,9 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         return false;
     }
     
-    // Get the frame closest to the requested time
-    mrs_real requestedPos = (location_ * model->getSampleRate()) / model->getFrameSize();
-    int requestedFrame = std::round(requestedPos);
+    // Get the frame closest to the requested time, float factor to be parameterizeda
+    mrs_real requestedPos = (1.0f * location_ * model->getSampleRate()) / model->getFrameSize();
+    int requestedFrame = std::round(requestedPos + startTimeOffset);
     
     // Out of frames from the model
     if (modelFrames <= requestedFrame)

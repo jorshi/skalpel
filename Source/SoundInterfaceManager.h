@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SoundInterface.h"
+#include "ModulationFactory.h"
 #include "AnalysisParameterManager.h"
 #include "ModulationManager.h"
 
@@ -42,8 +43,8 @@ private:
     OwnedArray<SoundInterface> soundInterfaces_;
     OwnedArray<AnalysisParameterManager> analysisParameters_;
     
-    // Modulation Matrix
-    ScopedPointer<ModulationManager> modManager_;
+    // Modulation Factory
+    ScopedPointer<ModulationFactory> modFactory_;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SoundInterfaceManager)

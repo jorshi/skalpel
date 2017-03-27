@@ -94,12 +94,15 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
     
     if (const SinusoidalSynthSound* const playingSound = static_cast<SinusoidalSynthSound*> (getCurrentlyPlayingSound().get()))
     {
+        if (activeModels_.size() < 1)
+        {
+            return;
+        }
         
         float* outL = outputBuffer.getWritePointer (0, startSample);
         float* outR = outputBuffer.getNumChannels() > 1 ? outputBuffer.getWritePointer (1, startSample) : nullptr;
         
         int numCalculated = 0;
-        
         
         while (numCalculated < numSamples)
         {
@@ -155,28 +158,6 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         return false;
     }
     
-    SineModel::ConstPtr model = activeModels_[0];
-    
-    // Get number of frames in the model return if there aren't any
-    int modelFrames = std::distance(model->begin(), model->end());
-    if (modelFrames < 1)
-    {
-        return false;
-    }
-    
-    // Get the frame closest to the requested time
-    mrs_real requestedPos = (location_ * model->getSampleRate()) / model->getFrameSize();
-    int requestedFrame = std::round(requestedPos);
-    
-    // Out of frames from the model
-    if (modelFrames <= requestedFrame)
-    {
-        return false;
-    }
-    
-    // Constant reference to the frame at this point
-    const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
-    
     // Zero out first half of spectrum
     std::for_each(spectrum_.begin(), spectrum_.begin() + nyquistBin_, [](FFT::Complex& complex){
         complex.r = 0;
@@ -191,115 +172,143 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     
     mrs_real mag;
     mrs_real phase;
-    
+
     std::map<int, PrevElement>::iterator prev;
-    
-    // Create the spectral signal
-    for (auto sine = frame.begin(); sine != frame.end(); ++sine)
+
+    for (int modelNum = 0; modelNum < activeModels_.size(); modelNum++)
     {
-        // Do frequency transformations here
-        freq = sine->getFreq();
+        SineModel::ConstPtr model = activeModels_[0];
         
-        // Frequency Scaling
-        freq *= noteFreqScale_;
-        
-        // Frequency Stretching
-        float stretchRatio = freq / 440.0;
-        float stretchFactor = 0.0f;
-        
-        if (stretchFactor > 0.0f)
+        // Get number of frames in the model return if there aren't any
+        if (model->size() < 1)
         {
-            if (stretchRatio > 1)
-            {
-                freq = pow(freq, (stretchFactor * stretchRatio) + 1.0f);
-            }
-            else if (stretchRatio < 1)
-            {
-                freq = pow(freq, 1.0f - (stretchFactor * stretchRatio));
-            }
+            return false;
         }
         
-        // Frequency Shifting
-        float freqShift = 0.0f;
-        freq += freqShift;
+        // Replace the float factor with a parameter, between 0 and 1
+        mrs_real startTimeOffset = 0.0f * model->size();
         
+        // Get the frame closest to the requested time, float factor to be parameterizeda
+        mrs_real requestedPos = (1.0f * location_ * model->getSampleRate()) / model->getFrameSize();
+        int requestedFrame = std::round(requestedPos + startTimeOffset);
         
-        binLoc =  (freq / getSampleRate()) * frameSize_;
-        binInt = std::round(binLoc);
-        binRem = binInt - binLoc;
-        
-        // Convert the decibels back to magnitude
-        mag = pow(10, sine->getAmp()/20);
-        
-        // Propagate phase
-        if ((prev = previousElements_.at(0).find(sine->getTrack())) ==  previousElements_.at(0).end())
+        // Out of frames from the model
+        if (model->size() <= requestedFrame)
         {
-            phase = sine->getPhase();
-            previousElements_.at(0).emplace(sine->getTrack(), PrevElement(freq, sine->getPhase()));
-        }
-        else
-        {
-            prev->second.phase += (PI * (prev->second.freq + freq) / getSampleRate()) * hopSize_;
-            prev->second.freq = freq;
-            phase = prev->second.phase;
+            return false;
         }
         
-        // Going to make a 9 bin wide Blackman Harris window
-        if (binLoc >= 5 && binLoc < nyquistBin_-4)
+        // Constant reference to the frame at this point
+        const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
+        
+        // Create the spectral signal
+        for (auto sine = frame.begin(); sine != frame.end(); ++sine)
         {
-            for (int i = -4; i < 5; ++i)
+            // Do frequency transformations here
+            freq = sine->getFreq();
+            
+            // Frequency Scaling
+            freq *= noteFreqScale_;
+            
+            // Frequency Stretching
+            float stretchRatio = freq / 440.0;
+            float stretchFactor = 0.0f;
+            
+            if (stretchFactor > 0.0f)
             {
-                spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
-            }
-        }
-        // Some components will wrap around 0
-        else if (binLoc < 5 && binLoc > 0)
-        {
-            for (int i = -4; i < 5; ++i)
-            {
-                // Complex Conjugate wraps around DC bin
-                if ((binInt + i) < 0)
+                if (stretchRatio > 1)
                 {
-                    spectrum_.at(-1*(binInt + i)).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum_.at(-1*(binInt + i)).i += -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    freq = pow(freq, (stretchFactor * stretchRatio) + 1.0f);
                 }
-                // Real only at DC bin
-                else if ((binInt + i) == 0)
+                else if (stretchRatio < 1)
                 {
-                    spectrum_.at(0).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                    freq = pow(freq, 1.0f - (stretchFactor * stretchRatio));
                 }
-                // Regular
-                else
+            }
+            
+            // Frequency Shifting
+            float freqShift = 0.0f;
+            freq += freqShift;
+            
+            
+            binLoc =  (freq / getSampleRate()) * frameSize_;
+            binInt = std::round(binLoc);
+            binRem = binInt - binLoc;
+            
+            // Convert the decibels back to magnitude. Gain should be parameterized.
+            float gain = -6.0f;
+            mag = pow(10, (sine->getAmp() - gain)/20);
+            
+            // Propagate phase
+            if ((prev = previousElements_.at(0).find(sine->getTrack())) ==  previousElements_.at(0).end())
+            {
+                phase = sine->getPhase();
+                previousElements_.at(0).emplace(sine->getTrack(), PrevElement(freq, sine->getPhase()));
+            }
+            else
+            {
+                prev->second.phase += (PI * (prev->second.freq + freq) / getSampleRate()) * hopSize_;
+                prev->second.freq = freq;
+                phase = prev->second.phase;
+            }
+            
+            // Going to make a 9 bin wide Blackman Harris window
+            if (binLoc >= 5 && binLoc < nyquistBin_-4)
+            {
+                for (int i = -4; i < 5; ++i)
                 {
                     spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
                     spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
                 }
             }
-        }
-        // Wrap around the Nyquist bin
-        else if (binLoc < (nyquistBin_ - 1) && binLoc >= (nyquistBin_-4))
-        {
-            for (int i = -4; i < 5; ++i)
+            // Some components will wrap around 0
+            else if (binLoc < 5 && binLoc > 0)
             {
-                // Complex Conjugate wraps nyquist bin
-                if ((binInt + i) > nyquistBin_)
+                for (int i = -4; i < 5; ++i)
                 {
-                    spectrum_.at((binInt + i) - nyquistBin_).r +=
-                    mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum_.at((binInt + i) - nyquistBin_).i +=
-                    -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    // Complex Conjugate wraps around DC bin
+                    if ((binInt + i) < 0)
+                    {
+                        spectrum_.at(-1*(binInt + i)).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                        spectrum_.at(-1*(binInt + i)).i += -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    }
+                    // Real only at DC bin
+                    else if ((binInt + i) == 0)
+                    {
+                        spectrum_.at(0).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                    }
+                    // Regular
+                    else
+                    {
+                        spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                        spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    }
                 }
-                // Real only at Nyquist
-                else if ((binInt + i) == nyquistBin_)
+            }
+            // Wrap around the Nyquist bin
+            else if (binLoc < (nyquistBin_ - 1) && binLoc >= (nyquistBin_-4))
+            {
+                for (int i = -4; i < 5; ++i)
                 {
-                    spectrum_.at(nyquistBin_).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                }
-                // Regular
-                else
-                {
-                    spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    // Complex Conjugate wraps nyquist bin
+                    if ((binInt + i) > nyquistBin_)
+                    {
+                        spectrum_.at((binInt + i) - nyquistBin_).r +=
+                        mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                        spectrum_.at((binInt + i) - nyquistBin_).i +=
+                        -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    }
+                    // Real only at Nyquist
+                    else if ((binInt + i) == nyquistBin_)
+                    {
+                        spectrum_.at(nyquistBin_).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                    }
+                    // Regular
+                    else
+                    {
+                        spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                        spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    }
                 }
             }
         }

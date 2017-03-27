@@ -79,6 +79,7 @@ public:
     mrs_natural getHopSize() const { return hopSize_; };
     const SineFrame& getFrame(int frame) const { return sineModel_.at(frame); };
     const SineMatrix& getModel() { return sineModel_; };
+    const int size() const { return sineModel_.size(); };
     
     // Get iterators for the sine model
     std::vector<std::vector<SineElement>>::iterator begin() { return sineModel_.begin(); };

@@ -61,6 +61,9 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         previousElements_.resize(activeModels_.size());
         
         noteFreqScale_ = pow(2.0, (midiNoteNumber - sound->midiRootNote_)/12.0f);
+        
+        adsr = ModulationFactory::make("adsr_1");
+        ADSR* myAdsr = dynamic_cast<ADSR*>(adsr.get());
     }
     else
     {

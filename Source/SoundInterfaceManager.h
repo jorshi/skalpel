@@ -15,6 +15,7 @@
 #include "SoundInterface.h"
 #include "ModulationFactory.h"
 #include "AnalysisParameterManager.h"
+#include "EnvelopeParameterManager.h"
 #include "ModulationManager.h"
 
 
@@ -42,9 +43,7 @@ private:
     // Sound interfaces and analysis parameters being managed here
     OwnedArray<SoundInterface> soundInterfaces_;
     OwnedArray<AnalysisParameterManager> analysisParameters_;
-    
-    // Modulation Factory
-    ScopedPointer<ModulationFactory> modFactory_;
+    ScopedPointer<EnvelopeParamaterManager> envelopes_;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SoundInterfaceManager)

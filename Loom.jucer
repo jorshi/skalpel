@@ -56,6 +56,10 @@
               file="Source/SynthesisUtils.h"/>
       </GROUP>
       <GROUP id="{B7912DAE-D906-DFCF-A3D3-4C2BDDFB5ED7}" name="Parameters">
+        <FILE id="FVyBFP" name="EnvelopeParameterManager.cpp" compile="1" resource="0"
+              file="Source/EnvelopeParameterManager.cpp"/>
+        <FILE id="rCsFhz" name="EnvelopeParameterManager.h" compile="0" resource="0"
+              file="Source/EnvelopeParameterManager.h"/>
         <FILE id="sJO8Fl" name="ParameterManager.cpp" compile="1" resource="0"
               file="Source/ParameterManager.cpp"/>
         <FILE id="eW27Uk" name="ParameterManager.h" compile="0" resource="0"

@@ -25,15 +25,15 @@ public:
     ModulationFactory();
     
     // Clone a prototype modulation source and return a pointer to it
-    Modulation::Ptr make(String id);
+    static Modulation::Ptr make(String id);
     
-    bool addModulationPrototype(Modulation::Ptr modSource, String id);
+    static bool addModulationPrototype(Modulation::Ptr modSource, String id);
     
 private:
     typedef std::map<String, Modulation::Ptr> ModMap;
 
     // Name set of modulation sources
-    ModMap modulationPrototypes_;
+    static ModMap modulationPrototypes_;
     
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(ModulationFactory)

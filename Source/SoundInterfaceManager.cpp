@@ -28,6 +28,8 @@ Thread("SoundInterface Manager Thread")
         soundInterfaces_.insert(i, sound);
     }
     
+    envelopes_ = new EnvelopeParamaterManager(0, params);
+    
     startThread();
 }
 

@@ -16,6 +16,9 @@
 #include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
 #include "SinusoidalSynthSound.h"
+#include "Modulation.h"
+#include "ADSR.h"
+#include "ModulationFactory.h"
 
 class SinusoidalSynthVoice : public SynthesiserVoice
 {
@@ -75,7 +78,8 @@ private:
     
     ReferenceCountedArray<SineModel> activeModels_;
     std::vector<std::map<int, PrevElement>> previousElements_;
-    
+
+    Modulation::Ptr adsr;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

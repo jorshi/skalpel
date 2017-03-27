@@ -17,7 +17,7 @@
 class ADSR : public Modulation
 {
 public:
-    enum phase
+    enum Phase
     {
         attack,
         decay,
@@ -27,7 +27,10 @@ public:
     };
 
     // Constructor
-    ADSR();
+    ADSR(AudioProcessorValueTreeState* p);
+    
+    // Copy Constructor
+    ADSR(const ADSR& c);
     
     // Deconstructor()
     ~ADSR() {};
@@ -38,9 +41,18 @@ public:
     // Return modulation value at current time and update
     void apply(float& value, int samples=1) override;
     
+    // Register parameter names for accessing in the parameters value tree
+    void registerAttackParam(String id) { attackTime_ = id; };
+    
 private:
     
     int position_;
+    AudioProcessorValueTreeState* parameters_;
+    Phase currentPhase_;
+    
+    // Parameter mappings
+    String attackTime_;
+    
 };
 
 

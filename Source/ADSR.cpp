@@ -10,14 +10,22 @@
 
 #include "ADSR.h"
 
-ADSR::ADSR() : position_(0)
+ADSR::ADSR(AudioProcessorValueTreeState* p) : position_(0), parameters_(p), currentPhase_(off)
 {
+}
+
+
+ADSR::ADSR(const ADSR& c)
+{
+    currentPhase_ = c.currentPhase_;
+    position_ = c.position_;
+    parameters_ = c.parameters_;
 }
 
 
 Modulation::Ptr ADSR::clone()
 {
-    return new ADSR;
+    return new ADSR(*this);
 }
 
 

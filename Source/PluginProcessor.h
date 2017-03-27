@@ -17,6 +17,9 @@
 #include "SoundInterfaceManager.h"
 #include "SoundInterface.h"
 #include "AnalysisParameterManager.h"
+#include "Modulation.h"
+#include "ModulationFactory.h"
+#include "ADSR.h"
 
 
 //==============================================================================

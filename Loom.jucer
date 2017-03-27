@@ -52,6 +52,10 @@
           <FILE id="YTWGAG" name="ADSR.h" compile="0" resource="0" file="Source/ADSR.h"/>
           <FILE id="MbRl7O" name="Modulation.cpp" compile="1" resource="0" file="Source/Modulation.cpp"/>
           <FILE id="R6BC12" name="Modulation.h" compile="0" resource="0" file="Source/Modulation.h"/>
+          <FILE id="BOtYVw" name="ModulationFactory.cpp" compile="1" resource="0"
+                file="Source/ModulationFactory.cpp"/>
+          <FILE id="JsagAq" name="ModulationFactory.h" compile="0" resource="0"
+                file="Source/ModulationFactory.h"/>
         </GROUP>
         <GROUP id="{6829FCC5-D5C4-114D-3A09-5F35C1BA508D}" name="Sinusoidal">
           <FILE id="bE2YdI" name="SineElement.cpp" compile="1" resource="0" file="Source/SineElement.cpp"/>

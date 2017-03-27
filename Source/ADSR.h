@@ -33,10 +33,10 @@ public:
     ~ADSR() {};
     
     // Return an instance of self
-    Modulation* clone() override;
+    Modulation::Ptr clone() override;
     
     // Return modulation value at current time and update
-    float tick(int samples=1) override;
+    void apply(float& value, int samples=1) override;
     
 private:
     

@@ -11,9 +11,14 @@
 #ifndef MODULATION_H_INCLUDED
 #define MODULATION_H_INCLUDED
 
-class Modulation
+#include "../JuceLibraryCode/JuceHeader.h"
+
+
+class Modulation : public ReferenceCountedObject
 {
 public:
+    
+    typedef ReferenceCountedObjectPtr<Modulation> Ptr;
     
     // Default Constructor
     Modulation() {};
@@ -22,10 +27,10 @@ public:
     virtual ~Modulation() {};
     
     // Must be implemented in subclasses
-    virtual Modulation* clone()=0;
+    virtual Ptr clone()=0;
     
-    // Returns value at current time and updates
-    virtual float tick(int samples=1)=0;
+    // Applies modulation to a value and then updates modulation function
+    virtual void apply(float& value, int samples=1)=0;
     
     // Sample rate shared by all modulation sources
     static void setRate(int sampleRate) { sampleRate_ = sampleRate; };
@@ -34,6 +39,17 @@ public:
 private:
     
     static int sampleRate_;
+};
+
+
+// Null Modulation Class, will act as a sort of nullptr in the case a
+// modulation source that doesn't exist was requested (for whatever reason)
+// and we want to return something that will have no effect without breaking
+class NullModulation : public Modulation
+{
+public:
+    Modulation::Ptr clone() { return new NullModulation; };
+    void apply(float& value, int samples=1) {};
 };
 
 

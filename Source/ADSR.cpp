@@ -15,14 +15,13 @@ ADSR::ADSR() : position_(0)
 }
 
 
-Modulation* ADSR::clone()
+Modulation::Ptr ADSR::clone()
 {
     return new ADSR;
 }
 
 
-float ADSR::tick(int samples)
+void ADSR::apply(float& value, int samples)
 {
     position_ += samples;
-    return 0.0f;
 }

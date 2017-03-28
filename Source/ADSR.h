@@ -39,10 +39,16 @@ public:
     Modulation::Ptr clone() override;
     
     // Return modulation value at current time and update
-    void apply(float& value, int samples=1) override;
+    void apply(float& value) override;
+    
+    void increment(int samples=1) override;
     
     // Register parameter names for accessing in the parameters value tree
-    void registerAttackParam(String id) { attackTime_ = id; };
+    void registerAttackParam(String id) { attackTimeParam_ = id; };
+    
+    void setPhase(Phase p) { currentPhase_ = p; };
+    
+    void turnOff();
     
 private:
     
@@ -51,7 +57,12 @@ private:
     Phase currentPhase_;
     
     // Parameter mappings
-    String attackTime_;
+    String attackTimeParam_;
+    
+    float attackTime_;
+    float decayTime_;
+    float sustainLevel_;
+    float releaseTime_;
     
 };
 

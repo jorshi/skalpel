@@ -30,7 +30,9 @@ public:
     virtual Ptr clone()=0;
     
     // Applies modulation to a value and then updates modulation function
-    virtual void apply(float& value, int samples=1)=0;
+    virtual void apply(float& value)=0;
+    
+    virtual void increment(int samples=1)=0;
     
     // Sample rate shared by all modulation sources
     static void setRate(int sampleRate) { sampleRate_ = sampleRate; };
@@ -48,8 +50,9 @@ private:
 class NullModulation : public Modulation
 {
 public:
-    Modulation::Ptr clone() { return new NullModulation; };
-    void apply(float& value, int samples=1) {};
+    Modulation::Ptr clone() override { return new NullModulation; };
+    void apply(float& value) override {};
+    void increment(int samples=1) override {};
 };
 
 

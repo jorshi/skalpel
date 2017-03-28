@@ -17,7 +17,7 @@ void ModulationManager::apply(float &value, String id, int sampleInc)
     {
         for (int i = 0; i < modSources->second.size(); i++)
         {
-            modSources->second.getUnchecked(i)->apply(value, sampleInc);
+            modSources->second.getUnchecked(i)->apply(value);
         }
     }
 }

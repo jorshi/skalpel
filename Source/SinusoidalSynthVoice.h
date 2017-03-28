@@ -79,7 +79,7 @@ private:
     ReferenceCountedArray<SineModel> activeModels_;
     std::vector<std::map<int, PrevElement>> previousElements_;
 
-    Modulation::Ptr adsr;
+    Modulation::Ptr env1_;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

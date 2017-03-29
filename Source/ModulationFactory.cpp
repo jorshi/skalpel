@@ -23,10 +23,14 @@ Modulation::Ptr ModulationFactory::make(String id)
     {
         return source->second->clone();
     }
-    else
+    else if ((source = modulationPrototypes_.find("null")) != modulationPrototypes_.end())
     {
-        return nullptr;
+        // Try to return a Null Modulator object, which is a modulator object that has no effect
+        // on the signals passed into it
+        return source->second->clone();
     }
+    
+    return nullptr;
 }
 
 bool ModulationFactory::addModulationPrototype(Modulation::Ptr modSource, String id)

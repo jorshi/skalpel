@@ -79,6 +79,7 @@ private:
     float attackTime_;
     float decayTime_;
     float sustainLevel_;
+    float releaseLevel_;
     float releaseTime_;
     float currentLevel_;
     

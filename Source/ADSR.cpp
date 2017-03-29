@@ -86,7 +86,7 @@ void ADSR::apply(float& value)
                 releaseTime_  = *param;
             }
             length = getRate() * (releaseTime_ / 1000);
-            currentLevel_ = (length > 0) ? (1.0f - (float(position_) / length)) * currentLevel_ : 0.0f;
+            currentLevel_ = (length > 0) ? (1.0f - (float(position_) / length)) * sustainLevel_ : 0.0f;
             break;
             
         case off:
@@ -155,6 +155,7 @@ void ADSR::triggerAttack()
 void ADSR::triggerRelease()
 {
     currentPhase_ = release;
+    releaseLevel_ = currentLevel_;
     position_ = 0;
 }
 

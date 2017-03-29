@@ -34,5 +34,3 @@ bool ModulationFactory::addModulationPrototype(Modulation::Ptr modSource, String
     std::pair<ModMap::iterator, bool> result = modulationPrototypes_.emplace(id, modSource);
     return result.second;
 }
-
-ModulationFactory::ModMap ModulationFactory::modulationPrototypes_ = ModulationFactory::ModMap();

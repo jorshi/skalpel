@@ -21,7 +21,7 @@ public:
     typedef ReferenceCountedObjectPtr<Modulation> Ptr;
     
     // Default Constructor
-    Modulation() {};
+    Modulation() : isActive_(true) {};
     
     // Default Deconstructor
     virtual ~Modulation() {};
@@ -38,9 +38,14 @@ public:
     static void setRate(int sampleRate) { sampleRate_ = sampleRate; };
     static int getRate() { return sampleRate_; };
     
+    // Whether or not this modulator is running
+    void setActive(bool active) { isActive_ = active; };
+    bool isActive() const { return isActive_; };
+    
 private:
     
     static int sampleRate_;
+    bool isActive_;
 };
 
 

@@ -62,11 +62,11 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         
         noteFreqScale_ = pow(2.0, (midiNoteNumber - sound->midiRootNote_)/12.0f);
         
-        env1_ = ModulationFactory::make("adsr_1");
+        env1_ = sound->getSoundInterfaceManager()->getModulator("adsr_1");
         ADSR* adsr;
         if ((adsr = dynamic_cast<ADSR*>(env1_.get())))
         {
-            adsr->setPhase(ADSR::attack);
+            adsr->triggerAttack();
         }
     }
     else
@@ -77,12 +77,21 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
 
 void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 {
-    ADSR* adsr;
-    if ((adsr = dynamic_cast<ADSR*>(env1_.get())))
-    {
-        adsr->turnOff();
+    if (allowTailOff) {
+        ADSR* adsr;
+        if ((adsr = dynamic_cast<ADSR*>(env1_.get())))
+        {
+            adsr->triggerRelease();
+        }
     }
-    
+    else
+    {
+        releaseOver();
+    }
+}
+
+void SinusoidalSynthVoice::releaseOver()
+{
     activeModels_.clear();
     previousElements_.clear();
     hopIndex_ = hopSize_;
@@ -91,7 +100,13 @@ void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
     readPos_ = 0;
     buffer_.setval(0.0);
     clearCurrentNote();
+    
+    if (env1_ != nullptr)
+    {
+        env1_->setActive(false);
+    }
 }
+
 
 void SinusoidalSynthVoice::pitchWheelMoved (const int /*newValue*/)
 {
@@ -145,6 +160,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                         buffer_(writePos_ + i) = 0.0;
                     }
                     clearCurrentNote();
+                    env1_->setActive(false);
                 }
                 
                 // Update write pointer and read pointer
@@ -167,9 +183,15 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
 //==============================================================================
 bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSynthSound* const sound)
 {
+    // No models to render or the amplitude envelope has completed
     if (activeModels_.size() < 1)
     {
         return false;
+    }
+    
+    if (!env1_->isActive())
+    {
+        releaseOver();
     }
     
     // Zero out first half of spectrum

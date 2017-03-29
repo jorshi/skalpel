@@ -44,11 +44,25 @@ public:
     void increment(int samples=1) override;
     
     // Register parameter names for accessing in the parameters value tree
-    void registerAttackParam(String id) { attackTimeParam_ = id; };
+    void registerAttackParam(const String& id) { attackTimeParam_ = id; };
     
+    void registerDecayParam(const String& id) { decayTimeParam_ = id; };
+    
+    void registerSustainParam(const String& id) { sustainLevelParam_ = id; };
+    
+    void registerReleaseParam(const String& id) { releaseTimeParam_ = id; };
+    
+    // Set the phase of the envelope (i.e. attack/decay/sustain/release)
     void setPhase(Phase p) { currentPhase_ = p; };
     
     void turnOff();
+    
+    // Set envelope into release stage
+    void triggerRelease();
+    
+    // Trigger onset of envelope
+    void triggerAttack();
+    
     
 private:
     
@@ -58,11 +72,15 @@ private:
     
     // Parameter mappings
     String attackTimeParam_;
+    String decayTimeParam_;
+    String sustainLevelParam_;
+    String releaseTimeParam_;
     
     float attackTime_;
     float decayTime_;
     float sustainLevel_;
     float releaseTime_;
+    float currentLevel_;
     
 };
 

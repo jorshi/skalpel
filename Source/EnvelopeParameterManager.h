@@ -20,7 +20,7 @@
 class EnvelopeParamaterManager : public ParameterManager
 {
 public:
-    EnvelopeParamaterManager(int num, AudioProcessorValueTreeState* p);
+    EnvelopeParamaterManager(int num, AudioProcessorValueTreeState* p, ModulationFactory* m);
     
     ~EnvelopeParamaterManager() override {};
     
@@ -31,6 +31,7 @@ public:
 private:
     
     Array<String> availableEnvelopes_;
+    ModulationFactory* modulationFactory_;
 };
 
 

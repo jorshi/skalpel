@@ -19,6 +19,7 @@
 #include "AnalysisParameterManager.h"
 #include "ParameterManager.h"
 #include "FileLoader.h"
+#include "ModulationFactory.h"
 
 class SoundInterface
 {
@@ -72,6 +73,7 @@ public:
     
     // Checks reference counted SineModels to see if any can be freed
     void checkModels();
+
     
 private:
     
@@ -87,6 +89,8 @@ private:
     
     // Parameters for the analysis phase
     AnalysisParameterManager* analysisParams_;
+    
+
     
     bool isActive_;
     

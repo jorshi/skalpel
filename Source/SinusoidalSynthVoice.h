@@ -57,6 +57,8 @@ private:
     
     bool renderFrames (mrs_realvec& buffer, const SinusoidalSynthSound* const sound);
     
+    void releaseOver();
+    
     
     //=============================================================================
     int hopSize_;

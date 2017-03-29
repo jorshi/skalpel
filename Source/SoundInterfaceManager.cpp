@@ -27,8 +27,11 @@ Thread("SoundInterface Manager Thread")
         sound = new SoundInterface(analysisParams);
         soundInterfaces_.insert(i, sound);
     }
+ 
+    modulationFactory_ = new ModulationFactory();
+    envelopes_ = new EnvelopeParamaterManager(0, params, modulationFactory_);
     
-    envelopes_ = new EnvelopeParamaterManager(0, params);
+
     
     startThread();
 }
@@ -69,3 +72,8 @@ Array<SoundInterface*> SoundInterfaceManager::getActiveSounds()
     return activeSounds;
 }
 
+
+Modulation::Ptr SoundInterfaceManager::getModulator(const String& id) const
+{
+    return modulationFactory_->make(id);
+}

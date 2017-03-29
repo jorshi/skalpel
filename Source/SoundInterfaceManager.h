@@ -16,7 +16,6 @@
 #include "ModulationFactory.h"
 #include "AnalysisParameterManager.h"
 #include "EnvelopeParameterManager.h"
-#include "ModulationManager.h"
 
 
 class SoundInterfaceManager : private Thread

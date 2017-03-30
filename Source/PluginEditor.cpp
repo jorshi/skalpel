@@ -15,16 +15,11 @@
 
 //==============================================================================
 LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
-    AudioProcessorEditor (&p), processor (p), soundInterface(p.getCurrentSound()),
-    analysisComponent(this, soundInterface->getAnalysisParams()),
-    loadComponent(this, this, soundInterface), synthesisComponent(this)
+    AudioProcessorEditor (&p), processor (p), soundManager(p.getSoundInterfaceManager()),
+    sounds(soundManager->getSounds())
 {
     setLookAndFeel(&loomLookAndFeel);
-    
-    // Make sure that before the constructor has finished, you've set the
-    // editor's size to whatever you need it to be.
-    setSize (640, 360);
-    
+
     // Setup Colours
     bgColour = Colour::fromRGB(71, 75, 81);
     layer1Colour = Colour::fromRGB(47, 47, 47);
@@ -36,12 +31,36 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     footer = Rectangle<int>(0, 288, 640, 74);
     middle = Rectangle<int>(10, 61, 620, 217);
     
-    // Components
-    addAndMakeVisible(analysisComponent);
-    addAndMakeVisible(loadComponent);
-    addAndMakeVisible(synthesisComponent);
+    SoundInterface* soundInterface;
+    AnalysisComponent* analysisComp;
+    LoadComponent* loadComp;
+    SynthesisComponent* synthesisComp;
     
-    loadState();
+    for (int i = 0; i < sounds.size(); i++)
+    {
+        soundInterface = sounds.getUnchecked(i);
+        
+        // Create new UI components for each sound
+        analysisComp = new AnalysisComponent(this, soundInterface->getAnalysisParams());
+        loadComp = new LoadComponent(this, this, soundInterface);
+        synthesisComp = new SynthesisComponent(this);
+        
+        // Add each component to a managed array
+        analysisComponents.add(analysisComp);
+        loadComponents.add(loadComp);
+        synthesisComponents.add(synthesisComp);
+        
+        // Add each component to the UI
+        addAndMakeVisible(analysisComp);
+        addAndMakeVisible(loadComp);
+        addAndMakeVisible(synthesisComp);
+    }
+    
+    loadCurrentSound();
+    
+    // Make sure that before the constructor has finished, you've set the
+    // editor's size to whatever you need it to be.
+    setSize (640, 360);
 }
 
 LoomAudioProcessorEditor::~LoomAudioProcessorEditor()
@@ -76,9 +95,9 @@ void LoomAudioProcessorEditor::paint (Graphics& g)
 
 void LoomAudioProcessorEditor::resized()
 {
-    analysisComponent.setBounds(10, 61, 620, 217);
-    loadComponent.setBounds(10, 61, 620, 217);
-    synthesisComponent.setBounds(10, 61, 620, 217);
+    analysisComponents.getUnchecked(currentSound)->setBounds(10, 61, 620, 217);
+    loadComponents.getUnchecked(currentSound)->setBounds(10, 61, 620, 217);
+    synthesisComponents.getUnchecked(currentSound)->setBounds(10, 61, 620, 217);
 }
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)
@@ -86,60 +105,60 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
     
     if (button->getComponentID() == "load_file")
     {
-        soundInterface->loadFile();
-        loadState();
+        currentSoundInterface->loadFile();
+        loadSoundState();
     }
     
     if (button->getComponentID() == "run_analysis")
     {
-        soundInterface->runAnalysis();
+        currentSoundInterface->runAnalysis();
         //processor.swapSound(soundInterface);
-        switchState(SoundInterface::synthesisState);
+        switchSoundState(SoundInterface::synthesisState);
     }
     
     if (button->getComponentID() == "new_analysis")
     {
-        switchState(SoundInterface::loadFileState);
+        switchSoundState(SoundInterface::loadFileState);
     }
 }
 
 
-void LoomAudioProcessorEditor::switchState(SoundInterface::State newState)
+void LoomAudioProcessorEditor::switchSoundState(SoundInterface::State newState)
 {
-    if (soundInterface->getState() != newState)
+    if (currentSoundInterface->getState() != newState)
     {
-        soundInterface->setState(newState);
-        loadState();
+        currentSoundInterface->setState(newState);
+        loadSoundState();
     }
 }
 
 
 void LoomAudioProcessorEditor::hideMiddle()
 {
-    analysisComponent.setVisible(false);
-    loadComponent.setVisible(false);
-    synthesisComponent.setVisible(false);
+    analysisComponents.getUnchecked(currentSound)->setVisible(false);
+    loadComponents.getUnchecked(currentSound)->setVisible(false);
+    synthesisComponents.getUnchecked(currentSound)->setVisible(false);
 }
 
 
-void LoomAudioProcessorEditor::loadState()
+void LoomAudioProcessorEditor::loadSoundState()
 {
     hideMiddle();
-    switch(soundInterface->getState())
+    switch(currentSoundInterface->getState())
     {
         case SoundInterface::loadFileState:
-            loadComponent.setVisible(true);
+            loadComponents.getUnchecked(currentSound)->setVisible(true);
             break;
             
         case SoundInterface::analysisState:
-            analysisComponent.setVisible(true);
+            analysisComponents.getUnchecked(currentSound)->setVisible(true);
             break;
             
         case SoundInterface::runningAnalysisState:
             break;
             
         case SoundInterface::synthesisState:
-            synthesisComponent.setVisible(true);
+            synthesisComponents.getUnchecked(currentSound)->setVisible(true);
             break;
     }
 }
@@ -149,7 +168,31 @@ void LoomAudioProcessorEditor::actionListenerCallback(const String& message)
 {
     if (message == "reload_state")
     {
-        loadState();
+        loadSoundState();
+    }
+}
+
+void LoomAudioProcessorEditor::loadCurrentSound()
+{
+    hideAllSounds();
+    currentSound = processor.getCurrentSoundNum();
+    if (currentSound >= 0 && currentSound < sounds.size())
+    {
+        analysisComponents.getUnchecked(currentSound)->setVisible(true);
+        loadComponents.getUnchecked(currentSound)->setVisible(true);
+        synthesisComponents.getUnchecked(currentSound)->setVisible(true);
+        currentSoundInterface = soundManager->getInterface(currentSound);
+        loadSoundState();
+    }
+}
+
+void LoomAudioProcessorEditor::hideAllSounds()
+{
+    for (int i = 0; i < sounds.size(); i++)
+    {
+        analysisComponents.getUnchecked(i)->setVisible(false);
+        loadComponents.getUnchecked(i)->setVisible(false);
+        synthesisComponents.getUnchecked(i)->setVisible(false);
     }
 }
 

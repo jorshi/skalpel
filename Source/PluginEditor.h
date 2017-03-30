@@ -50,11 +50,18 @@ private:
     void actionListenerCallback(const String& message) override;
     
     // Called when the UI state changes
-    void switchState(SoundInterface::State newState);
+    void switchSoundState(SoundInterface::State newState);
     
+    // Hide all the main sound components for the current sound
     void hideMiddle();
     
-    void loadState();
+    // Load a new sound state
+    void loadSoundState();
+    
+    // Get the current sound to be displayed on the main UI
+    void loadCurrentSound();
+    
+    void hideAllSounds();
     
     LoomAudioProcessor& processor;
     
@@ -75,16 +82,18 @@ private:
     // File Loader
     FileLoader fileLoader;
     
-    
-    //SoundInterfaceManager& soundInterfaceManager;
-    
     // For interfacing with analysis and sounds
-    SoundInterface* soundInterface;
+    SoundInterfaceManager* soundManager;
+    SoundInterface* currentSoundInterface;
     
     // This is where analysis and synthesis params go
-    AnalysisComponent analysisComponent;
-    LoadComponent loadComponent;
-    SynthesisComponent synthesisComponent;
+    OwnedArray<AnalysisComponent> analysisComponents;
+    OwnedArray<LoadComponent> loadComponents;
+    OwnedArray<SynthesisComponent> synthesisComponents;
+    
+    int currentSound;
+    
+    const OwnedArray<SoundInterface>& sounds;
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessorEditor)
 };

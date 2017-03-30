@@ -74,8 +74,9 @@ public:
     void swapModel(ScopedPointer<SineModel> newModel);
     void swapSound(const SoundInterface& newSound);
     
+    SoundInterfaceManager* getSoundInterfaceManager() { return soundManager_.get(); };
     SoundInterface* getCurrentSound() { return soundManager_->getInterface(currentUISound_); };
-    
+    int getCurrentSoundNum() { return currentUISound_; };
     AudioProcessorValueTreeState& getParams();
 
 private:

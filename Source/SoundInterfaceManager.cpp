@@ -31,8 +31,6 @@ Thread("SoundInterface Manager Thread")
     modulationFactory_ = new ModulationFactory();
     envelopes_ = new EnvelopeParamaterManager(0, params, modulationFactory_);
     
-
-    
     startThread();
 }
 

@@ -34,6 +34,9 @@ public:
     // Get an array of pointers to active sounds
     Array<SoundInterface*> getActiveSounds();
     
+    // Get a reference to all the sound interfaces
+    const OwnedArray<SoundInterface>& getSounds() const { return soundInterfaces_; };
+    
     // Modulator object
     Modulation::Ptr getModulator(const String& id) const;
 

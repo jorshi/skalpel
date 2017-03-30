@@ -45,7 +45,8 @@ public:
     // Sample the synthesis window function
     mrs_real getSynthWindow(int index) const { return synthWindow_(index); };
     
-    
+    // Get sound interface manager
+    SoundInterfaceManager* getSoundInterfaceManager() const { return manager_; };
     
 private:
     friend class SinusoidalSynthVoice;

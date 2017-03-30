@@ -13,7 +13,9 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SoundInterface.h"
+#include "ModulationFactory.h"
 #include "AnalysisParameterManager.h"
+#include "EnvelopeParameterManager.h"
 
 
 class SoundInterfaceManager : private Thread
@@ -31,6 +33,9 @@ public:
     
     // Get an array of pointers to active sounds
     Array<SoundInterface*> getActiveSounds();
+    
+    // Modulator object
+    Modulation::Ptr getModulator(const String& id) const;
 
 private:
     
@@ -40,6 +45,10 @@ private:
     // Sound interfaces and analysis parameters being managed here
     OwnedArray<SoundInterface> soundInterfaces_;
     OwnedArray<AnalysisParameterManager> analysisParameters_;
+    ScopedPointer<EnvelopeParamaterManager> envelopes_;
+    
+    // Modulation Factory
+    ScopedPointer<ModulationFactory> modulationFactory_;
     
 
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(SoundInterfaceManager)

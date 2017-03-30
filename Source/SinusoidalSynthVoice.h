@@ -16,6 +16,9 @@
 #include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
 #include "SinusoidalSynthSound.h"
+#include "Modulation.h"
+#include "ADSR.h"
+#include "ModulationFactory.h"
 
 class SinusoidalSynthVoice : public SynthesiserVoice
 {
@@ -54,6 +57,8 @@ private:
     
     bool renderFrames (mrs_realvec& buffer, const SinusoidalSynthSound* const sound);
     
+    void releaseOver();
+    
     
     //=============================================================================
     int hopSize_;
@@ -77,7 +82,8 @@ private:
     Array<SoundInterface*> activeSounds_;
     
     std::vector<std::map<int, PrevElement>> previousElements_;
-    
+
+    Modulation::Ptr env1_;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

@@ -62,6 +62,13 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         previousElements_.resize(activeModels_.size());
         
         noteFreqScale_ = pow(2.0, (midiNoteNumber - sound->midiRootNote_)/12.0f);
+        
+        env1_ = sound->getSoundInterfaceManager()->getModulator("adsr_1");
+        ADSR* adsr;
+        if ((adsr = dynamic_cast<ADSR*>(env1_.get())))
+        {
+            adsr->triggerAttack();
+        }
     }
     else
     {
@@ -71,14 +78,36 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
 
 void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 {
+    if (allowTailOff) {
+        ADSR* adsr;
+        if ((adsr = dynamic_cast<ADSR*>(env1_.get())))
+        {
+            adsr->triggerRelease();
+        }
+    }
+    else
+    {
+        releaseOver();
+    }
+}
+
+void SinusoidalSynthVoice::releaseOver()
+{
     activeModels_.clear();
     previousElements_.clear();
     hopIndex_ = hopSize_;
     overlapIndex_ = 0;
     location_ = 0.0;
     readPos_ = 0;
+    buffer_.setval(0.0);
     clearCurrentNote();
+    
+    if (env1_ != nullptr)
+    {
+        env1_->setActive(false);
+    }
 }
+
 
 void SinusoidalSynthVoice::pitchWheelMoved (const int /*newValue*/)
 {
@@ -132,6 +161,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                         buffer_(writePos_ + i) = 0.0;
                     }
                     clearCurrentNote();
+                    env1_->setActive(false);
                 }
                 
                 // Update write pointer and read pointer
@@ -154,9 +184,15 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
 //==============================================================================
 bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSynthSound* const sound)
 {
+    // No models to render or the amplitude envelope has completed
     if (activeModels_.size() < 1)
     {
         return false;
+    }
+    
+    if (!env1_->isActive())
+    {
+        releaseOver();
     }
     
     // Zero out first half of spectrum
@@ -171,7 +207,8 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     mrs_natural binInt;
     mrs_real binRem;
     
-    mrs_real mag;
+    float mag;
+    float ampEnv = 1.0f;
     mrs_real phase;
 
     std::map<int, PrevElement>::iterator prev;
@@ -198,6 +235,9 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         {
             return false;
         }
+        
+        // Amplitude envelope value to be applied at this frame
+        env1_->apply(ampEnv);
         
         // Constant reference to the frame at this point
         const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
@@ -238,7 +278,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             
             // Convert the decibels back to magnitude. Gain should be parameterized.
             float gain = -6.0f;
-            mag = pow(10, (sine->getAmp() - gain)/20);
+            mag = pow(10, (sine->getAmp() + gain)/20) * ampEnv;
             
             // Propagate phase
             if ((prev = previousElements_.at(0).find(sine->getTrack())) ==  previousElements_.at(0).end())
@@ -314,6 +354,10 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             }
         }
     }
+    
+    float i = 1.0;
+    env1_->apply(i);
+    env1_->increment(hopSize_);
     
     // Conjugate for bins above the nyquist frequency
     for (int i = 1; i < nyquistBin_; ++i)

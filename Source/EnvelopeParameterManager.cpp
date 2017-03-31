@@ -42,7 +42,7 @@ void EnvelopeParamaterManager::createParameters()
                                        "ADSR 1 Sustain",
                                        String(),
                                        NormalisableRange<float>(0.0f, 1.0f, 0.01f),
-                                       1.0f,
+                                       0.75f,
                                        nullptr,
                                        nullptr);
     
@@ -50,7 +50,7 @@ void EnvelopeParamaterManager::createParameters()
                                        "ADSR 1 Release",
                                        "ms",
                                        NormalisableRange<float>(0.0f, 5000.0f, 0.1f, 0.75f),
-                                       1000.0f,
+                                       20.0f,
                                        nullptr,
                                        nullptr);
     

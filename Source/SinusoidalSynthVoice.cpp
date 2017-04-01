@@ -217,6 +217,12 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     
     float parameterValue;
     
+    // Tuning Parameters
+    float octaveTuning;
+    float semitoneTuning;
+    float centTuning;
+    float tuningRatio;
+    
     // Time modulation
     float startTimeOffset;
     float playbackRate;
@@ -276,9 +282,23 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         // Constant reference to the frame at this point
         const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
         
+        // -- Tuning Parameters --
+        octaveTuning = params_.getUnchecked(modelNum)->getRawValue("octave_tune", parameterValue) ?
+            parameterValue : 0.0f;
+        
+        semitoneTuning = params_.getUnchecked(modelNum)->getRawValue("semitone_tune", parameterValue) ?
+            parameterValue : 0.0f;
+        
+        centTuning = params_.getUnchecked(modelNum)->getRawValue("cent_tune", parameterValue) ?
+            parameterValue : 0.0f;
+        
+        tuningRatio = ((octaveTuning * 1200.0f) + (semitoneTuning * 100.0f) + (centTuning)) / 1200.0f;
+        tuningRatio = powf(2.0, tuningRatio);
+        
         // --- Get transformation parameters outside of loop through frame --
         freqScale = params_.getUnchecked(modelNum)->getRawValue("frequency_scale", parameterValue) ?
             parameterValue : 1.0f;
+        
         
         stretchCenter = params_.getUnchecked(modelNum)->getRawValue("stretch_center", parameterValue) ? parameterValue : 0.0f;
         
@@ -307,7 +327,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             freq = sine->getFreq();
             
             // Frequency Scaling
-            freq *= noteFreqScale_ * freqScale;
+            freq *= (noteFreqScale_ * freqScale * tuningRatio);
             
             // Perform stretching
             stretchRatio = freq / stretchCenter;

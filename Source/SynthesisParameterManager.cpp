@@ -19,7 +19,40 @@ SynthesisParameterManager::SynthesisParameterManager(int num, AudioProcessorValu
 
 
 void SynthesisParameterManager::createParameters()
-{    
+{
+    String octaveTuneId("octave_tune_" + std::to_string(soundNum_));
+    String octaveTuneName("octave_tune");
+    paramMap_.emplace(octaveTuneName, octaveTuneId);
+    parameters_->createAndAddParameter(octaveTuneId,
+                                       octaveTuneName,
+                                       String(),
+                                       NormalisableRange<float>(-2.0f, 2.0f, 1.0f),
+                                       0.0f,
+                                       [](float value) { return std::to_string((int)value); },
+                                       [](const String& text) { return std::stof(text.toStdString()); });
+    
+    String semitoneTuneId("semitone_tune_" + std::to_string(soundNum_));
+    String semitoneTuneName("semitone_tune");
+    paramMap_.emplace(semitoneTuneName, semitoneTuneId);
+    parameters_->createAndAddParameter(semitoneTuneId,
+                                       semitoneTuneName,
+                                       "semitones",
+                                       NormalisableRange<float>(-12.0f, 12.0f, 1.0f),
+                                       0.0f,
+                                       [](float value) { return std::to_string((int)value); },
+                                       [](const String& text) { return std::stof(text.toStdString()); });
+    
+    String centTuneId("cent_tune_" + std::to_string(soundNum_));
+    String centTuneName("cent_tune");
+    paramMap_.emplace(centTuneName, centTuneId);
+    parameters_->createAndAddParameter(centTuneId,
+                                       centTuneName,
+                                       "cents",
+                                       NormalisableRange<float>(-50.0f, 50.0f, 1.0f),
+                                       0.0f,
+                                       [](float value) { return std::to_string((int)value); },
+                                       [](const String& text) { return std::stof(text.toStdString()); });
+    
     String freqScaleId("frequency_scale_" + std::to_string(soundNum_));
     String freqScaleName("frequency_scale");
     paramMap_.emplace(freqScaleName, freqScaleId);

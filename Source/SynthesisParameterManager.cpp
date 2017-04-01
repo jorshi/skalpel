@@ -86,6 +86,17 @@ void SynthesisParameterManager::createParameters()
                                        1.0f,
                                        [](float value) { return std::to_string(value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
+    
+    String sineRatioId("sine_ratio_" + std::to_string(soundNum_));
+    String sineRatioName("sine_ratio");
+    paramMap_.emplace(sineRatioName, sineRatioId);
+    parameters_->createAndAddParameter(sineRatioId,
+                                       sineRatioName,
+                                       String(),
+                                       NormalisableRange<float>(0.0f, 1.0f),
+                                       1.0f,
+                                       [](float value) { return std::to_string(value); },
+                                       [](const String& text) { return std::stof(text.toStdString()); });
 }
 
 

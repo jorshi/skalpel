@@ -11,6 +11,7 @@
               jucerVersion="4.3.1" companyName="napsky">
   <MAINGROUP id="bdoCZ7" name="Loom">
     <GROUP id="{7413FB03-66FF-963C-2408-F3078DE33B84}" name="Resources">
+      <FILE id="u67znm" name="Benguiat.ttf" compile="0" resource="1" file="../../../../Downloads/benguiat-bk-bt/Benguiat.ttf"/>
       <FILE id="gwnyl6" name="DaysOne-Regular.ttf" compile="0" resource="1"
             file="../../../../Downloads/days_one/DaysOne-Regular.ttf"/>
       <FILE id="yu53Fg" name="ZapfDingbats.ttf" compile="0" resource="1"

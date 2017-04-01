@@ -28,7 +28,9 @@ void LoomLookAndFeel::drawButtonBackground (Graphics& g, Button& button, const C
 
 Font LoomLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)
 {
-    return Font (jmin (13.5f, buttonHeight * 0.6f));
+    Font buttonFont(benguiatTypeface);
+    buttonFont.setHeight(jmin(13.5f, buttonHeight * 0.6f));
+    return buttonFont;
 }
 
 Font LoomLookAndFeel::getLabelFont(Label& label)
@@ -45,6 +47,8 @@ const Colour LoomLookAndFeel::loomTextColour = Colour::fromRGB(102, 105, 108);
 const Typeface::Ptr LoomLookAndFeel::daysOneTypeFace = Typeface::createSystemTypefaceFor(BinaryData::DaysOneRegular_ttf, BinaryData::DaysOneRegular_ttfSize);
 
 const Typeface::Ptr LoomLookAndFeel::zapfDingbatsTypeface = Typeface::createSystemTypefaceFor(BinaryData::ZapfDingbats_ttf, BinaryData::ZapfDingbats_ttfSize);
+
+const Typeface::Ptr LoomLookAndFeel::benguiatTypeface = Typeface::createSystemTypefaceFor(BinaryData::Benguiat_ttf, BinaryData::Benguiat_ttfSize);
 
 
 

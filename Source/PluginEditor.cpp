@@ -86,7 +86,7 @@ void LoomAudioProcessorEditor::paint (Graphics& g)
     g.drawHorizontalLine(footer.getBottom() - footer.getHeight(), footer.getWidth() - footer.getRight(), footer.getRight());
     
     g.setColour(LoomLookAndFeel::loomTextColour);
-    Font loomFont = Font(LoomLookAndFeel::daysOneTypeFace);
+    Font loomFont = Font(LoomLookAndFeel::benguiatTypeface);
     loomFont.setHeight(51);
     g.setFont(loomFont);
     g.drawText("LOOM", 25, 0, 182, 51, Justification::left);

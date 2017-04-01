@@ -12,12 +12,8 @@
 
 
 // Default Constructor
-SinusoidalSynthVoice::SinusoidalSynthVoice()
-:
-hopSize_(128),
-frameSize_(512),
-overlapIndex_(0),
-location_(0.0)
+SinusoidalSynthVoice::SinusoidalSynthVoice(SoundInterfaceManager& s) :
+    hopSize_(128), frameSize_(512), overlapIndex_(0), location_(0.0), soundManger_(s)
 {
     hopIndex_ = hopSize_;
     writePos_ = 0;
@@ -58,12 +54,19 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         
         // Models producing sound -- we just want to hold onto these while a
         // sound is playing so that the model doesn't get switched out mid way through
-        activeModels_ = sound->getPlayingSineModels();
-        previousElements_.resize(activeModels_.size());
+        for (int i = 0; i < soundManger_.size(); i++)
+        {
+            if (soundManger_[i]->isActive())
+            {
+                activeModels_.insert(i, soundManger_[i]->getSineModel());
+                params_.insert(i, soundManger_[i]->getSynthParams());
+            }
+        }
         
+        previousElements_.resize(activeModels_.size());
         noteFreqScale_ = pow(2.0, (midiNoteNumber - sound->midiRootNote_)/12.0f);
         
-        env1_ = sound->getSoundInterfaceManager()->getModulator("adsr_1");
+        env1_ = soundManger_.getModulator("adsr_1");
         ADSR* adsr;
         if ((adsr = dynamic_cast<ADSR*>(env1_.get())))
         {
@@ -94,6 +97,7 @@ void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 void SinusoidalSynthVoice::releaseOver()
 {
     activeModels_.clear();
+    params_.clear();
     previousElements_.clear();
     hopIndex_ = hopSize_;
     overlapIndex_ = 0;
@@ -210,30 +214,53 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     float mag;
     float ampEnv = 1.0f;
     mrs_real phase;
+    
+    float parameterValue;
+    
+    // Time modulation
+    float startTimeOffset;
+    float playbackRate;
+    
+    // For continuous frequency scaling
+    float freqScale;
+    
+    // For Frequency Stretching
+    float stretchRatio;
+    float stretchCenter;
+    float stretchFactor;
+    
+    // For Frequency Shifting
+    float freqShift;
 
     std::map<int, PrevElement>::iterator prev;
 
-    for (int modelNum = 0; modelNum < activeModels_.size(); modelNum++)
+    for (int modelNum = activeModels_.size(); --modelNum >= 0;)
     {
-        SineModel::ConstPtr model = activeModels_[0];
+        SineModel::ConstPtr model = activeModels_[modelNum];
         
         // Get number of frames in the model return if there aren't any
         if (model->size() < 1)
         {
-            return false;
+            activeModels_.remove(modelNum);
+            continue;
         }
         
         // Replace the float factor with a parameter, between 0 and 1
-        mrs_real startTimeOffset = 0.0f * model->size();
+        startTimeOffset = params_.getUnchecked(modelNum)->getRawValue("start_offset", parameterValue) ?
+            (parameterValue * model->size()) : 0.0f;
         
-        // Get the frame closest to the requested time, float factor to be parameterizeda
-        mrs_real requestedPos = (1.0f * location_ * model->getSampleRate()) / model->getFrameSize();
+        playbackRate = params_.getUnchecked(modelNum)->getRawValue("playback_rate", parameterValue) ?
+            parameterValue : 1.0f;
+
+        // Get the frame closest to the requested time, float factor to be parameterized
+        mrs_real requestedPos = (playbackRate * location_ * model->getSampleRate()) / model->getFrameSize();
         int requestedFrame = std::round(requestedPos + startTimeOffset);
         
         // Out of frames from the model
         if (model->size() <= requestedFrame)
         {
-            return false;
+            activeModels_.remove(modelNum);
+            continue;
         }
         
         // Amplitude envelope value to be applied at this frame
@@ -242,6 +269,17 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         // Constant reference to the frame at this point
         const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
         
+        // --- Get transformation parameters outside of loop through frame --
+        freqScale = params_.getUnchecked(modelNum)->getRawValue("frequency_scale", parameterValue) ?
+            parameterValue : 1.0f;
+        
+        stretchCenter = params_.getUnchecked(modelNum)->getRawValue("stretch_center", parameterValue) ? parameterValue : 0.0f;
+        
+        stretchFactor = params_.getUnchecked(modelNum)->getRawValue("stretch_factor", parameterValue) ? parameterValue : 1.0f;
+        
+        freqShift = params_.getUnchecked(modelNum)->getRawValue("freq_shift", parameterValue) ?
+            parameterValue : 0.0f;
+        
         // Create the spectral signal
         for (auto sine = frame.begin(); sine != frame.end(); ++sine)
         {
@@ -249,12 +287,10 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             freq = sine->getFreq();
             
             // Frequency Scaling
-            freq *= noteFreqScale_;
+            freq *= noteFreqScale_ * freqScale;
             
-            // Frequency Stretching
-            float stretchRatio = freq / 440.0;
-            float stretchFactor = 0.0f;
-            
+            // Perform stretching
+            stretchRatio = freq / stretchCenter;
             if (stretchFactor > 0.0f)
             {
                 if (stretchRatio > 1)
@@ -268,9 +304,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             }
             
             // Frequency Shifting
-            float freqShift = 0.0f;
             freq += freqShift;
-            
             
             binLoc =  (freq / getSampleRate()) * frameSize_;
             binInt = std::round(binLoc);

@@ -11,11 +11,17 @@
 #include "SoundInterface.h"
 
 
-SoundInterface::SoundInterface(AnalysisParameterManager* a) : analysis_(nullptr), state_(loadFileState)
+SoundInterface::SoundInterface(AnalysisParameterManager* a, SynthesisParameterManager* s) :
+    analysis_(nullptr), state_(loadFileState)
 {
     analysisParams_ = a;
+    synthParams_ = s;
+    
+    // Create an empty sine model and add it to the owned array of models
     currentSineModel_ = new SineModel;
     sineModels_.add(currentSineModel_);
+    
+    // Default state is not playing
     isActive_ = false;
 }
 

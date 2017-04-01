@@ -48,6 +48,9 @@ public:
     // Get sound interface manager
     SoundInterfaceManager* getSoundInterfaceManager() const { return manager_; };
     
+    // Reference to all sound interfaces
+    const OwnedArray<SoundInterface>& getAllSounds() const { return manager_->getSounds(); };
+    
 private:
     friend class SinusoidalSynthVoice;
     

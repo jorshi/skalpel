@@ -70,3 +70,5 @@ Array<SoundInterface*> SinusoidalSynthSound::getPlayingSounds() const
 {
     return manager_->getActiveSounds();
 }
+
+

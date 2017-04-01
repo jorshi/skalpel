@@ -16,6 +16,8 @@
 #include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
 #include "SinusoidalSynthSound.h"
+#include "SynthesisParameterManager.h"
+#include "SoundInterfaceManager.h"
 #include "Modulation.h"
 #include "ADSR.h"
 #include "ModulationFactory.h"
@@ -25,7 +27,7 @@ class SinusoidalSynthVoice : public SynthesiserVoice
 public:
     //==============================================================================
     /** Creates a Sinusoidal Synth Voice. */
-    SinusoidalSynthVoice();
+    SinusoidalSynthVoice(SoundInterfaceManager& s);
     
     /** Destructor. */
     ~SinusoidalSynthVoice();
@@ -69,17 +71,20 @@ private:
     int writePos_;
     int nyquistBin_;
     
-    mrs_real location_;
     mrs_realvec buffer_;
     mrs_realvec output_;
     mrs_real noteFreqScale_;
+    
+    std::vector<float> location_;
     
     ScopedPointer<FFT> inverseFFT_;
     std::vector<FFT::Complex> spectrum_;
     std::vector<FFT::Complex> timeDomain_;
     
     ReferenceCountedArray<SineModel> activeModels_;
+    Array<SynthesisParameterManager*> params_;
     Array<SoundInterface*> activeSounds_;
+    SoundInterfaceManager& soundManger_;
     
     std::vector<std::map<int, PrevElement>> previousElements_;
 

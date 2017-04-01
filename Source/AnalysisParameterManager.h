@@ -19,7 +19,7 @@ class AnalysisParameterManager : public ParameterManager
 public:
     AnalysisParameterManager(int num, AudioProcessorValueTreeState* p);
     
-    ~AnalysisParameterManager() override {};
+    ~AnalysisParameterManager() {};
     
     void createParameters() override;
     

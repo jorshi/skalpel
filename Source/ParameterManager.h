@@ -21,7 +21,7 @@ public:
     // Default Constructor
     ParameterManager(int num, AudioProcessorValueTreeState* p);
     
-    virtual ~ParameterManager()=0;
+    virtual ~ParameterManager();
 
     // Pure virtual method to create parameters
     virtual void createParameters()=0;

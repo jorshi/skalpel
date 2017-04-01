@@ -16,15 +16,20 @@ Thread("SoundInterface Manager Thread")
 {
     SoundInterface* sound;
     AnalysisParameterManager* analysisParams;
+    SynthesisParameterManager* synthParams;
     
     for (int i = 0; i < numSounds; i++)
     {
         // New set of analysis parameters
         analysisParams = new AnalysisParameterManager(i, params);
         analysisParameters_.insert(i, analysisParams);
+        
+        // New set of synthesis parameters
+        synthParams = new SynthesisParameterManager(i, params);
+        synthesisParameters_.insert(i, synthParams);
        
         // New sound interface for this particular sound
-        sound = new SoundInterface(analysisParams);
+        sound = new SoundInterface(analysisParams, synthParams);
         soundInterfaces_.insert(i, sound);
     }
  
@@ -38,6 +43,12 @@ Thread("SoundInterface Manager Thread")
 SoundInterfaceManager::~SoundInterfaceManager()
 {
     stopThread(4000);
+}
+
+
+SoundInterface* SoundInterfaceManager::operator[](const int num) const
+{
+    return soundInterfaces_.getUnchecked(num);
 }
 
 
@@ -75,3 +86,4 @@ Modulation::Ptr SoundInterfaceManager::getModulator(const String& id) const
 {
     return modulationFactory_->make(id);
 }
+

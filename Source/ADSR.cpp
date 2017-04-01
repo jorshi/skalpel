@@ -148,6 +148,7 @@ void ADSR::triggerAttack()
 {
     setActive(true);
     currentPhase_ = attack;
+    currentLevel_ = 0.0f;
     position_ = 0;
 }
 

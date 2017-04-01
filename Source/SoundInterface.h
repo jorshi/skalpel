@@ -17,6 +17,7 @@
 #include "AnalysisMrs.h"
 #include "SineElement.h"
 #include "AnalysisParameterManager.h"
+#include "SynthesisParameterManager.h"
 #include "ParameterManager.h"
 #include "FileLoader.h"
 #include "ModulationFactory.h"
@@ -35,7 +36,7 @@ public:
     };
     
     // Default Constructor
-    SoundInterface(AnalysisParameterManager* a);
+    SoundInterface(AnalysisParameterManager* a, SynthesisParameterManager* s);
     
     // Default Deconstructor
     ~SoundInterface();
@@ -58,8 +59,11 @@ public:
     // Get a parameter value from a parameter name
     float getParameterValue(String);
 
-    // Get a pointer to the analysis parameters
-    AnalysisParameterManager* getAnalysisParams() { return analysisParams_; };
+    // Get a pointer to the analysis parameters for this model
+    AnalysisParameterManager* getAnalysisParams() const { return analysisParams_; };
+    
+    // Get a pointer to the synthesis parameters for this model
+    SynthesisParameterManager* getSynthParams() const { return synthParams_; };
     
     // Load audio from file and load into a new analysis object
     void loadFile();
@@ -83,17 +87,20 @@ private:
     ReferenceCountedArray<SineModel> sineModels_;
     SineModel::Ptr currentSineModel_;
     
-    State state_;
-    
+    // For loading new sounds into the analysis
     FileLoader fileLoader_;
     
     // Parameters for the analysis phase
     AnalysisParameterManager* analysisParams_;
     
-
+    // Parameters for synthesis
+    SynthesisParameterManager* synthParams_;
     
+    // Current state of this sound
+    State state_;
+    
+    // Can this sound be synthesized
     bool isActive_;
-    
 };
 
 

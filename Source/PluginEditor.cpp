@@ -26,10 +26,11 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     gradientMain = ColourGradient(Colour::fromRGB(63, 63, 63), 0.0f, 61.0f, Colour::fromRGB(43, 43, 43), 0.0f, 278.0f, false);
     
     // Create shapes
-    background = Rectangle<int>(0, 0, 640, 360);
-    header = Rectangle<int>(0, 0, 640, 51);
-    footer = Rectangle<int>(0, 288, 640, 74);
-    middle = Rectangle<int>(10, 61, 620, 217);
+    background = Rectangle<int>(0, 0, 690, 485);
+    header = Rectangle<int>(0, 0, 690, 51);
+    footer = Rectangle<int>(0, 411, 690, 74);
+    middle = Rectangle<int>(10, 61, 670, 290);
+    layers = Rectangle<int>(10, 358, 670, 46);
     
     SoundInterface* soundInterface;
     AnalysisComponent* analysisComp;
@@ -43,7 +44,7 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
         // Create new UI components for each sound
         analysisComp = new AnalysisComponent(this, soundInterface->getAnalysisParams());
         loadComp = new LoadComponent(this, this, soundInterface);
-        synthesisComp = new SynthesisComponent(this);
+        synthesisComp = new SynthesisComponent(this, soundInterface->getSynthParams());
         
         // Add each component to a managed array
         analysisComponents.add(analysisComp);
@@ -60,7 +61,7 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (640, 360);
+    setSize (690, 485);
 }
 
 LoomAudioProcessorEditor::~LoomAudioProcessorEditor()
@@ -76,12 +77,14 @@ void LoomAudioProcessorEditor::paint (Graphics& g)
     g.setColour(layer1Colour);
     g.fillRect(header);
     g.fillRect(footer);
+    g.fillRect(layers);
     
     g.setGradientFill(gradientMain);
     g.fillRect(middle);
     
     g.setColour(Colours::black);
     g.drawRect(middle);
+    g.drawRect(layers);
     g.drawHorizontalLine(header.getBottom(), header.getWidth() - header.getRight(), header.getRight());
     g.drawHorizontalLine(footer.getBottom() - footer.getHeight(), footer.getWidth() - footer.getRight(), footer.getRight());
     
@@ -89,15 +92,15 @@ void LoomAudioProcessorEditor::paint (Graphics& g)
     Font loomFont = Font(LoomLookAndFeel::daysOneTypeFace);
     loomFont.setHeight(51);
     g.setFont(loomFont);
-    g.drawText("LOOM", 25, 0, 182, 51, Justification::left);
+    g.drawText("LOOM", 10, 0, 182, 51, Justification::left);
     
 }
 
 void LoomAudioProcessorEditor::resized()
 {
-    analysisComponents.getUnchecked(currentSound)->setBounds(10, 61, 620, 217);
-    loadComponents.getUnchecked(currentSound)->setBounds(10, 61, 620, 217);
-    synthesisComponents.getUnchecked(currentSound)->setBounds(10, 61, 620, 217);
+    analysisComponents.getUnchecked(currentSound)->setBounds(middle);
+    loadComponents.getUnchecked(currentSound)->setBounds(middle);
+    synthesisComponents.getUnchecked(currentSound)->setBounds(middle);
 }
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)
@@ -119,6 +122,11 @@ void LoomAudioProcessorEditor::buttonClicked(Button* button)
     if (button->getComponentID() == "new_analysis")
     {
         switchSoundState(SoundInterface::loadFileState);
+    }
+    
+    if (button->getComponentID() == "re-analysis")
+    {
+        switchSoundState(SoundInterface::analysisState);
     }
 }
 

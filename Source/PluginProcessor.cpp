@@ -30,7 +30,7 @@ LoomAudioProcessor::LoomAudioProcessor()
     parameters_ = new AudioProcessorValueTreeState(*this, undoManager_);
     
     // Create the sound manager object
-    soundManager_ = new SoundInterfaceManager(1, parameters_);
+    soundManager_ = new SoundInterfaceManager(maxSounds, parameters_);
 
     // Allocate voices for synthesizer
     for (int i = 0; i < maxVoices; ++i)

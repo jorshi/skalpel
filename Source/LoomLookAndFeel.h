@@ -34,6 +34,7 @@ public:
     static const Colour buttonEdgeColour;
     static const Colour buttonTextColour;
     static const Colour loomTextColour;
+    static const Colour boundaryColour;
     
     // Custom Typeface
     static const Typeface::Ptr daysOneTypeFace;

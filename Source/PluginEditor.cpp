@@ -28,7 +28,7 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     // Create shapes
     background = Rectangle<int>(0, 0, 690, 485);
     header = Rectangle<int>(0, 0, 690, 51);
-    footer = Rectangle<int>(0, 411, 690, 74);
+    footer = Rectangle<int>(0, 411, 690, 89);
     middle = Rectangle<int>(10, 61, 670, 290);
     layers = Rectangle<int>(10, 358, 670, 46);
     
@@ -57,11 +57,14 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
         addAndMakeVisible(synthesisComp);
     }
     
+    modulationComponent = new ModulationComponent(this, soundManager->getEnvelopeParameterManager());
+    addAndMakeVisible(modulationComponent);
+    
     loadCurrentSound();
     
     // Make sure that before the constructor has finished, you've set the
     // editor's size to whatever you need it to be.
-    setSize (690, 485);
+    setSize (690, 500);
 }
 
 LoomAudioProcessorEditor::~LoomAudioProcessorEditor()
@@ -101,6 +104,7 @@ void LoomAudioProcessorEditor::resized()
     analysisComponents.getUnchecked(currentSound)->setBounds(middle);
     loadComponents.getUnchecked(currentSound)->setBounds(middle);
     synthesisComponents.getUnchecked(currentSound)->setBounds(middle);
+    modulationComponent->setBounds(footer);
 }
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)

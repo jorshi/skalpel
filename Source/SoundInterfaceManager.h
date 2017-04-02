@@ -49,6 +49,9 @@ public:
     // Modulator object
     Modulation::Ptr getModulator(const String& id) const;
     
+    // Get modulation parameter manager
+    EnvelopeParamaterManager* getEnvelopeParameterManager() const { return envelopes_; };
+    
     // Number of sound interfaces being managed
     int size() const { return soundInterfaces_.size(); };
 

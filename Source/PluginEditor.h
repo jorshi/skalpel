@@ -20,6 +20,7 @@
 #include "AnalysisComponent.h"
 #include "LoadComponent.h"
 #include "SynthesisComponent.h"
+#include "ModulationComponent.h"
 #include "SoundInterfaceManager.h"
 
 
@@ -91,6 +92,7 @@ private:
     OwnedArray<AnalysisComponent> analysisComponents;
     OwnedArray<LoadComponent> loadComponents;
     OwnedArray<SynthesisComponent> synthesisComponents;
+    ScopedPointer<ModulationComponent> modulationComponent;
     
     int currentSound;
     

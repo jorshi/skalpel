@@ -47,9 +47,9 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
         synthesisComp = new SynthesisComponent(this, soundInterface->getSynthParams());
         
         // Add each component to a managed array
-        analysisComponents.add(analysisComp);
-        loadComponents.add(loadComp);
-        synthesisComponents.add(synthesisComp);
+        analysisComponents.insert(i, analysisComp);
+        loadComponents.insert(i, loadComp);
+        synthesisComponents.insert(i, synthesisComp);
         
         // Add each component to the UI
         addAndMakeVisible(analysisComp);
@@ -59,6 +59,8 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     
     modulationComponent = new ModulationComponent(this, soundManager->getEnvelopeParameterManager());
     addAndMakeVisible(modulationComponent);
+    layeringComponent = new LayeringComponent(this, soundManager);
+    addAndMakeVisible(layeringComponent);
     
     loadCurrentSound();
     
@@ -105,6 +107,7 @@ void LoomAudioProcessorEditor::resized()
     loadComponents.getUnchecked(currentSound)->setBounds(middle);
     synthesisComponents.getUnchecked(currentSound)->setBounds(middle);
     modulationComponent->setBounds(footer);
+    layeringComponent->setBounds(layers);
 }
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)
@@ -160,6 +163,7 @@ void LoomAudioProcessorEditor::loadSoundState()
     {
         case SoundInterface::loadFileState:
             loadComponents.getUnchecked(currentSound)->setVisible(true);
+            currentSoundInterface->setActive(false);
             break;
             
         case SoundInterface::analysisState:
@@ -182,18 +186,24 @@ void LoomAudioProcessorEditor::actionListenerCallback(const String& message)
     {
         loadSoundState();
     }
+    
+    if (message == "layer_change")
+    {
+        loadCurrentSound();
+    }
 }
 
 void LoomAudioProcessorEditor::loadCurrentSound()
 {
     hideAllSounds();
-    currentSound = processor.getCurrentSoundNum();
+    currentSound = soundManager->getCurrentSound();
     if (currentSound >= 0 && currentSound < sounds.size())
     {
         analysisComponents.getUnchecked(currentSound)->setVisible(true);
         loadComponents.getUnchecked(currentSound)->setVisible(true);
         synthesisComponents.getUnchecked(currentSound)->setVisible(true);
         currentSoundInterface = soundManager->getInterface(currentSound);
+        resized();
         loadSoundState();
     }
 }

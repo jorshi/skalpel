@@ -32,6 +32,8 @@ Thread("SoundInterface Manager Thread")
         sound = new SoundInterface(analysisParams, synthParams);
         soundInterfaces_.insert(i, sound);
     }
+    
+    currentUISound = 0;
  
     modulationFactory_ = new ModulationFactory();
     envelopes_ = new EnvelopeParamaterManager(0, params, modulationFactory_);

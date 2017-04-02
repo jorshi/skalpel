@@ -54,11 +54,17 @@ public:
     
     // Number of sound interfaces being managed
     int size() const { return soundInterfaces_.size(); };
+    
+    int getCurrentSound() const { return currentUISound; };
+    void setCurrentSound(const int num) { currentUISound = num; };
 
 private:
     
     // Run the thread
     void run() override;
+    
+    // Current sound to display on UI
+    int currentUISound;
     
     // Sound interfaces and analysis parameters being managed here
     OwnedArray<SoundInterface> soundInterfaces_;

@@ -74,6 +74,10 @@
               file="Source/AnalysisComponent.cpp"/>
         <FILE id="D3hxap" name="AnalysisComponent.h" compile="0" resource="0"
               file="Source/AnalysisComponent.h"/>
+        <FILE id="XWCpkJ" name="LayeringComponent.cpp" compile="1" resource="0"
+              file="Source/LayeringComponent.cpp"/>
+        <FILE id="hvfTSh" name="LayeringComponent.h" compile="0" resource="0"
+              file="Source/LayeringComponent.h"/>
         <FILE id="sCJCVP" name="LoadComponent.cpp" compile="1" resource="0"
               file="Source/LoadComponent.cpp"/>
         <FILE id="ILYrZS" name="LoadComponent.h" compile="0" resource="0" file="Source/LoadComponent.h"/>

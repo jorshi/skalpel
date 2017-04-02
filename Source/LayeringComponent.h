@@ -12,14 +12,18 @@
 #define LAYERINGCOMPONENT_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "LoomLookAndFeel.h"
+#include "SoundInterfaceManager.h"
 
 //==============================================================================
 /*
 */
-class LayeringComponent    : public Component, public ActionListener
+class LayeringComponent :   public Component,
+                            public ActionListener,
+                            public Button::Listener
 {
 public:
-    LayeringComponent(ActionListener* parent);
+    LayeringComponent(ActionListener* parent, SoundInterfaceManager* s);
     ~LayeringComponent();
 
     void paint (Graphics&) override;
@@ -29,8 +33,14 @@ private:
     // Get called when a child sends a message: allows messages to bubble up
     void actionListenerCallback(const String& message) override;
     
-    // Message broadcaster
+    // Called when any button on UI is clicked
+    void buttonClicked(Button* button) override;
+    
     ActionBroadcaster broadcaster;
+    OwnedArray<TextButton> layerButtons;
+    SoundInterfaceManager* soundManager;
+    
+    LoomLookAndFeel loomLookAndFeel;
     
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LayeringComponent)
 };

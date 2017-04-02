@@ -16,6 +16,8 @@ LoomLookAndFeel::LoomLookAndFeel()
     setColour(TextButton::textColourOffId, buttonTextColour);
     setColour(Label::textColourId, buttonTextColour);
     setColour(Slider::rotarySliderFillColourId, buttonEdgeColour);
+    
+    buttonRadius = 7.0f;
 }
 
 
@@ -24,7 +26,7 @@ void LoomLookAndFeel::drawButtonBackground (Graphics& g, Button& button, const C
 {
     Rectangle<float> buttonArea = button.getLocalBounds().toFloat();
     g.setColour(buttonEdgeColour);
-    g.drawRoundedRectangle(buttonArea, 7.0f, 1.5f);
+    g.drawRoundedRectangle(buttonArea, buttonRadius, 1.5f);
 }
 
 Font LoomLookAndFeel::getTextButtonFont (TextButton&, int buttonHeight)

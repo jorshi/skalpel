@@ -74,6 +74,7 @@ public:
     
     // Whether or not this sound can be played
     bool isActive() { return isActive_; };
+    void setActive(bool val) { isActive_ = val; };
     
     // Checks reference counted SineModels to see if any can be freed
     void checkModels();

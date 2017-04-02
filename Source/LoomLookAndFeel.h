@@ -39,10 +39,12 @@ public:
     // Custom Typeface
     static const Typeface::Ptr daysOneTypeFace;
     static const Typeface::Ptr zapfDingbatsTypeface;
+    
+    void setButtonRadius(float radius) { buttonRadius = radius; };
 
 private:
     
-
+    float buttonRadius;
     
 
     

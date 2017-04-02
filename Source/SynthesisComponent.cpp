@@ -173,7 +173,7 @@ SynthesisComponent::~SynthesisComponent()
 void SynthesisComponent::paint (Graphics& g)
 {
     g.setColour(LoomLookAndFeel::boundaryColour);
-    g.drawRect(visualizer);
+    g.drawRect(visualizer, 2.0f);
     
     g.setColour(LoomLookAndFeel::loomTextColour);
     g.drawLine(182.5, 190, 182.5, 270, 2.0f);

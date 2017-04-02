@@ -59,6 +59,8 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
     
     modulationComponent = new ModulationComponent(this, soundManager->getEnvelopeParameterManager());
     addAndMakeVisible(modulationComponent);
+    layeringComponent = new LayeringComponent(this);
+    addAndMakeVisible(layeringComponent);
     
     loadCurrentSound();
     
@@ -105,6 +107,7 @@ void LoomAudioProcessorEditor::resized()
     loadComponents.getUnchecked(currentSound)->setBounds(middle);
     synthesisComponents.getUnchecked(currentSound)->setBounds(middle);
     modulationComponent->setBounds(footer);
+    layeringComponent->setBounds(layers);
 }
 
 void LoomAudioProcessorEditor::buttonClicked(Button* button)

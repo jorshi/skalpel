@@ -76,6 +76,7 @@ private:
     // Shapes
     Rectangle<int> header;
     Rectangle<int> background;
+    Rectangle<int> layers;
     Rectangle<int> footer;
     Rectangle<int> middle;
     

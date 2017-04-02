@@ -95,7 +95,7 @@ void SynthesisParameterManager::createParameters()
                                        "Hz",
                                        NormalisableRange<float>(0.0f, 1000.0f, 0.0f, 0.75f),
                                        0.0f,
-                                       [](float value) { return std::to_string(value); },
+                                       [](float value) { return std::to_string((int)value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
     
     String startOffsetId("start_offset_" + std::to_string(soundNum_));
@@ -125,9 +125,20 @@ void SynthesisParameterManager::createParameters()
     paramMap_.emplace(sineRatioName, sineRatioId);
     parameters_->createAndAddParameter(sineRatioId,
                                        sineRatioName,
-                                       String(),
+                                       " %",
                                        NormalisableRange<float>(0.0f, 1.0f),
                                        1.0f,
+                                       [](float value) { return std::to_string((int)(value * 100)); },
+                                       [](const String& text) { return std::stof(text.toStdString()); });
+    
+    String sineGainId("sine_gain_" + std::to_string(soundNum_));
+    String sineGainName("sine_gain");
+    paramMap_.emplace(sineGainName, sineGainId);
+    parameters_->createAndAddParameter(sineGainId,
+                                       sineGainName,
+                                       "",
+                                       NormalisableRange<float>(-80.0f, 6.0f),
+                                       -6.0f,
                                        [](float value) { return std::to_string(value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
 }

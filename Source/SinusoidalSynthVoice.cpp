@@ -241,6 +241,9 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     // Number of sinusoids to be included in playback
     float sineRatio;
     float frameEndOffset;
+    
+    // Sine gain parameter
+    float sineGain;
 
     std::map<int, PrevElement>::iterator prev;
 
@@ -309,6 +312,9 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         
         sineRatio = params_.getUnchecked(modelNum)->getRawValue("sine_ratio", parameterValue) ?
             parameterValue : 1.0f;
+        
+        sineGain = params_.getUnchecked(modelNum)->getRawValue("sine_gain", parameterValue) ?
+            parameterValue : -6.0f;
 
         // Make sure the sine ratio is a number between 0 and 1
         if (isPositiveAndNotGreaterThan(sineRatio, 1.0f))
@@ -351,8 +357,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             binRem = binInt - binLoc;
             
             // Convert the decibels back to magnitude. Gain should be parameterized.
-            float gain = -6.0f;
-            mag = pow(10, (sine->getAmp() + gain)/20) * ampEnv;
+            mag = pow(10, (sine->getAmp() + sineGain)/20) * ampEnv;
             
             // Propagate phase
             if ((prev = previousElements_.at(0).find(sine->getTrack())) ==  previousElements_.at(0).end())

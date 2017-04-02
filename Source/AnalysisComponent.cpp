@@ -99,16 +99,16 @@ void AnalysisComponent::paint (Graphics& g)
 
 void AnalysisComponent::resized()
 {
-    analysisButton.setBounds(241, 166, 138, 34);
-    windowSize.setBounds(35, 62, 71, 20);
+    analysisButton.setBounds((getWidth()/2.0f) - (138/2.0f), 196, 138, 34);
+    windowSize.setBounds(50, 72, 71, 20);
     
     // Hop size doesn't really work right now
     //hopSize.setBounds(35, 109, 71, 20);
 
-    amplitudeTreshold.setBounds(141, 62, 200, 20);
-    duration.setBounds(141, 119, 200, 20);
-    sines.setBounds(379, 119, 200, 20);
-    freqOffset.setBounds(379, 62, 200, 20);
+    amplitudeTreshold.setBounds(156, 72, 200, 20);
+    duration.setBounds(156, 139, 200, 20);
+    sines.setBounds(394, 139, 200, 20);
+    freqOffset.setBounds(394, 72, 200, 20);
 
     //freqSlope.setBounds(379, 109, 200, 20);
 }

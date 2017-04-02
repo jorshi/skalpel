@@ -35,12 +35,14 @@ LoadComponent::~LoadComponent()
 
 void LoadComponent::paint (Graphics& g)
 {
+    g.setColour(LoomLookAndFeel::loomTextColour);
+    g.drawText("Load Audio For Analysis", 0, 10, getWidth(), 15, Justification::centred);
 }
 
 void LoadComponent::resized()
 {
-    openButton.setBounds(145, 165, 330, 34);
-    loomFileDrop.setBounds(145, 20, 330, 128);
+    openButton.setBounds((getWidth()/2.0f) - (330/2.0f), 205, 330, 34);
+    loomFileDrop.setBounds((getWidth()/2.0f) - (330/2.0f), 60, 330, 128);
 }
 
 void LoadComponent::actionListenerCallback(const String &message)

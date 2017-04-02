@@ -360,10 +360,10 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             mag = pow(10, (sine->getAmp() + sineGain)/20) * ampEnv;
             
             // Propagate phase
-            if ((prev = previousElements_.at(0).find(sine->getTrack())) ==  previousElements_.at(0).end())
+            if ((prev = previousElements_.at(modelNum).find(sine->getTrack())) ==  previousElements_.at(modelNum).end())
             {
                 phase = sine->getPhase();
-                previousElements_.at(0).emplace(sine->getTrack(), PrevElement(freq, sine->getPhase()));
+                previousElements_.at(modelNum).emplace(sine->getTrack(), PrevElement(freq, sine->getPhase()));
             }
             else
             {

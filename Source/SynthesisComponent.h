@@ -14,6 +14,8 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "LoomLookAndFeel.h"
 #include "SynthesisParameterManager.h"
+#include "SoundInterface.h"
+#include "VisualizerComponent.h"
 
 //==============================================================================
 /*
@@ -21,11 +23,13 @@
 class SynthesisComponent    : public Component
 {
 public:
-    SynthesisComponent(ButtonListener* parent, SynthesisParameterManager* p);
+    SynthesisComponent(ButtonListener* parent, SoundInterface* s);
     ~SynthesisComponent();
 
     void paint (Graphics&) override;
     void resized() override;
+    
+    void setVisible(bool shouldBeVisible) override;
 
 private:
     typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
@@ -36,6 +40,9 @@ private:
 
     Rectangle<int> visualizer;
 
+    ScopedPointer<VisualizerComponent> visualizerComponent;
+    
+    SoundInterface* sound;
     SynthesisParameterManager* synthesisParams;
 
     int bottomRowOffset;

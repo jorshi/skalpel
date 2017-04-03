@@ -113,6 +113,7 @@ void LoomAudioProcessor::prepareToPlay (double sampleRate, int samplesPerBlock)
 
     // Sets sample rate for all modulation sources
     Modulation::setRate(sampleRate);
+    SoundInterface::setRate(sampleRate);
 }
 
 void LoomAudioProcessor::releaseResources()

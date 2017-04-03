@@ -12,8 +12,9 @@
 
 
 //==============================================================================
-SynthesisComponent::SynthesisComponent(ButtonListener* parent, SynthesisParameterManager* p) : synthesisParams(p)
+SynthesisComponent::SynthesisComponent(ButtonListener* parent, SoundInterface* s) : sound(s)
 {
+    synthesisParams = sound->getSynthParams();
     setLookAndFeel(&loomLookAndFeel);
 
     newButton.setButtonText("New");
@@ -38,6 +39,9 @@ SynthesisComponent::SynthesisComponent(ButtonListener* parent, SynthesisParamete
     groupD = groupC + sliderSpacing + groupSpacing;
     groupE = groupD + sliderSpacing + groupSpacing;
 
+    visualizerComponent = new VisualizerComponent(sound);
+    addAndMakeVisible(visualizerComponent);
+    
     // Octave Tuning Rotary
     addAndMakeVisible(octave);
     octave.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -238,4 +242,20 @@ void SynthesisComponent::resized()
     sineGain.setBounds(groupD + 65, 220, 50, 55);
 
     noiseGain.setBounds(groupE, 220, 50, 55);
+    
+    visualizerComponent->setBounds(visualizer);
+}
+
+void SynthesisComponent::setVisible(bool shouldBeVisible)
+{
+    Component::setVisible(shouldBeVisible);
+    
+    if (shouldBeVisible)
+    {
+        visualizerComponent->run();
+    }
+    else
+    {
+        visualizerComponent->stop();
+    }
 }

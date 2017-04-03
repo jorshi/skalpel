@@ -23,6 +23,9 @@ SoundInterface::SoundInterface(AnalysisParameterManager* a, SynthesisParameterMa
     
     // Default state is not playing
     isActive_ = false;
+    canVisualize = false;
+    
+    visualizerFrame_.resize(visualizerSize);
 }
 
 
@@ -110,5 +113,20 @@ void SoundInterface::checkModels()
     }
 }
 
+void SoundInterface::addVisualizerFrame(float freq, float amp)
+{
+    int pixel = (int)((freq / sampleRate_) * visualizerSize);
+    if (isPositiveAndBelow(pixel, (int)visualizerSize))
+    {
+        visualizerFrame_[pixel] += amp;
+    }
+}
+
+void SoundInterface::clearVisualizerFrame()
+{
+    std::fill(visualizerFrame_.begin(), visualizerFrame_.end(), 0.0f);
+}
 
 
+// Default rate
+float SoundInterface::sampleRate_ = 44100.0f;

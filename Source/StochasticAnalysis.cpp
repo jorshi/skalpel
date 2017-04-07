@@ -74,14 +74,6 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
     // Run audio processing loop
     while(frame != sineModel->end())
     {
-        // Shift samples by a hop size
-        for (int i = 0; i < hopSize * 3; i++)
-        {
-            inputSamples[i] = inputSamples[i + hopSize];
-        }
-        reader->read(&inputBuffer, hopSize * 3, hopSize, readPtr, true, false);
-        readPtr += hopSize;
-        
         // Store input as a complex number for FFT - Do Zero Phasing and apply window
         for (int i = 0; i < frameSize; ++i)
         {
@@ -104,8 +96,8 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
         // Subtract the sinusoidal spectrum from the original spectrum
         for (int i = 0; i < frameSize; i++)
         {
-            spectral[i].r -= sineSpectral[i].r;
-            spectral[i].i -= sineSpectral[i].i;
+            spectral[i].r = spectral[i].r - sineSpectral[i].r;
+            spectral[i].i = spectral[i].i - sineSpectral[i].i;
         }
         
         // For testing output
@@ -115,6 +107,14 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
             jassert((i + outPtr) < output.getNumSamples());
             outputSample[i + outPtr] += outputTime[(i + frameSize/2) % frameSize].r / frameSize * synthWindow_(i);
         }
+        
+        // Shift samples by a hop size
+        for (int i = 0; i < hopSize * 3; i++)
+        {
+            inputSamples[i] = inputSamples[i + hopSize];
+        }
+        reader->read(&inputBuffer, hopSize * 3, hopSize, readPtr, true, false);
+        readPtr += hopSize;
         
         ++frame;
         outPtr += hopSize;

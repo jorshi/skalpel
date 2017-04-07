@@ -67,7 +67,7 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
     
     mrs_real sampleRate;
     
-    AudioBuffer<float> inputFrame(1, frameSize);
+    AudioBuffer<float> inputBuffer(1, frameSize);
     
     // Complex vectors for frequency domain calculations
     std::vector<FFT::Complex> timeDomain(frameSize);
@@ -97,8 +97,16 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
     SynthUtils::windowingFillHamming(window);
     window /= window.sum();
   
+    float* inputSamples = inputBuffer.getWritePointer(0);
+    inputBuffer.clear();
+    
+    // First half of frame is padded with zeros
+    reader->read(&inputBuffer, frameSize/2, frameSize/2, 0, true, false);
+    int readPtr = hopSize;
+    int sampleShift = frameSize - hopSize;
+    
     // Run audio processing loop
-    while(network->getControl("SoundFileSource/input/mrs_bool/hasData")->to_bool())
+    while(network->getControl("SoundFileSource/input/mrs_bool/hasData")->to_bool() && readPtr < reader->lengthInSamples)
     {
         network->tick();
         
@@ -111,7 +119,7 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
         // Store input as a complex number for FFT - Do Zero Phasing and apply window
         for (int i = 0; i < frameSize; ++i)
         {
-            timeDomain.at(i).r = input((i + (int)(frameSize/2)) % frameSize) *
+            timeDomain.at(i).r = inputSamples[(i + (int)(frameSize/2)) % frameSize] *
                 window((i + (int)(frameSize/2)) % frameSize);
         }
         
@@ -182,6 +190,14 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
             ppMag = pMag;
             pMag = mag;
         }
+        
+        // Shift samples by a hop size
+        for (int j = hopSize; j < frameSize; j++)
+        {
+            inputSamples[j - hopSize] = inputSamples[j];
+        }
+        reader->read(&inputBuffer, frameSize - hopSize, hopSize, readPtr, true, false);
+        readPtr += hopSize;
 
         sineModel->addFrame(frameElements);
     }

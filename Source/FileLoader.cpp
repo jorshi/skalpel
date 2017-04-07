@@ -61,3 +61,10 @@ bool FileLoader::fileExtensionOkay(const juce::String &filename)
     const String extensions = formatManager.getWildcardForAllFormats().removeCharacters("*");
     return file.hasFileExtension(extensions);
 }
+
+
+AudioFormatReader* FileLoader::getAudioReader(File& file)
+{
+    AudioFormatReader* reader = formatManager.createReaderFor(file);
+    return reader;
+}

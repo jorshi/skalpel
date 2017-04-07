@@ -32,6 +32,9 @@ public:
     // Checks if we can read a given file extension
     bool fileExtensionOkay(const String& filename);
     
+    // Create a new audio format reader for a file
+    AudioFormatReader* getAudioReader(File& file);
+    
 private:
     
     AudioFormatManager formatManager;

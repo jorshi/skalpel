@@ -103,7 +103,6 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
     // First half of frame is padded with zeros
     reader->read(&inputBuffer, frameSize/2, frameSize/2, 0, true, false);
     int readPtr = hopSize;
-    int sampleShift = frameSize - hopSize;
     
     // Run audio processing loop
     while(network->getControl("SoundFileSource/input/mrs_bool/hasData")->to_bool() && readPtr < reader->lengthInSamples)
@@ -125,7 +124,6 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
         
         // Perform forward FFT
         forwardFFT.perform(timeDomain.data(), spectral.data());
-        
         
         mrs_realvec phases((int)(frameSize/2));
         

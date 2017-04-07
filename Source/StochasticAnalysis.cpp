@@ -96,8 +96,8 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
         // Subtract the sinusoidal spectrum from the original spectrum
         for (int i = 0; i < frameSize; i++)
         {
-            spectral[i].r = spectral[i].r - sineSpectral[i].r;
-            spectral[i].i = spectral[i].i - sineSpectral[i].i;
+            spectral[i].r = sineSpectral[i].r;
+            spectral[i].i = sineSpectral[i].i;
         }
         
         // For testing output
@@ -109,11 +109,11 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
         }
         
         // Shift samples by a hop size
-        for (int i = 0; i < hopSize * 3; i++)
+        for (int i = hopSize; i < frameSize; i++)
         {
-            inputSamples[i] = inputSamples[i + hopSize];
+            inputSamples[i - hopSize] = inputSamples[i];
         }
-        reader->read(&inputBuffer, hopSize * 3, hopSize, readPtr, true, false);
+        reader->read(&inputBuffer, frameSize - hopSize, hopSize, readPtr, true, false);
         readPtr += hopSize;
         
         ++frame;

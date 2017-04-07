@@ -15,6 +15,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AnalysisMrs.h"
+#include "StochasticAnalysis.h"
 #include "SineElement.h"
 #include "AnalysisParameterManager.h"
 #include "SynthesisParameterManager.h"
@@ -83,6 +84,7 @@ public:
 private:
     
     ScopedPointer<AnalysisMrs> analysis_;
+    ScopedPointer<StochasticAnalysis> stochasticAnalysis_;
     
     // Reference counted pointers to Sine Models for this interface
     ReferenceCountedArray<SineModel> sineModels_;

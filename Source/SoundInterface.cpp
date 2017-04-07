@@ -12,7 +12,7 @@
 
 
 SoundInterface::SoundInterface(AnalysisParameterManager* a, SynthesisParameterManager* s) :
-    analysis_(nullptr), state_(loadFileState)
+    analysis_(nullptr), stochasticAnalysis_(nullptr), state_(loadFileState)
 {
     analysisParams_ = a;
     synthParams_ = s;
@@ -34,6 +34,7 @@ SoundInterface::~SoundInterface()
 void SoundInterface::buildAnalysis(File inputFile)
 {
     analysis_ = new AnalysisMrs(inputFile, *analysisParams_);
+    stochasticAnalysis_ = new StochasticAnalysis(inputFile, *analysisParams_);
 }
 
 
@@ -42,6 +43,7 @@ void SoundInterface::runAnalysis()
     if (analysis_ != nullptr)
     {
         currentSineModel_ = analysis_->runAnalysis();
+        stochasticAnalysis_->runAnalysis(currentSineModel_);
         sineModels_.add(currentSineModel_);
         isActive_ = true;
     }

@@ -69,7 +69,7 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
     
     // First half of frame is padded with zeros
     reader->read(&inputBuffer, frameSize/2, frameSize/2, 0, true, false);
-    int readPtr = hopSize;
+    int readPtr = frameSize/2;
     
     // Run audio processing loop
     while(frame != sineModel->end())
@@ -96,8 +96,8 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
         // Subtract the sinusoidal spectrum from the original spectrum
         for (int i = 0; i < frameSize; i++)
         {
-            spectral[i].r = sineSpectral[i].r;
-            spectral[i].i = sineSpectral[i].i;
+            spectral[i].r -= sineSpectral[i].r;
+            spectral[i].i -= sineSpectral[i].i;
         }
         
         // For testing output

@@ -21,6 +21,11 @@ StochasticAnalysis::StochasticAnalysis(File input, AnalysisParameterManager& p) 
 
 void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
 {
+    
+    // Audio file reader
+    ScopedPointer<AudioFormatReader> reader = fileLoader_.getAudioReader(audioFile_);
+    sampleRate_ = reader->sampleRate;
+    
     // Maybe not any definable parameters?
     //AudioProcessorValueTreeState* parameters = params_.getParameters();
     int hopSize = 128;
@@ -37,6 +42,8 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
     output.clear();
     float* outputSample = output.getWritePointer(0);
     
+    AudioBuffer<float> inputBuffer(1, frameSize);
+    
     // Complex vectors for frequency domain calculations
     std::vector<FFT::Complex> timeDomain(frameSize);
     std::vector<FFT::Complex> spectral(frameSize);
@@ -46,23 +53,6 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
     // Forward FFT class
     FFT forwardFFT(std::log2(frameSize), false);
     FFT backwardFFT(std::log2(frameSize), true);
-    
-    // Create a Marsyas system
-    MarSystemManager mng;
-    ScopedPointer<MarSystem> network = mng.create("Series/analysis");
-    
-    network->addMarSystem(mng.create("SoundFileSource/input"));
-    network->addMarSystem(mng.create("MixToMono/mono"));
-    network->addMarSystem(mng.create("ShiftInput/shift"));
-    network->addMarSystem(mng.create("Gain/gain"));
-
-    const String fileName = audioFile_.getFullPathName();
-    network->updControl("mrs_natural/inSamples", hopSize);
-    network->updControl("SoundFileSource/input/mrs_string/filename", fileName.toStdString());
-    network->updControl("ShiftInput/shift/mrs_natural/winSize", frameSize);
-    
-    // Get pointer to a frame of shifted samples from input
-    MarControlPtr shifted = network->getControl("ShiftInput/shift/mrs_realvec/processedData");
     
     // Create and normalize a Hamming window
     mrs_realvec window(frameSize);
@@ -74,21 +64,28 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
     
     int outPtr = 0;
     
+    float* inputSamples = inputBuffer.getWritePointer(0);
+    inputBuffer.clear();
+    
+    // First half of frame is padded with zeros
+    reader->read(&inputBuffer, frameSize/2, frameSize/2, 0, true, false);
+    int readPtr = hopSize;
+    
     // Run audio processing loop
-    while(network->getControl("SoundFileSource/input/mrs_bool/hasData")->to_bool() && frame != sineModel->end())
+    while(frame != sineModel->end())
     {
-        network->tick();
-        
-        // Update sample rate -- shouldn't change but we need to do it in the loop
-        sampleRate_ = network->getControl("SoundFileSource/input/mrs_real/osrate")->to_real();
-        
-        // Shifted frame
-        mrs_realvec input = shifted->to_realvec();
+        // Shift samples by a hop size
+        for (int i = 0; i < hopSize * 3; i++)
+        {
+            inputSamples[i] = inputSamples[i + hopSize];
+        }
+        reader->read(&inputBuffer, hopSize * 3, hopSize, readPtr, true, false);
+        readPtr += hopSize;
         
         // Store input as a complex number for FFT - Do Zero Phasing and apply window
         for (int i = 0; i < frameSize; ++i)
         {
-            timeDomain.at(i).r = input((i + (int)(frameSize/2)) % frameSize) *
+            timeDomain.at(i).r = inputSamples[(i + (int)(frameSize/2)) % frameSize] *
                 window((i + (int)(frameSize/2)) % frameSize);
         }
         
@@ -107,8 +104,8 @@ void StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
         // Subtract the sinusoidal spectrum from the original spectrum
         for (int i = 0; i < frameSize; i++)
         {
-            spectral[i].r = sineSpectral[i].r;
-            spectral[i].i = sineSpectral[i].i;
+            spectral[i].r -= sineSpectral[i].r;
+            spectral[i].i -= sineSpectral[i].i;
         }
         
         // For testing output

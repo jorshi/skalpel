@@ -13,6 +13,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "marsyas/system/MarSystemManager.h"
+#include "FileLoader.h"
 #include "SineElement.h"
 #include "SynthesisUtils.h"
 #include "AnalysisParameterManager.h"
@@ -37,6 +38,8 @@ private:
   
     File audioFile_;
     AnalysisParameterManager& params_;
+    
+    FileLoader fileLoader_;
     
     mrs_real sampleRate_;
     mrs_realvec synthWindow_;

@@ -33,7 +33,9 @@ SineModel::Ptr AnalysisMrs::runAnalysis()
     const String fileName = audioFile.getFullPathName();
     SineModel::Ptr model = new SineModel;
     
-    peakDetection(model, fileName);
+    ScopedPointer<AudioFormatReader> reader = fileLoader_.getAudioReader(audioFile);
+    
+    peakDetection(model, fileName, reader);
     sineTracking(model);
     cleanModel(model);
     
@@ -46,7 +48,7 @@ SineModel::Ptr AnalysisMrs::runAnalysis()
  *  Opens an audio file and runs peak detection, filling a
  *  SineModel object with a sinusoidal model
  */
-void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename)
+void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, AudioFormatReader* reader)
 {
     AudioProcessorValueTreeState* parameters = params_.getParameters();
     
@@ -64,6 +66,8 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename)
         thresh = -80.0;
     
     mrs_real sampleRate;
+    
+    AudioBuffer<float> inputFrame(1, frameSize);
     
     // Complex vectors for frequency domain calculations
     std::vector<FFT::Complex> timeDomain(frameSize);
@@ -183,7 +187,8 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename)
     }
     
     sineModel->setSampleRate(sampleRate);
-    sineModel->setFrameSize(hopSize);
+    sineModel->setFrameSize(hopSize); // TODO why not the frame size??
+    sineModel->setHopSize(hopSize);
 }
 
 

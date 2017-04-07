@@ -12,6 +12,7 @@
 #define ANALYSISMRS_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
+#include "FileLoader.h"
 #include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
 #include "AnalysisParameterManager.h"
@@ -38,11 +39,12 @@ public:
     SineModel::Ptr runAnalysis();
     
 private:
-    void peakDetection(SineModel::Ptr, String);
+    void peakDetection(SineModel::Ptr, String, AudioFormatReader* reader);
     void sineTracking(SineModel::Ptr);
     void cleanModel(SineModel::Ptr);
     
     File audioFile;
+    FileLoader fileLoader_;
     
     // Paramters
     AnalysisParameterManager& params_;

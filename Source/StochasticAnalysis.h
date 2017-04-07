@@ -31,9 +31,15 @@ public:
     void runAnalysis(SineModel::Ptr sineModel);
     
 private:
+    
+    // Synthesize a frame of the sine model to subtract from the spectrum
+    void synthesizeFrame(SineModel::SineFrame& frame, FFT::Complex* spectrum, int length);
   
     File audioFile_;
     AnalysisParameterManager& params_;
+    
+    mrs_real sampleRate_;
+    mrs_realvec synthWindow_;
 };
 
 

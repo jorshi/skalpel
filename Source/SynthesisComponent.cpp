@@ -202,6 +202,7 @@ SynthesisComponent::~SynthesisComponent()
 
 void SynthesisComponent::paint (Graphics& g)
 {
+    
     g.setColour(LoomLookAndFeel::boundaryColour);
     g.drawRect(visualizer, 2.0f);
 
@@ -243,7 +244,7 @@ void SynthesisComponent::resized()
 
     noiseGain.setBounds(groupE, 220, 50, 55);
     
-    visualizerComponent->setBounds(visualizer);
+    visualizerComponent->setBounds(visualizer.reduced(2.0f));
 }
 
 void SynthesisComponent::setVisible(bool shouldBeVisible)

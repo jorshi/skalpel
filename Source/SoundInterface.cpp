@@ -115,7 +115,7 @@ void SoundInterface::checkModels()
 
 void SoundInterface::addVisualizerFrame(float freq, float amp)
 {
-    int pixel = (int)((freq / sampleRate_) * visualizerSize);
+    int pixel = (int)((freq / sampleRate_) * (visualizerSize*2));
     if (isPositiveAndBelow(pixel, (int)visualizerSize))
     {
         visualizerFrame_[pixel] += amp;

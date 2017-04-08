@@ -19,7 +19,10 @@ class StochasticModel : public ReferenceCountedObject
 public:
     
     typedef ReferenceCountedObjectPtr<StochasticModel> Ptr;
+    typedef const ReferenceCountedObjectPtr<StochasticModel> ConstPtr;
+
     typedef std::vector<std::vector<float>> StochasticModelMatrix;
+    typedef std::vector<float> StochasticModelFrame;
     
     // Constructor -- the model factor must be defined
     StochasticModel(int factor) : factor_(factor) {};
@@ -35,6 +38,9 @@ public:
     
     // Add a new frame from a complex spectrum
     void addFrame(const std::vector<FFT::Complex>& spectrum);
+    
+    // Get a frame 
+    const StochasticModelFrame& getFrame(int index) const { return model_.at(index); };
     
     const int size() const { return model_.size(); };
     

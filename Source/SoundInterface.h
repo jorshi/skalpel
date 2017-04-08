@@ -51,6 +51,9 @@ public:
     // Sine Model Getter
     SineModel::ConstPtr getSineModel() const { return currentSineModel_; };
     
+    // Stochastic Model Getter
+    StochasticModel::ConstPtr getStochasticModel() const { return currentStochasticModel_; };
+    
     // Get current state of sound
     State getState() const { return state_; };
     

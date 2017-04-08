@@ -233,7 +233,7 @@ StochasticModel* StochasticAnalysis::stochasticModelling(AudioBuffer<float>& res
 {
     const float* sample = residualBuffer.getReadPointer(0);
     int readPtr = startSample;
-    int factor = 64;
+    int factor = hopSize;
     
     // New stochastic model
     StochasticModel* stochasticModel = new StochasticModel(factor);
@@ -275,6 +275,8 @@ StochasticModel* StochasticAnalysis::stochasticModelling(AudioBuffer<float>& res
 
         forward.perform(time.data(), spectral.data());
         
+        float mag;
+        float phase;
         // Calculate magnitude spectrum
         for (int i = 0; i < hopSize; i++)
         {
@@ -286,33 +288,36 @@ StochasticModel* StochasticAnalysis::stochasticModelling(AudioBuffer<float>& res
             resampleSpectral[i].i = 0.0;
         }
         
-        // FFT decimation of the frequency spectrum
-        jassert(resampleForward.getSize() == resampleSpectral.size());
-        jassert(resampleForward.getSize() == resampleSignalA.size());
+        // FFT Resampling isn't working -- TODO
         
-        resampleForward.perform(resampleSpectral.data(), resampleSignalA.data());
-        
-        for (int i = 0; i < factor/2; i++)
-        {
-            jassert(i < resampleSignalB.size());
-            jassert(i < resampleSignalA.size());
-            
-            resampleSignalB[i].r = resampleSignalA[i].r;
-            resampleSignalB[i].i = resampleSignalA[i].i;
-            
-            jassert(factor -1 - i < resampleSignalB.size());
-            
-            resampleSignalB[factor -1 - i].r = resampleSignalA[i].r;
-            resampleSignalB[factor -1 - i].i = -resampleSignalA[i].i;
-        }
-        
-        jassert(resampleBackward.getSize() == resampleSignalB.size());
-        jassert(resampleBackward.getSize() == stochComplex.size());
-        
-        resampleBackward.perform(resampleSignalB.data(), stochComplex.data());
+//        // FFT decimation of the frequency spectrum
+//        jassert(resampleForward.getSize() == resampleSpectral.size());
+//        jassert(resampleForward.getSize() == resampleSignalA.size());
+//        
+//        resampleForward.perform(resampleSpectral.data(), resampleSignalA.data());
+//        
+//
+//        for (int i = 0; i < factor/2; i++)
+//        {
+//            jassert(i < resampleSignalB.size());
+//            jassert(i < resampleSignalA.size());
+//            
+//            resampleSignalB[i].r = resampleSignalA[i].r;
+//            resampleSignalB[i].i = resampleSignalA[i].i;
+//            
+//            jassert(factor -1 - i < resampleSignalB.size());
+//            
+//            resampleSignalB[factor -1 - i].r = resampleSignalA[i].r;
+//            resampleSignalB[factor -1 - i].i = -resampleSignalA[i].i;
+//        }
+//        
+//        jassert(resampleBackward.getSize() == resampleSignalB.size());
+//        jassert(resampleBackward.getSize() == stochComplex.size());
+//        
+//        resampleBackward.perform(resampleSignalB.data(), stochComplex.data());
         
         // Add frame to the stochastic model
-        stochasticModel->addFrame(stochComplex);
+        stochasticModel->addFrame(resampleSpectral);
         
         readPtr += hopSize;
         frameCount++;

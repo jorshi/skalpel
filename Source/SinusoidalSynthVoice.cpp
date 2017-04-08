@@ -22,15 +22,21 @@ SinusoidalSynthVoice::SinusoidalSynthVoice(SoundInterfaceManager& s) :
     
     // Inverse FFT of frame size
     inverseFFT_ = new FFT(std::log2(frameSize_), true);
-    
     spectrum_.resize(frameSize_);
     timeDomain_.resize(frameSize_);
+    
+    noiseForwardFFT_ = new FFT(std::log2(64), false);
+    noiseBackwardFFT_ = new FFT(std::log2(frameSize_), true);
+    noiseForward_.resize(64);
+    noiseFreq_.resize(512);
+    noiseSpectrum_.resize(512);
+
     
     output_.create(frameSize_);
     buffer_.create(frameSize_);
 }
 
-// Deconstructor
+//
 SinusoidalSynthVoice::~SinusoidalSynthVoice()
 {
 }
@@ -59,6 +65,7 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
             if (soundManger_[i]->isActive())
             {
                 activeModels_.insert(i, soundManger_[i]->getSineModel());
+                activeNoiseModels_.insert(i, soundManger_[i]->getStochasticModel());
                 params_.insert(i, soundManger_[i]->getSynthParams());
                 location_.at(i) = 0.0f;
             }
@@ -250,11 +257,13 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     for (int modelNum = activeModels_.size(); --modelNum >= 0;)
     {
         SineModel::ConstPtr model = activeModels_[modelNum];
+        StochasticModel::ConstPtr noiseModel = activeNoiseModels_[modelNum];
         
         // Get number of frames in the model return if there aren't any
         if (model->size() < 1)
         {
             activeModels_.remove(modelNum);
+            activeNoiseModels_.remove(modelNum);
             continue;
         }
         
@@ -273,9 +282,10 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         location_[modelNum] += (hopSize_ / getSampleRate()) * playbackRate;
         
         // Out of frames from the model
-        if (model->size() <= requestedFrame)
+        if (model->size() <= requestedFrame || noiseModel->size() <= requestedFrame)
         {
             activeModels_.remove(modelNum);
+            activeNoiseModels_.remove(modelNum);
             continue;
         }
         
@@ -284,6 +294,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         
         // Constant reference to the frame at this point
         const SineModel::SineFrame& frame = model->getFrame(requestedFrame);
+        const StochasticModel::StochasticModelFrame& noiseFrame = noiseModel->getFrame(requestedFrame);
         
         // -- Tuning Parameters --
         octaveTuning = params_.getUnchecked(modelNum)->getRawValue("octave_tune", parameterValue) ?
@@ -326,7 +337,8 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             frameEndOffset = 0;
         }
         
-        // Create the spectral signal
+        // ====================  Sinusoidal Modelling  ====================
+
         for (auto sine = frame.begin(); sine != (frame.end() - frameEndOffset); ++sine)
         {
             // Do frequency transformations here
@@ -432,6 +444,11 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
                 }
             }
         }
+        
+        // ====================  Stochastic Modelling  ====================
+        
+        // To a simple linear interpolation resampling ot get correct number of samples
+        
     }
     
     float i = 1.0;

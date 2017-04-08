@@ -21,6 +21,7 @@
 #include "Modulation.h"
 #include "ADSR.h"
 #include "ModulationFactory.h"
+#include "StochasticModel.h"
 
 class SinusoidalSynthVoice : public SynthesiserVoice
 {
@@ -77,11 +78,20 @@ private:
     
     std::vector<float> location_;
     
+    // FFTs for Sine Modelling
     ScopedPointer<FFT> inverseFFT_;
     std::vector<FFT::Complex> spectrum_;
     std::vector<FFT::Complex> timeDomain_;
     
+    ScopedPointer<FFT> noiseForwardFFT_;
+    ScopedPointer<FFT> noiseBackwardFFT_;
+    std::vector<FFT::Complex> noiseForward_;
+    std::vector<FFT::Complex> noiseFreq_;
+    std::vector<FFT::Complex> noiseSpectrum_;
+    
     ReferenceCountedArray<SineModel> activeModels_;
+    ReferenceCountedArray<StochasticModel> activeNoiseModels_;
+    
     Array<SynthesisParameterManager*> params_;
     Array<SoundInterface*> activeSounds_;
     SoundInterfaceManager& soundManger_;
@@ -89,6 +99,8 @@ private:
     std::vector<std::map<int, PrevElement>> previousElements_;
 
     Modulation::Ptr env1_;
+    
+    Random random_;
     
     JUCE_LEAK_DETECTOR (SinusoidalSynthVoice)
 };

@@ -440,10 +440,33 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         
         // ====================  Stochastic Modelling  ====================
         
-        // To a simple linear interpolation resampling ot get correct number of samples
-        
+        // Do a simple linear interpolation resampling ot get correct number of samples
+        float factor = std::floor(frameSize_ / noiseFrame.size());
+        float noiseLoc, noiseMag, noisePhase;
+        int prevBin, nextBin;
+        for (int i = 1; i < nyquistBin_; i++)
+        {
+            noiseLoc = i / factor;
+            prevBin = std::floor(noiseLoc);
+            nextBin = std::ceil(noiseLoc);
+            noiseLoc = noiseLoc - prevBin;
+            
+            // Do linear interpolation and convert from dB to linear scale magnitude
+            noiseMag = noiseFrame[prevBin] + noiseLoc * (noiseFrame[nextBin] - noiseFrame[prevBin]);
+            
+            jassert(noiseMag < 0.0);
+            noiseMag = powf(10, noiseMag/20.0) * ampEnv;
+            
+            // Random phase for shaped noise
+            noisePhase = random_.nextFloat() * 2 * float_Pi;
+            
+            // Create noise spectrum
+            spectrum_.at(i).r += noiseMag*cos(noisePhase);
+            spectrum_.at(i).i += noiseMag*sin(noisePhase);
+        }
     }
     
+    // TODO -- what's this about?
     float i = 1.0;
     env1_->apply(i);
     env1_->increment(hopSize_);

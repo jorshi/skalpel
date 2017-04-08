@@ -24,6 +24,7 @@ StochasticModel::Ptr StochasticAnalysis::runAnalysis(SineModel::Ptr sineModel)
     StochasticModel::Ptr model;
     
     AudioBuffer<float> residual;
+    residual.clear();
     residualSignal(residual, sineModel);
     model = stochasticModelling(residual, 0, 128, sineModel->size());
     
@@ -247,15 +248,12 @@ StochasticModel* StochasticAnalysis::stochasticModelling(AudioBuffer<float>& res
     
     // For resampling
     std::vector<FFT::Complex> resampleSpectral(hopSize);
-    std::vector<FFT::Complex> resampleSignalA(hopSize);
-    std::vector<FFT::Complex> resampleSignalB(factor);
-    std::vector<FFT::Complex> stochComplex(factor);
-    FFT resampleForward(std::log2(hopSize), false);
-    FFT resampleBackward(std::log2(factor), true);
     
+    // Normalized Hamming window
     mrs_realvec window;
     window.create(hopSize*2);
     SynthUtils::windowingFillHamming(window);
+    window /= window.sum();
     
     int frameCount = 0;
     while (readPtr + (hopSize*2) < residualBuffer.getNumSamples() && frameCount < frames)
@@ -263,58 +261,23 @@ StochasticModel* StochasticAnalysis::stochasticModelling(AudioBuffer<float>& res
         // Window residual signal
         for (int i = 0; i < hopSize * 2; i++)
         {
-            jassert(i < time.size());
-            jassert(i + readPtr < residualBuffer.getNumSamples());
-            
             time[i].r = sample[readPtr + i] * window(i);
+            jassert(std::abs(time[i].r) <= 1.0);
         }
         
         // Move to frequency domain
-        jassert(forward.getSize() == time.size());
-        jassert(forward.getSize() == spectral.size());
-
         forward.perform(time.data(), spectral.data());
         
-        float mag;
-        float phase;
         // Calculate magnitude spectrum
         for (int i = 0; i < hopSize; i++)
         {
-            jassert(i < spectral.size());
-            jassert(i < resampleSpectral.size());
-            
             resampleSpectral[i].r = sqrt(spectral[i].r * spectral[i].r + spectral[i].i * spectral[i].i);
             resampleSpectral[i].r = std::max(20*log10(resampleSpectral[i].r), -200.0);
             resampleSpectral[i].i = 0.0;
+            
+            // Make sure levels are correct
+            jassert(resampleSpectral[i].r < 0.0);
         }
-        
-        // FFT Resampling isn't working -- TODO
-        
-//        // FFT decimation of the frequency spectrum
-//        jassert(resampleForward.getSize() == resampleSpectral.size());
-//        jassert(resampleForward.getSize() == resampleSignalA.size());
-//        
-//        resampleForward.perform(resampleSpectral.data(), resampleSignalA.data());
-//        
-//
-//        for (int i = 0; i < factor/2; i++)
-//        {
-//            jassert(i < resampleSignalB.size());
-//            jassert(i < resampleSignalA.size());
-//            
-//            resampleSignalB[i].r = resampleSignalA[i].r;
-//            resampleSignalB[i].i = resampleSignalA[i].i;
-//            
-//            jassert(factor -1 - i < resampleSignalB.size());
-//            
-//            resampleSignalB[factor -1 - i].r = resampleSignalA[i].r;
-//            resampleSignalB[factor -1 - i].i = -resampleSignalA[i].i;
-//        }
-//        
-//        jassert(resampleBackward.getSize() == resampleSignalB.size());
-//        jassert(resampleBackward.getSize() == stochComplex.size());
-//        
-//        resampleBackward.perform(resampleSignalB.data(), stochComplex.data());
         
         // Add frame to the stochastic model
         stochasticModel->addFrame(resampleSpectral);

@@ -3,7 +3,7 @@
 
     SoundInterfaceManager.cpp
     Created: 23 Mar 2017 10:26:01pm
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -17,27 +17,27 @@ Thread("SoundInterface Manager Thread")
     SoundInterface* sound;
     AnalysisParameterManager* analysisParams;
     SynthesisParameterManager* synthParams;
-    
+
     for (int i = 0; i < numSounds; i++)
     {
         // New set of analysis parameters
         analysisParams = new AnalysisParameterManager(i, params);
         analysisParameters_.insert(i, analysisParams);
-        
+
         // New set of synthesis parameters
         synthParams = new SynthesisParameterManager(i, params);
         synthesisParameters_.insert(i, synthParams);
-       
+
         // New sound interface for this particular sound
         sound = new SoundInterface(analysisParams, synthParams);
         soundInterfaces_.insert(i, sound);
     }
-    
+
     currentUISound = 0;
- 
+
     modulationFactory_ = new ModulationFactory();
     envelopes_ = new EnvelopeParamaterManager(0, params, modulationFactory_);
-    
+
     startThread();
 }
 
@@ -79,7 +79,7 @@ Array<SoundInterface*> SoundInterfaceManager::getActiveSounds()
             activeSounds.add(soundInterfaces_[i]);
         }
     }
-    
+
     return activeSounds;
 }
 

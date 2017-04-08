@@ -3,7 +3,7 @@
 
     EnvelopeParameterManager.cpp
     Created: 27 Mar 2017 11:04:17am
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -29,7 +29,7 @@ void EnvelopeParamaterManager::createParameters()
                                        10.0f,
                                        nullptr,
                                        nullptr);
-    
+
     parameters_->createAndAddParameter("adsr_1_decay",
                                        "ADSR 1 Decay",
                                        "ms",
@@ -37,7 +37,7 @@ void EnvelopeParamaterManager::createParameters()
                                        150.0f,
                                        nullptr,
                                        nullptr);
-    
+
     parameters_->createAndAddParameter("adsr_1_sustain",
                                        "ADSR 1 Sustain",
                                        String(),
@@ -45,7 +45,7 @@ void EnvelopeParamaterManager::createParameters()
                                        0.75f,
                                        nullptr,
                                        nullptr);
-    
+
     parameters_->createAndAddParameter("adsr_1_release",
                                        "ADSR 1 Release",
                                        "ms",
@@ -53,7 +53,7 @@ void EnvelopeParamaterManager::createParameters()
                                        20.0f,
                                        nullptr,
                                        nullptr);
-    
+
     ADSR* newAdsr = new ADSR(parameters_);
     newAdsr->registerAttackParam("adsr_1_attack");
     newAdsr->registerDecayParam("adsr_1_decay");

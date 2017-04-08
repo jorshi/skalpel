@@ -3,7 +3,7 @@
 
     AnalysisParameterManager.cpp
     Created: 19 Mar 2017 4:32:44am
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -37,7 +37,7 @@ void AnalysisParameterManager::createParameters()
                                        {
                                            return std::log2(std::stof(text.toStdString())) - analysisWindowOffset;
                                        });
-    
+
 
     // Analysis Hop Size
     String analysisHopId("analysis_hop_" + std::to_string(soundNum_));
@@ -76,7 +76,7 @@ void AnalysisParameterManager::createParameters()
                                        "Hz",
                                        NormalisableRange<float>(0.0f, 100.0f, 1.0f, 0.75f),
                                        20.0f, nullptr, nullptr);
- 
+
     // Analysis Frequency Deviation Slope
     String analysisFreqSlopeId("analysis_freq_slope_" + std::to_string(soundNum_));
     String analysisFreqSlopeName("analysis_freq_slope");
@@ -96,7 +96,7 @@ void AnalysisParameterManager::createParameters()
                                        "ms",
                                        NormalisableRange<float>(0.0f, 5000.0f, 0.1f, 0.25f),
                                        20.0f, nullptr, nullptr);
-    
+
     String analysisSineCountId("analysis_sines_" + std::to_string(soundNum_));
     String analysisSineCountName("analysis_sines");
     paramMap_.emplace(analysisSineCountName, analysisSineCountId);
@@ -129,6 +129,6 @@ bool AnalysisParameterManager::getRawValue(const juce::String &name, float& valu
         value = *parameters_->getRawParameterValue(paramId);
         return true;
     }
-    
+
     return false;
 }

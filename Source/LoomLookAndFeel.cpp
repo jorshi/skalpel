@@ -3,7 +3,7 @@
 
     LoomLookAndFeel.cpp
     Created: 18 Mar 2017 1:48:42am
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -16,7 +16,7 @@ LoomLookAndFeel::LoomLookAndFeel()
     setColour(TextButton::textColourOffId, buttonTextColour);
     setColour(Label::textColourId, buttonTextColour);
     setColour(Slider::rotarySliderFillColourId, buttonEdgeColour);
-    
+
     buttonRadius = 7.0f;
 }
 

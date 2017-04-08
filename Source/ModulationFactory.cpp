@@ -3,7 +3,7 @@
 
     ModulationFactory.cpp
     Created: 27 Mar 2017 12:56:52am
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -29,7 +29,7 @@ Modulation::Ptr ModulationFactory::make(String id)
         // on the signals passed into it
         return source->second->clone();
     }
-    
+
     return nullptr;
 }
 

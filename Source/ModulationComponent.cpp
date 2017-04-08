@@ -3,7 +3,7 @@
 
     ModulationComponent.cpp
     Created: 2 Apr 2017 1:55:44am
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -17,7 +17,7 @@ ModulationComponent::ModulationComponent(ActionListener* parent, EnvelopeParamat
     // Setup action broadcaster
     broadcaster.removeAllActionListeners();
     broadcaster.addActionListener(parent);
-    
+
     // Attack Time Rotary
     addAndMakeVisible(attack);
     attack.setTextValueSuffix(" ms");
@@ -26,11 +26,11 @@ ModulationComponent::ModulationComponent(ActionListener* parent, EnvelopeParamat
     attackAttachment = new SliderAttachment(*params->getParameters(),
                                             "adsr_1_attack",
                                             attack);
-    
+
     addAndMakeVisible(attackLabel);
     attackLabel.setText("Attack", dontSendNotification);
     attackLabel.attachToComponent(&attack, false);
-    
+
     // Decay Time Rotary
     addAndMakeVisible(decay);
     decay.setTextValueSuffix(" ms");
@@ -39,11 +39,11 @@ ModulationComponent::ModulationComponent(ActionListener* parent, EnvelopeParamat
     decayAttachment = new SliderAttachment(*params->getParameters(),
                                             "adsr_1_decay",
                                             decay);
-    
+
     addAndMakeVisible(decayLabel);
     decayLabel.setText("Decay", dontSendNotification);
     decayLabel.attachToComponent(&decay, false);
-    
+
     // Sustain Level Rotary
     addAndMakeVisible(sustain);
     sustain.setSliderStyle(Slider::RotaryHorizontalVerticalDrag);
@@ -51,11 +51,11 @@ ModulationComponent::ModulationComponent(ActionListener* parent, EnvelopeParamat
     sustainAttachment = new SliderAttachment(*params->getParameters(),
                                              "adsr_1_sustain",
                                              sustain);
-    
+
     addAndMakeVisible(sustainLabel);
     sustainLabel.setText("Sustain", dontSendNotification);
     sustainLabel.attachToComponent(&sustain, false);
-    
+
     // Release Time Rotary
     addAndMakeVisible(release);
     release.setTextValueSuffix(" ms");
@@ -64,7 +64,7 @@ ModulationComponent::ModulationComponent(ActionListener* parent, EnvelopeParamat
     releaseAttachment = new SliderAttachment(*params->getParameters(),
                                             "adsr_1_release",
                                              release);
-    
+
     addAndMakeVisible(releaseLabel);
     releaseLabel.setText("Release", dontSendNotification);
     releaseLabel.attachToComponent(&release, false);

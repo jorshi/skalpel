@@ -3,7 +3,7 @@
 
     SineElement.cpp
     Created: 11 Feb 2017 2:09:40pm
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */

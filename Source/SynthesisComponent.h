@@ -3,7 +3,7 @@
 
     SynthesisComponent.h
     Created: 20 Mar 2017 10:38:23pm
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -29,15 +29,15 @@ public:
 
 private:
     typedef AudioProcessorValueTreeState::SliderAttachment SliderAttachment;
-    
+
     LoomLookAndFeel loomLookAndFeel;
     TextButton newButton;
     TextButton analysisButton;
-    
+
     Rectangle<int> visualizer;
-    
+
     SynthesisParameterManager* synthesisParams;
-    
+
     // Sliders
     Slider octave;
     Slider semitone;
@@ -50,7 +50,7 @@ private:
     Slider playbackRate;
     Slider sineCount;
     Slider sineGain;
-    
+
     // Labels
     Label octaveLabel;
     Label semitoneLabel;
@@ -63,8 +63,8 @@ private:
     Label playbackRateLabel;
     Label sineCountLabel;
     Label sineGainLabel;
-    
-    
+
+
     // Attachments
     ScopedPointer<SliderAttachment> octaveAttachment;
     ScopedPointer<SliderAttachment> semitoneAttachment;
@@ -77,7 +77,7 @@ private:
     ScopedPointer<SliderAttachment> playbackRateAttachment;
     ScopedPointer<SliderAttachment> sineCountAttachment;
     ScopedPointer<SliderAttachment> sineGainAttachment;
-    
+
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (SynthesisComponent)
 };
 

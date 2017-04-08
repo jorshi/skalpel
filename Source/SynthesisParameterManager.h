@@ -3,7 +3,7 @@
 
     SynthesisParameterManager.h
     Created: 30 Mar 2017 12:32:12am
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -20,17 +20,17 @@ public:
 
     // Constructor
     SynthesisParameterManager(int num, AudioProcessorValueTreeState* p);
-    
+
     // Deconstructor
     ~SynthesisParameterManager() {};
-    
+
     // Creates all the parameters for a particular sound
     void createParameters() override;
-    
+
     bool getRawValue(const String& name, float& value) const;
-    
+
 private:
-  
+
 
     JUCE_LEAK_DETECTOR(SynthesisParameterManager)
 };

@@ -3,7 +3,7 @@
 
     SynthesisParameterManager.cpp
     Created: 30 Mar 2017 12:32:12am
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -30,7 +30,7 @@ void SynthesisParameterManager::createParameters()
                                        0.0f,
                                        [](float value) { return std::to_string((int)value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String semitoneTuneId("semitone_tune_" + std::to_string(soundNum_));
     String semitoneTuneName("semitone_tune");
     paramMap_.emplace(semitoneTuneName, semitoneTuneId);
@@ -41,7 +41,7 @@ void SynthesisParameterManager::createParameters()
                                        0.0f,
                                        [](float value) { return std::to_string((int)value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String centTuneId("cent_tune_" + std::to_string(soundNum_));
     String centTuneName("cent_tune");
     paramMap_.emplace(centTuneName, centTuneId);
@@ -52,7 +52,7 @@ void SynthesisParameterManager::createParameters()
                                        0.0f,
                                        [](float value) { return std::to_string((int)value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String freqScaleId("frequency_scale_" + std::to_string(soundNum_));
     String freqScaleName("frequency_scale");
     paramMap_.emplace(freqScaleName, freqScaleId);
@@ -64,7 +64,7 @@ void SynthesisParameterManager::createParameters()
                                        [](float value) { return std::to_string(value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
 
-    
+
     String stretchCenterId("stretch_center_" + std::to_string(soundNum_));
     String stretchCenterName("stretch_center");
     paramMap_.emplace(stretchCenterName, stretchCenterId);
@@ -75,7 +75,7 @@ void SynthesisParameterManager::createParameters()
                                        100.0f,
                                        [](float value) { return std::to_string(value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String stretchFactorId("stretch_factor_" + std::to_string(soundNum_));
     String stretchFactorName("stretch_factor");
     paramMap_.emplace(stretchFactorName, stretchFactorId);
@@ -86,7 +86,7 @@ void SynthesisParameterManager::createParameters()
                                        0.0f,
                                        [](float value) { return std::to_string(value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String freqShiftId("freq_shift_" + std::to_string(soundNum_));
     String freqShiftName("freq_shift");
     paramMap_.emplace(freqShiftName, freqShiftId);
@@ -97,7 +97,7 @@ void SynthesisParameterManager::createParameters()
                                        0.0f,
                                        [](float value) { return std::to_string((int)value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String startOffsetId("start_offset_" + std::to_string(soundNum_));
     String startOffsetName("start_offset");
     paramMap_.emplace(startOffsetName, startOffsetId);
@@ -108,7 +108,7 @@ void SynthesisParameterManager::createParameters()
                                        0.0f,
                                        [](float value) { return std::to_string(value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String playbackRateId("playback_rate_" + std::to_string(soundNum_));
     String playbackRateName("playback_rate");
     paramMap_.emplace(playbackRateName, playbackRateId);
@@ -119,7 +119,7 @@ void SynthesisParameterManager::createParameters()
                                        1.0f,
                                        [](float value) { return std::to_string(value); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String sineRatioId("sine_ratio_" + std::to_string(soundNum_));
     String sineRatioName("sine_ratio");
     paramMap_.emplace(sineRatioName, sineRatioId);
@@ -130,7 +130,7 @@ void SynthesisParameterManager::createParameters()
                                        1.0f,
                                        [](float value) { return std::to_string((int)(value * 100)); },
                                        [](const String& text) { return std::stof(text.toStdString()); });
-    
+
     String sineGainId("sine_gain_" + std::to_string(soundNum_));
     String sineGainName("sine_gain");
     paramMap_.emplace(sineGainName, sineGainId);
@@ -152,6 +152,6 @@ bool SynthesisParameterManager::getRawValue(const juce::String &name, float& val
         value = *parameters_->getRawParameterValue(paramId);
         return true;
     }
-    
+
     return false;
 }

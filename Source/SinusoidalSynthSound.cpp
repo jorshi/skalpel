@@ -3,7 +3,7 @@
 
     SinusoidalSynthSound.cpp
     Created: 17 Feb 2017 4:03:26pm
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -25,7 +25,7 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
     {
         bh1001_(i) = SynthUtils::BHCONST.at(i);
     }
-    
+
     // Synthesis window for windowing time domain output of signal
     synthWindow_.create(frameSize_);
     SynthUtils::createSynthesisWindow(synthWindow_, frameSize_/4);
@@ -56,7 +56,7 @@ ReferenceCountedArray<SineModel> SinusoidalSynthSound::getPlayingSineModels() co
 {
     ReferenceCountedArray<SineModel> models;
     Array<SoundInterface*> activeSounds = manager_->getActiveSounds();
-    
+
     for (int i = 0; i < activeSounds.size(); i++)
     {
         models.add(activeSounds[i]->getSineModel());

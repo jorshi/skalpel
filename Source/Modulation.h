@@ -3,7 +3,7 @@
 
     Modulation.h
     Created: 27 Mar 2017 12:18:21am
-    Author:  Jordie Shier 
+    Author:  Jordie Shier
 
   ==============================================================================
 */
@@ -17,33 +17,33 @@
 class Modulation : public ReferenceCountedObject
 {
 public:
-    
+
     typedef ReferenceCountedObjectPtr<Modulation> Ptr;
-    
+
     // Default Constructor
     Modulation() : isActive_(true) {};
-    
+
     // Default Deconstructor
     virtual ~Modulation() {};
-    
+
     // Must be implemented in subclasses
     virtual Ptr clone()=0;
-    
+
     // Applies modulation to a value and then updates modulation function
     virtual void apply(float& value)=0;
-    
+
     virtual void increment(int samples=1)=0;
-    
+
     // Sample rate shared by all modulation sources
     static void setRate(int sampleRate) { sampleRate_ = sampleRate; };
     static int getRate() { return sampleRate_; };
-    
+
     // Whether or not this modulator is running
     void setActive(bool active) { isActive_ = active; };
     bool isActive() const { return isActive_; };
-    
+
 private:
-    
+
     static int sampleRate_;
     bool isActive_;
 };

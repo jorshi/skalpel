@@ -25,13 +25,6 @@ SinusoidalSynthVoice::SinusoidalSynthVoice(SoundInterfaceManager& s) :
     spectrum_.resize(frameSize_);
     timeDomain_.resize(frameSize_);
     
-    noiseForwardFFT_ = new FFT(std::log2(64), false);
-    noiseBackwardFFT_ = new FFT(std::log2(frameSize_), true);
-    noiseForward_.resize(64);
-    noiseFreq_.resize(512);
-    noiseSpectrum_.resize(512);
-
-    
     output_.create(frameSize_);
     buffer_.create(frameSize_);
 }

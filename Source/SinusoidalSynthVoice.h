@@ -83,12 +83,6 @@ private:
     std::vector<FFT::Complex> spectrum_;
     std::vector<FFT::Complex> timeDomain_;
     
-    ScopedPointer<FFT> noiseForwardFFT_;
-    ScopedPointer<FFT> noiseBackwardFFT_;
-    std::vector<FFT::Complex> noiseForward_;
-    std::vector<FFT::Complex> noiseFreq_;
-    std::vector<FFT::Complex> noiseSpectrum_;
-    
     ReferenceCountedArray<SineModel> activeModels_;
     ReferenceCountedArray<StochasticModel> activeNoiseModels_;
     

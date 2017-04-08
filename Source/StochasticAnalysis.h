@@ -13,10 +13,12 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "marsyas/system/MarSystemManager.h"
+#include <algorithm>
 #include "FileLoader.h"
 #include "SineElement.h"
 #include "SynthesisUtils.h"
 #include "AnalysisParameterManager.h"
+#include "StochasticModel.h"
 
 class StochasticAnalysis
 {
@@ -29,12 +31,18 @@ public:
     ~StochasticAnalysis() {};
     
     // Run stochastic analysis
-    void runAnalysis(SineModel::Ptr sineModel);
+    StochasticModel::Ptr runAnalysis(SineModel::Ptr sineModel);
     
 private:
     
     // Synthesize a frame of the sine model to subtract from the spectrum
     void synthesizeFrame(SineModel::SineFrame& frame, FFT::Complex* spectrum, int length);
+    
+    // Calculate a stochastic model for a frame
+    StochasticModel* stochasticModelling(AudioBuffer<float>& residualSignal, int startSample, int hopSize, int frames);
+    
+    // Create residual signal
+    void residualSignal(AudioBuffer<float>& residualSignal, SineModel::Ptr sineModel);
   
     File audioFile_;
     AnalysisParameterManager& params_;
@@ -43,6 +51,8 @@ private:
     
     mrs_real sampleRate_;
     mrs_realvec synthWindow_;
+    
+    JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR(StochasticAnalysis);
 };
 
 

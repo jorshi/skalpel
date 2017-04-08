@@ -50,6 +50,10 @@
           <FILE id="MrGNBE" name="SinusoidalSynthVoice.h" compile="0" resource="0"
                 file="Source/SinusoidalSynthVoice.h"/>
         </GROUP>
+        <FILE id="D0eFPt" name="StochasticModel.cpp" compile="1" resource="0"
+              file="Source/StochasticModel.cpp"/>
+        <FILE id="ty8gUo" name="StochasticModel.h" compile="0" resource="0"
+              file="Source/StochasticModel.h"/>
         <FILE id="kNgQmu" name="SynthesisUtils.cpp" compile="1" resource="0"
               file="Source/SynthesisUtils.cpp"/>
         <FILE id="uI4fzd" name="SynthesisUtils.h" compile="0" resource="0"

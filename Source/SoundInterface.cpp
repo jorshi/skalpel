@@ -43,8 +43,11 @@ void SoundInterface::runAnalysis()
     if (analysis_ != nullptr)
     {
         currentSineModel_ = analysis_->runAnalysis();
-        stochasticAnalysis_->runAnalysis(currentSineModel_);
         sineModels_.add(currentSineModel_);
+        
+        currentStochasticModel_ = stochasticAnalysis_->runAnalysis(currentSineModel_);
+        stochasticModels_.add(currentStochasticModel_);
+        
         isActive_ = true;
     }
 }
@@ -93,6 +96,16 @@ void SoundInterface::checkModels()
         if (model->getReferenceCount() == 2)
         {
             sineModels_.remove(i);
+        }
+    }
+    
+    for (int i = stochasticModels_.size(); --i >= 0;)
+    {
+        StochasticModel::Ptr model(stochasticModels_.getUnchecked(i));
+        
+        if (model->getReferenceCount() == 2)
+        {
+            stochasticModels_.remove(i);
         }
     }
 }

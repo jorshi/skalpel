@@ -86,9 +86,12 @@ private:
     ScopedPointer<AnalysisMrs> analysis_;
     ScopedPointer<StochasticAnalysis> stochasticAnalysis_;
     
-    // Reference counted pointers to Sine Models for this interface
+    // Reference counted pointers to models
     ReferenceCountedArray<SineModel> sineModels_;
     SineModel::Ptr currentSineModel_;
+    
+    ReferenceCountedArray<StochasticModel> stochasticModels_;
+    StochasticModel::Ptr currentStochasticModel_;
     
     // For loading new sounds into the analysis
     FileLoader fileLoader_;

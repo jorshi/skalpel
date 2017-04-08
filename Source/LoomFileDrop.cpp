@@ -3,7 +3,7 @@
 
     LoomFileDrop.cpp
     Created: 21 Mar 2017 11:04:08pm
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -28,7 +28,7 @@ void LoomFileDrop::paint (Graphics& g)
     Rectangle<float> buttonArea(0, 0, getWidth(), getHeight());
     g.setColour(buttonEdgeColour);
     g.drawRoundedRectangle(buttonArea, 7.0f, 1.5f);
-
+    
     g.setColour(LoomLookAndFeel::buttonTextColour);
     g.drawText("Drop Audio File", buttonArea, Justification::centred);
 }
@@ -43,7 +43,7 @@ bool LoomFileDrop::isInterestedInFileDrag(const juce::StringArray &files)
     {
         return false;
     }
-
+    
     return soundInterface->willAcceptFile(files[0]);
 }
 

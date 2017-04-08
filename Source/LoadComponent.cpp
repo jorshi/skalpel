@@ -3,7 +3,7 @@
 
     LoadComponent.cpp
     Created: 20 Mar 2017 10:18:56pm
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -16,14 +16,14 @@ LoadComponent::LoadComponent(ButtonListener* parent, ActionListener* parentActio
     soundInterface(s), loomFileDrop(this, s)
 {
     setLookAndFeel(&loomLookAndFeel);
-
+    
     openButton.setButtonText("Browse");
     openButton.setComponentID("load_file");
     openButton.addListener(parent);
     addAndMakeVisible(&openButton);
-
+    
     addAndMakeVisible(&loomFileDrop);
-
+    
     // Setup action broadcaster
     broadcaster.removeAllActionListeners();
     broadcaster.addActionListener(parentAction);

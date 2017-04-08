@@ -3,7 +3,7 @@
 
     Modulation.cpp
     Created: 27 Mar 2017 12:18:21am
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */

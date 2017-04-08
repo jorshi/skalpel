@@ -3,7 +3,7 @@
 
     SynthesisUtils.cpp
     Created: 15 Feb 2017 11:06:15pm
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -13,8 +13,8 @@
 
 
 namespace SynthUtils {
-
-
+    
+    
     void windowingFillBlackmanHarris(realvec& envelope)
     {
         mrs_natural N = envelope.getSize();
@@ -26,8 +26,8 @@ namespace SynthUtils {
             - a3 * cos(6.0 * PI * t / (N - 1.0));
         }
     }
-
-
+    
+    
     void windowingFillTriangle(realvec& envelope)
     {
         mrs_natural N = envelope.getSize();
@@ -36,7 +36,7 @@ namespace SynthUtils {
             envelope(t) = 2.0/N * (N/2.0 - std::abs(t - (N - 1.0)/2.0));
         }
     }
-
+    
     void windowingFillRaisedCosine(realvec& envelope, mrs_real alpha, mrs_real beta)
     {
         mrs_natural N = envelope.getSize();
@@ -45,22 +45,22 @@ namespace SynthUtils {
             envelope(t) = alpha - beta * cos(2.0 * PI * t / (N - 1.0));
         }
     }
-
+    
     void windowingFillHamming(realvec& envelope)
     {
         windowingFillRaisedCosine(envelope, 0.54, 0.46);
     }
-
+    
     void createSynthesisWindow(realvec& envelope, mrs_natural hopSize)
     {
         // Create a normalized blackman harris window
         windowingFillBlackmanHarris(envelope);
         envelope /= envelope.sum();
-
+        
         // Create a triangle window
         mrs_realvec triangle(hopSize*2);
         windowingFillTriangle(triangle);
-
+        
         // Create a triangle window in the middle of a window twice it's size,
         // divided by a blackman harris window
         for (int i = 0; i < envelope.getSize(); ++i)

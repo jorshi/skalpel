@@ -3,7 +3,7 @@
 
     SoundInterface.cpp
     Created: 18 Mar 2017 12:28:33pm
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -16,11 +16,11 @@ SoundInterface::SoundInterface(AnalysisParameterManager* a, SynthesisParameterMa
 {
     analysisParams_ = a;
     synthParams_ = s;
-
+    
     // Create an empty sine model and add it to the owned array of models
     currentSineModel_ = new SineModel;
     sineModels_.add(currentSineModel_);
-
+    
     // Default state is not playing
     isActive_ = false;
 }
@@ -44,10 +44,10 @@ void SoundInterface::runAnalysis()
     {
         currentSineModel_ = analysis_->runAnalysis();
         sineModels_.add(currentSineModel_);
-
+        
         currentStochasticModel_ = stochasticAnalysis_->runAnalysis(currentSineModel_);
         stochasticModels_.add(currentStochasticModel_);
-
+        
         isActive_ = true;
     }
 }
@@ -92,17 +92,17 @@ void SoundInterface::checkModels()
     for (int i = sineModels_.size(); --i >= 0;)
     {
         SineModel::Ptr model(sineModels_.getUnchecked(i));
-
+        
         if (model->getReferenceCount() == 2)
         {
             sineModels_.remove(i);
         }
     }
-
+    
     for (int i = stochasticModels_.size(); --i >= 0;)
     {
         StochasticModel::Ptr model(stochasticModels_.getUnchecked(i));
-
+        
         if (model->getReferenceCount() == 2)
         {
             stochasticModels_.remove(i);

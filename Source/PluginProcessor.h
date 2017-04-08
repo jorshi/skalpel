@@ -33,7 +33,7 @@ public:
         maxVoices = 4,
         maxSounds = 4
     };
-
+    
     //==============================================================================
     LoomAudioProcessor();
     ~LoomAudioProcessor();
@@ -69,11 +69,11 @@ public:
     //==============================================================================
     void getStateInformation (MemoryBlock& destData) override;
     void setStateInformation (const void* data, int sizeInBytes) override;
-
+    
     //==============================================================================
     void swapModel(ScopedPointer<SineModel> newModel);
     void swapSound(const SoundInterface& newSound);
-
+    
     SoundInterfaceManager* getSoundInterfaceManager() { return soundManager_.get(); };
     SoundInterface* getCurrentSound() { return soundManager_->getInterface(currentUISound_); };
     int getCurrentSoundNum() { return currentUISound_; };
@@ -81,19 +81,19 @@ public:
 
 private:
     //==============================================================================
-
+    
     // Keep track of model currently showing on UI
     int currentUISound_;
 
     // Sound manager is responsible for all sound model and parameter management objects
     ScopedPointer<SoundInterfaceManager> soundManager_;
-
+    
     Synthesiser synth_;
-
+    
     ScopedPointer<UndoManager> undoManager_;
     ScopedPointer<AudioProcessorValueTreeState> parameters_;
-
-
+    
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoomAudioProcessor)
 };
 

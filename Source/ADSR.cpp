@@ -3,7 +3,7 @@
 
     ADSR.cpp
     Created: 27 Mar 2017 12:18:27am
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -30,7 +30,7 @@ ADSR::ADSR(const ADSR& c)
     decayTime_ = c.decayTime_;
     sustainLevel_ = c.sustainLevel_;
     releaseTime_ = c.releaseTime_;
-
+    
     attackTimeParam_ = c.attackTimeParam_;
     decayTimeParam_ = c.decayTimeParam_;
     sustainLevelParam_ = c.sustainLevelParam_;
@@ -58,7 +58,7 @@ void ADSR::apply(float& value)
             length = getRate() * (attackTime_/ 1000);
             currentLevel_ = (length > 0) ? (float(position_) / length) : 1.0f;
             break;
-
+            
         case decay:
             if ((param = parameters_->getRawParameterValue(decayTimeParam_)))
             {
@@ -71,7 +71,7 @@ void ADSR::apply(float& value)
             length = getRate() * (decayTime_ / 1000);
             currentLevel_ = (length > 0) ? 1.0f - ((float(position_) / length) * (1.0f - sustainLevel_)) : 1.0f;
             break;
-
+            
         case sustain:
             if ((param = parameters_->getRawParameterValue(sustainLevelParam_)))
             {
@@ -79,7 +79,7 @@ void ADSR::apply(float& value)
             }
             currentLevel_ = sustainLevel_;
             break;
-
+            
         case release:
             if ((param = parameters_->getRawParameterValue(releaseTimeParam_)))
             {
@@ -88,7 +88,7 @@ void ADSR::apply(float& value)
             length = getRate() * (releaseTime_ / 1000);
             currentLevel_ = (length > 0) ? (1.0f - (float(position_) / length)) * sustainLevel_ : 0.0f;
             break;
-
+            
         case off:
             currentLevel_ = 0.0f;
             break;
@@ -97,7 +97,7 @@ void ADSR::apply(float& value)
             currentLevel_ = 1.0;
             break;
     }
-
+    
     value *= currentLevel_;
 }
 
@@ -105,7 +105,7 @@ void ADSR::increment(int samples)
 {
     position_ += samples;
     float timePos = float(position_) / getRate();
-
+    
     switch (currentPhase_)
     {
         case attack:
@@ -115,7 +115,7 @@ void ADSR::increment(int samples)
                 position_ = 0;
             }
             break;
-
+            
         case decay:
             if (timePos >= (decayTime_ / 1000))
             {
@@ -123,7 +123,7 @@ void ADSR::increment(int samples)
                 position_ = 0;
             }
             break;
-
+            
         case release:
             if (timePos >= (releaseTime_ / 1000))
             {
@@ -131,7 +131,7 @@ void ADSR::increment(int samples)
                 currentPhase_ = off;
                 position_ = 0;
             }
-
+            
         default:
             break;
     }

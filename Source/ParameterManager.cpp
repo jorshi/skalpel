@@ -3,7 +3,7 @@
 
     ParameterManager.cpp
     Created: 18 Mar 2017 8:49:41pm
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -28,7 +28,7 @@ String ParameterManager::getParamId(const String paramName) const
     {
         return name->second;
     }
-
+    
     return "";
 }
 

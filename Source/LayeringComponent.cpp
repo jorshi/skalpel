@@ -3,7 +3,7 @@
 
     LayeringComponent.cpp
     Created: 2 Apr 2017 3:00:02am
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -17,7 +17,7 @@ LayeringComponent::LayeringComponent(ActionListener* parent, SoundInterfaceManag
     // Setup action broadcaster
     broadcaster.removeAllActionListeners();
     broadcaster.addActionListener(parent);
-
+    
     loomLookAndFeel.setButtonRadius(1.0f);
     setLookAndFeel(&loomLookAndFeel);
 
@@ -32,7 +32,7 @@ LayeringComponent::LayeringComponent(ActionListener* parent, SoundInterfaceManag
         layerButtons.add(newButton);
         addAndMakeVisible(newButton);
     }
-
+    
     layerButtons.getUnchecked(soundManager->getCurrentSound())->setToggleState(true, sendNotification);
 }
 

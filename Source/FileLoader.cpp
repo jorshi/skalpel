@@ -3,7 +3,7 @@
 
     FileLoader.cpp
     Created: 17 Mar 2017 1:20:56pm
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -17,7 +17,7 @@ FileLoader::FileLoader()
 
 FileLoader::~FileLoader()
 {
-
+    
 }
 
 
@@ -27,7 +27,7 @@ File* FileLoader::getNewAudioFile()
     FileChooser chooser ("Choose audio file ...",
                          File::nonexistent,
                          "*.wav");
-
+    
     // Open file and make sure it is a valid audio file
     if(chooser.browseForFileToOpen())
     {
@@ -37,7 +37,7 @@ File* FileLoader::getNewAudioFile()
             return file;
         }
     }
-
+    
     return nullptr;
 }
 
@@ -45,12 +45,12 @@ File* FileLoader::getNewAudioFile()
 bool FileLoader::canReadFile(juce::File& file)
 {
     ScopedPointer<AudioFormatReader> reader = formatManager.createReaderFor(file);
-
+    
     if (reader != nullptr)
     {
         return true;
     }
-
+    
     return false;
 }
 

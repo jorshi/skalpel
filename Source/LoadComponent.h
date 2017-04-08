@@ -3,7 +3,7 @@
 
     LoadComponent.h
     Created: 20 Mar 2017 10:18:56pm
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -31,20 +31,20 @@ public:
 private:
     // Get called when a child sends a message: allows messages to bubble up
     void actionListenerCallback(const String& message) override;
-
+    
     LoomLookAndFeel loomLookAndFeel;
     TextButton openButton;
 
-
+    
     // Sound interface for this loading component
     SoundInterface* soundInterface;
-
+    
     // File drop component
     LoomFileDrop loomFileDrop;
-
+    
     // Message broadcaster
     ActionBroadcaster broadcaster;
-
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LoadComponent)
 };
 

@@ -3,7 +3,7 @@
 
     StochasticModel.cpp
     Created: 7 Apr 2017 6:56:13pm
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */

@@ -3,7 +3,7 @@
 
     LayeringComponent.h
     Created: 2 Apr 2017 3:00:02am
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -32,16 +32,16 @@ public:
 private:
     // Get called when a child sends a message: allows messages to bubble up
     void actionListenerCallback(const String& message) override;
-
+    
     // Called when any button on UI is clicked
     void buttonClicked(Button* button) override;
-
+    
     ActionBroadcaster broadcaster;
     OwnedArray<TextButton> layerButtons;
     SoundInterfaceManager* soundManager;
-
+    
     LoomLookAndFeel loomLookAndFeel;
-
+    
     JUCE_DECLARE_NON_COPYABLE_WITH_LEAK_DETECTOR (LayeringComponent)
 };
 

@@ -3,7 +3,7 @@
 
     AnalysisMrs.h
     Created: 10 Feb 2017 10:05:14am
-    Author:  Jordie Shier
+    Author:  Jordie Shier 
 
   ==============================================================================
 */
@@ -24,28 +24,28 @@
 class AnalysisMrs
 {
 public:
-
+    
     // Defualt Constructor
     AnalysisMrs(AnalysisParameterManager& params);
-
+    
     // Constructor with audio file
     AnalysisMrs(File input, AnalysisParameterManager& params);
-
+    
     // Default Deconstructor
     ~AnalysisMrs();
-
+    
     // Run analysis on file, return a pointer to the created model object
     // !! Not responsible for cleaning up the object !!
     SineModel::Ptr runAnalysis();
-
+    
 private:
     void peakDetection(SineModel::Ptr, String, AudioFormatReader* reader);
     void sineTracking(SineModel::Ptr);
     void cleanModel(SineModel::Ptr);
-
+    
     File audioFile;
     FileLoader fileLoader_;
-
+    
     // Paramters
     AnalysisParameterManager& params_;
 };

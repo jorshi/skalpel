@@ -56,8 +56,7 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
     float thresh;
     if (!params_.getRawValue("analysis_amp_thresh", thresh))
         thresh = -80.0;
-    
-    
+
     // Noise Floor
     const mrs_real noiseFloor = 1e-14;
     
@@ -173,7 +172,7 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
     }
     
     sineModel->setSampleRate(sampleRate);
-    sineModel->setFrameSize(hopSize); // TODO why not the frame size??
+    sineModel->setFrameSize(frameSize);
     sineModel->setHopSize(hopSize);
 }
 

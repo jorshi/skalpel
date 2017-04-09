@@ -213,7 +213,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     mrs_real binRem;
 
     float mag;
-    float ampEnv = 1.0f;
+    float ampEnv;
     mrs_real phase;
 
     float parameterValue;
@@ -270,7 +270,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             parameterValue : 1.0f;
 
         // Get the frame closest to the requested time, float factor to be parameterized
-        mrs_real requestedPos = (location_[modelNum] * model->getSampleRate()) / model->getFrameSize();
+        mrs_real requestedPos = (location_[modelNum] * model->getSampleRate()) / model->getHopSize();
         int requestedFrame = std::round(requestedPos + startTimeOffset);
 
         // Update location
@@ -285,6 +285,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         }
 
         // Amplitude envelope value to be applied at this frame
+        ampEnv = 1.0f;
         env1_->apply(ampEnv);
 
         // Constant reference to the frame at this point
@@ -471,9 +472,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         }
     }
 
-    // TODO -- what's this about?
-    float i = 1.0;
-    env1_->apply(i);
+    // Update the amplitude envelope
     env1_->increment(hopSize_);
 
     // Conjugate for bins above the nyquist frequency

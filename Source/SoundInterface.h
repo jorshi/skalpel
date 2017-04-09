@@ -15,6 +15,7 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "AnalysisMrs.h"
+#include "StochasticAnalysis.h"
 #include "SineElement.h"
 #include "AnalysisParameterManager.h"
 #include "SynthesisParameterManager.h"
@@ -50,6 +51,9 @@ public:
     // Sine Model Getter
     SineModel::ConstPtr getSineModel() const { return currentSineModel_; };
     
+    // Stochastic Model Getter
+    StochasticModel::ConstPtr getStochasticModel() const { return currentStochasticModel_; };
+    
     // Get current state of sound
     State getState() const { return state_; };
     
@@ -83,10 +87,14 @@ public:
 private:
     
     ScopedPointer<AnalysisMrs> analysis_;
+    ScopedPointer<StochasticAnalysis> stochasticAnalysis_;
     
-    // Reference counted pointers to Sine Models for this interface
+    // Reference counted pointers to models
     ReferenceCountedArray<SineModel> sineModels_;
     SineModel::Ptr currentSineModel_;
+    
+    ReferenceCountedArray<StochasticModel> stochasticModels_;
+    StochasticModel::Ptr currentStochasticModel_;
     
     // For loading new sounds into the analysis
     FileLoader fileLoader_;

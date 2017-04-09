@@ -22,6 +22,10 @@
         <FILE id="Jjd1t6" name="AnalysisMrs.h" compile="0" resource="0" file="Source/AnalysisMrs.h"/>
         <FILE id="ES4zUR" name="FileLoader.cpp" compile="1" resource="0" file="Source/FileLoader.cpp"/>
         <FILE id="Mq1nMz" name="FileLoader.h" compile="0" resource="0" file="Source/FileLoader.h"/>
+        <FILE id="pR2i15" name="StochasticAnalysis.cpp" compile="1" resource="0"
+              file="Source/StochasticAnalysis.cpp"/>
+        <FILE id="dAL52Y" name="StochasticAnalysis.h" compile="0" resource="0"
+              file="Source/StochasticAnalysis.h"/>
       </GROUP>
       <GROUP id="{344A66DB-57A9-73F9-A8A5-7A6554B637B6}" name="Synthesis">
         <GROUP id="{D38AFA8D-5124-C62C-5B47-121C077DB184}" name="Modulation">
@@ -46,6 +50,10 @@
           <FILE id="MrGNBE" name="SinusoidalSynthVoice.h" compile="0" resource="0"
                 file="Source/SinusoidalSynthVoice.h"/>
         </GROUP>
+        <FILE id="D0eFPt" name="StochasticModel.cpp" compile="1" resource="0"
+              file="Source/StochasticModel.cpp"/>
+        <FILE id="ty8gUo" name="StochasticModel.h" compile="0" resource="0"
+              file="Source/StochasticModel.h"/>
         <FILE id="kNgQmu" name="SynthesisUtils.cpp" compile="1" resource="0"
               file="Source/SynthesisUtils.cpp"/>
         <FILE id="uI4fzd" name="SynthesisUtils.h" compile="0" resource="0"

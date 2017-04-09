@@ -12,7 +12,7 @@
 
 
 SoundInterface::SoundInterface(AnalysisParameterManager* a, SynthesisParameterManager* s) :
-    analysis_(nullptr), state_(loadFileState)
+    analysis_(nullptr), stochasticAnalysis_(nullptr), state_(loadFileState)
 {
     analysisParams_ = a;
     synthParams_ = s;
@@ -34,6 +34,7 @@ SoundInterface::~SoundInterface()
 void SoundInterface::buildAnalysis(File inputFile)
 {
     analysis_ = new AnalysisMrs(inputFile, *analysisParams_);
+    stochasticAnalysis_ = new StochasticAnalysis(inputFile, *analysisParams_);
 }
 
 
@@ -43,6 +44,10 @@ void SoundInterface::runAnalysis()
     {
         currentSineModel_ = analysis_->runAnalysis();
         sineModels_.add(currentSineModel_);
+        
+        currentStochasticModel_ = stochasticAnalysis_->runAnalysis(currentSineModel_);
+        stochasticModels_.add(currentStochasticModel_);
+        
         isActive_ = true;
     }
 }
@@ -91,6 +96,16 @@ void SoundInterface::checkModels()
         if (model->getReferenceCount() == 2)
         {
             sineModels_.remove(i);
+        }
+    }
+    
+    for (int i = stochasticModels_.size(); --i >= 0;)
+    {
+        StochasticModel::Ptr model(stochasticModels_.getUnchecked(i));
+        
+        if (model->getReferenceCount() == 2)
+        {
+            stochasticModels_.remove(i);
         }
     }
 }

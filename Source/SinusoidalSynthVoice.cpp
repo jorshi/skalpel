@@ -259,6 +259,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         {
             activeModels_.remove(modelNum);
             activeNoiseModels_.remove(modelNum);
+            params_.remove(modelNum);
             continue;
         }
 
@@ -281,6 +282,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         {
             activeModels_.remove(modelNum);
             activeNoiseModels_.remove(modelNum);
+            params_.remove(modelNum);
             continue;
         }
 

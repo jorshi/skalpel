@@ -107,6 +107,10 @@
               file="Source/SynthesisComponent.cpp"/>
         <FILE id="MSYRkU" name="SynthesisComponent.h" compile="0" resource="0"
               file="Source/SynthesisComponent.h"/>
+        <FILE id="cNAZl9" name="VisualizerComponent.cpp" compile="1" resource="0"
+              file="Source/VisualizerComponent.cpp"/>
+        <FILE id="tsdz9o" name="VisualizerComponent.h" compile="0" resource="0"
+              file="Source/VisualizerComponent.h"/>
       </GROUP>
       <FILE id="DUP9BQ" name="PluginProcessor.cpp" compile="1" resource="0"
             file="Source/PluginProcessor.cpp"/>

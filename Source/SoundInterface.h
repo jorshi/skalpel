@@ -27,6 +27,11 @@ class SoundInterface
 {
 public:
 
+    enum
+    {
+        visualizerSize = 512
+    };
+
     // Current state of this interface
     enum State
     {
@@ -82,9 +87,22 @@ public:
     
     // Checks reference counted SineModels to see if any can be freed
     void checkModels();
-
     
+    void addVisualizerFrame(float freq, float amp);
+    void setVisualize(bool value) { canVisualize = value; };
+    bool getVisualize() const { return canVisualize; };
+    
+    const std::vector<float>& getVisualizerFrame() const { return visualizerFrame_; };
+    void clearVisualizerFrame();
+    
+    
+    static void setRate(float rate) { sampleRate_ = rate; };
+    
+
+
 private:
+    
+
     
     ScopedPointer<AnalysisMrs> analysis_;
     ScopedPointer<StochasticAnalysis> stochasticAnalysis_;
@@ -110,6 +128,12 @@ private:
     
     // Can this sound be synthesized
     bool isActive_;
+    
+    std::vector<float> visualizerFrame_;
+    
+    bool canVisualize;
+    
+    static float sampleRate_;
 };
 
 

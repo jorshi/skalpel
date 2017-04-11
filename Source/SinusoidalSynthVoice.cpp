@@ -283,6 +283,8 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             activeModels_.remove(modelNum);
             activeNoiseModels_.remove(modelNum);
             params_.remove(modelNum);
+            soundManger_[modelNum]->clearVisualizerFrame();
+            soundManger_[modelNum]->setVisualize(true);
             continue;
         }
 
@@ -371,6 +373,9 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
 
             // Convert the decibels back to magnitude. Gain should be parameterized.
             mag = pow(10, (sine->getAmp() + sineGain)/20) * ampEnv;
+
+            // Add frame to be visualzied
+            soundManger_[modelNum]->addVisualizerFrame(freq, mag);
 
             // Propagate phase
             if ((prev = previousElements_.at(modelNum).find(sine->getTrack())) ==  previousElements_.at(modelNum).end())
@@ -472,6 +477,8 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             spectrum_.at(i).r += noiseMag*cos(noisePhase);
             spectrum_.at(i).i += noiseMag*sin(noisePhase);
         }
+
+        soundManger_[modelNum]->setVisualize(true);
     }
 
     // Update the amplitude envelope

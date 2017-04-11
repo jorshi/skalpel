@@ -44,6 +44,9 @@ const Colour LoomLookAndFeel::buttonEdgeColour = Colour::fromRGB(124, 141, 165);
 const Colour LoomLookAndFeel::buttonTextColour = Colour::fromRGB(168, 168, 168);
 const Colour LoomLookAndFeel::loomTextColour = Colour::fromRGB(102, 105, 108);
 const Colour LoomLookAndFeel::boundaryColour = Colour::fromRGB(43, 43, 43);
+const Colour LoomLookAndFeel::spectraColour = Colour::fromRGB(198, 246, 255);
+const ColourGradient LoomLookAndFeel::gradient = ColourGradient(Colour::fromRGB(63, 63, 63), 0.0f, 0.0f, Colour::fromRGB(43, 43, 43), 0.0f, 169.0f, false);
+
 
 // Custom Typeface
 const Typeface::Ptr LoomLookAndFeel::daysOneTypeFace = Typeface::createSystemTypefaceFor(BinaryData::DaysOneRegular_ttf, BinaryData::DaysOneRegular_ttfSize);

@@ -44,7 +44,7 @@ LoomAudioProcessorEditor::LoomAudioProcessorEditor (LoomAudioProcessor& p) :
         // Create new UI components for each sound
         analysisComp = new AnalysisComponent(this, soundInterface->getAnalysisParams());
         loadComp = new LoadComponent(this, this, soundInterface);
-        synthesisComp = new SynthesisComponent(this, soundInterface->getSynthParams());
+        synthesisComp = new SynthesisComponent(this, soundInterface);
         
         // Add each component to a managed array
         analysisComponents.insert(i, analysisComp);

@@ -88,6 +88,7 @@ private:
     
     Array<SynthesisParameterManager*> params_;
     Array<SoundInterface*> activeSounds_;
+    Array<int> playingSounds_;
     SoundInterfaceManager& soundManger_;
     
     std::vector<std::map<int, PrevElement>> previousElements_;

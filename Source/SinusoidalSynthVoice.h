@@ -90,6 +90,8 @@ private:
     Array<SoundInterface*> activeSounds_;
     SoundInterfaceManager& soundManger_;
     
+    Array<bool> isSoundActive_;
+    
     std::vector<std::map<int, PrevElement>> previousElements_;
 
     Modulation::Ptr env1_;

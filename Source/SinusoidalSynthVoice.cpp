@@ -28,6 +28,12 @@ SinusoidalSynthVoice::SinusoidalSynthVoice(SoundInterfaceManager& s) :
 
     output_.create(frameSize_);
     buffer_.create(frameSize_);
+    
+    for (int i = 0; i < soundManger_.size(); i++)
+    {
+        params_.insert(i, soundManger_[i]->getSynthParams());
+        isSoundActive_.insert(i, false);
+    }
 }
 
 //
@@ -60,8 +66,12 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
             {
                 activeModels_.insert(i, soundManger_[i]->getSineModel());
                 activeNoiseModels_.insert(i, soundManger_[i]->getStochasticModel());
-                params_.insert(i, soundManger_[i]->getSynthParams());
                 location_.at(i) = 0.0f;
+                isSoundActive_.insert(i, true);
+            }
+            else
+            {
+                isSoundActive_.insert(i, false);
             }
         }
 
@@ -99,7 +109,7 @@ void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 void SinusoidalSynthVoice::releaseOver()
 {
     activeModels_.clear();
-    params_.clear();
+    activeNoiseModels_.clear();
     previousElements_.clear();
     hopIndex_ = hopSize_;
     overlapIndex_ = 0;
@@ -129,7 +139,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
 
     if (const SinusoidalSynthSound* const playingSound = static_cast<SinusoidalSynthSound*> (getCurrentlyPlayingSound().get()))
     {
-        if (activeModels_.size() < 1)
+        if (std::all_of(isSoundActive_.begin(), isSoundActive_.end(), [](bool i){return !i;}))
         {
             return;
         }
@@ -190,7 +200,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
 bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSynthSound* const sound)
 {
     // No models to render or the amplitude envelope has completed
-    if (activeModels_.size() < 1)
+    if (std::all_of(isSoundActive_.begin(), isSoundActive_.end(), [](bool a){return !a;}))
     {
         return false;
     }
@@ -251,15 +261,18 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
 
     for (int modelNum = activeModels_.size(); --modelNum >= 0;)
     {
+        if (!isSoundActive_[modelNum])
+        {
+            continue;
+        }
+        
         SineModel::ConstPtr model = activeModels_[modelNum];
         StochasticModel::ConstPtr noiseModel = activeNoiseModels_[modelNum];
 
         // Get number of frames in the model return if there aren't any
         if (model->size() < 1)
         {
-            activeModels_.remove(modelNum);
-            activeNoiseModels_.remove(modelNum);
-            params_.remove(modelNum);
+            isSoundActive_.insert(modelNum, false);
             continue;
         }
 
@@ -280,9 +293,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
         // Out of frames from the model
         if (model->size() <= requestedFrame || noiseModel->size() <= requestedFrame)
         {
-            activeModels_.remove(modelNum);
-            activeNoiseModels_.remove(modelNum);
-            params_.remove(modelNum);
+            isSoundActive_.insert(modelNum, false);
             soundManger_[modelNum]->clearVisualizerFrame();
             soundManger_[modelNum]->setVisualize(true);
             continue;

@@ -3,18 +3,20 @@
 <JUCERPROJECT id="XaTUjo" name="Loom" projectType="audioplug" version="1.0.0"
               bundleIdentifier="com.napsky.Loom" includeBinaryInAppConfig="1"
               buildVST="1" buildVST3="0" buildAU="1" buildAUv3="0" buildRTAS="0"
-              buildAAX="0" pluginName="Loom" pluginDesc="Loom" pluginManufacturer="Napsky"
-              pluginManufacturerCode="Manu" pluginCode="Xatu" pluginChannelConfigs=""
-              pluginIsSynth="1" pluginWantsMidiIn="1" pluginProducesMidiOut="0"
-              pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0" pluginAUExportPrefix="LoomAU"
-              pluginRTASCategory="" aaxIdentifier="com.yourcompany.Loom" pluginAAXCategory="AAX_ePlugInCategory_Dynamics"
-              jucerVersion="4.3.1" companyName="napsky">
+              buildAAX="0" pluginName="Skalpel" pluginDesc="Sinusoidal Modelling Synthesizer"
+              pluginManufacturer="Napsky" pluginManufacturerCode="Manu" pluginCode="Xatu"
+              pluginChannelConfigs="" pluginIsSynth="1" pluginWantsMidiIn="1"
+              pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
+              pluginAUExportPrefix="LoomAU" pluginRTASCategory="" aaxIdentifier="com.yourcompany.Loom"
+              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.0.1"
+              companyName="NapSky" displaySplashScreen="1" reportAppUsage="1"
+              splashScreenColour="Dark" buildStandalone="0" enableIAA="0">
   <MAINGROUP id="bdoCZ7" name="Loom">
     <GROUP id="{7413FB03-66FF-963C-2408-F3078DE33B84}" name="Resources">
-      <FILE id="gwnyl6" name="DaysOne-Regular.ttf" compile="0" resource="1"
-            file="../../../../Downloads/days_one/DaysOne-Regular.ttf"/>
-      <FILE id="yu53Fg" name="ZapfDingbats.ttf" compile="0" resource="1"
-            file="../../../../Downloads/ZapfDingbats.ttf"/>
+      <FILE id="ZPXFTf" name="DaysOne-Regular.ttf" compile="0" resource="1"
+            file="/Library/Fonts/DaysOne-Regular.ttf"/>
+      <FILE id="XcqyQw" name="ZapfDingbats.ttf" compile="0" resource="1"
+            file="/System/Library/Fonts/ZapfDingbats.ttf"/>
     </GROUP>
     <GROUP id="{2A5344C4-6F3D-D15C-A82A-F8E308E69ED8}" name="Source">
       <GROUP id="{318136ED-7D16-1A86-CD7E-29E73C2400B0}" name="Analysis">

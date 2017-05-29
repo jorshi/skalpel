@@ -97,7 +97,7 @@ void LoomAudioProcessorEditor::paint (Graphics& g)
     Font loomFont = Font(LoomLookAndFeel::daysOneTypeFace);
     loomFont.setHeight(51);
     g.setFont(loomFont);
-    g.drawText("LOOM", 10, 0, 182, 51, Justification::left);
+    g.drawText("SKALPEL", 10, 0, 250, 51, Justification::left);
     
 }
 

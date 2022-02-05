@@ -19,7 +19,7 @@
 #include "SynthesisParameterManager.h"
 #include "SoundInterfaceManager.h"
 #include "Modulation.h"
-#include "ADSR.h"
+#include "ADSREnv.h"
 #include "ModulationFactory.h"
 #include "StochasticModel.h"
 

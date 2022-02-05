@@ -12,7 +12,6 @@
 #define SINEELEMENT_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "marsyas/system/MarSystemManager.h"
 
 using namespace Marsyas;
 

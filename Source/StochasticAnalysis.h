@@ -12,7 +12,6 @@
 #define STOCHASTICANALYSIS_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "marsyas/system/MarSystemManager.h"
 #include <algorithm>
 #include "FileLoader.h"
 #include "SineElement.h"

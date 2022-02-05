@@ -14,7 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "Modulation.h"
 
-class ADSR : public Modulation
+class ADSREnv : public Modulation
 {
 public:
     enum Phase
@@ -27,13 +27,13 @@ public:
     };
 
     // Constructor
-    ADSR(AudioProcessorValueTreeState* p);
+    ADSREnv(AudioProcessorValueTreeState* p);
     
     // Copy Constructor
-    ADSR(const ADSR& c);
+    ADSREnv(const ADSREnv& c);
     
     // Deconstructor()
-    ~ADSR() {};
+    ~ADSREnv() {};
     
     // Return an instance of self
     Modulation::Ptr clone() override;

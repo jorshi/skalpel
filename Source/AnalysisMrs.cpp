@@ -11,8 +11,6 @@
 #include "AnalysisMrs.h"
 
 
-using namespace Marsyas;
-
 // Default Constructor
 AnalysisMrs::AnalysisMrs(AnalysisParameterManager& params) : params_(params)
 {
@@ -58,7 +56,7 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
         thresh = -80.0;
 
     // Noise Floor
-    const mrs_real noiseFloor = 1e-14;
+    const double noiseFloor = 1e-14;
     
     float sampleRate = reader->sampleRate;
     AudioBuffer<float> inputBuffer(1, frameSize);

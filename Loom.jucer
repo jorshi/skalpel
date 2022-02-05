@@ -8,13 +8,14 @@
               pluginChannelConfigs="" pluginIsSynth="1" pluginWantsMidiIn="1"
               pluginProducesMidiOut="0" pluginIsMidiEffectPlugin="0" pluginEditorRequiresKeys="0"
               pluginAUExportPrefix="LoomAU" pluginRTASCategory="" aaxIdentifier="com.yourcompany.Loom"
-              pluginAAXCategory="AAX_ePlugInCategory_Dynamics" jucerVersion="5.0.1"
-              companyName="NapSky" displaySplashScreen="1" reportAppUsage="1"
-              splashScreenColour="Dark" buildStandalone="0" enableIAA="0">
+              pluginAAXCategory="2" companyName="NapSky" displaySplashScreen="1"
+              reportAppUsage="1" splashScreenColour="Dark" buildStandalone="0"
+              enableIAA="0" pluginFormats="buildVST,buildAU" pluginCharacteristicsValue="pluginIsSynth,pluginWantsMidiIn"
+              jucerFormatVersion="1">
   <MAINGROUP id="bdoCZ7" name="Loom">
     <GROUP id="{7413FB03-66FF-963C-2408-F3078DE33B84}" name="Resources">
-      <FILE id="ZPXFTf" name="DaysOne-Regular.ttf" compile="0" resource="1"
-            file="/Library/Fonts/DaysOne-Regular.ttf"/>
+      <FILE id="WONCLe" name="days-one.regular.ttf" compile="0" resource="1"
+            file="../../Library/Fonts/days-one.regular.ttf"/>
       <FILE id="XcqyQw" name="ZapfDingbats.ttf" compile="0" resource="1"
             file="/System/Library/Fonts/ZapfDingbats.ttf"/>
     </GROUP>
@@ -31,8 +32,8 @@
       </GROUP>
       <GROUP id="{344A66DB-57A9-73F9-A8A5-7A6554B637B6}" name="Synthesis">
         <GROUP id="{D38AFA8D-5124-C62C-5B47-121C077DB184}" name="Modulation">
-          <FILE id="vbk3ih" name="ADSR.cpp" compile="1" resource="0" file="Source/ADSR.cpp"/>
-          <FILE id="YTWGAG" name="ADSR.h" compile="0" resource="0" file="Source/ADSR.h"/>
+          <FILE id="vbk3ih" name="ADSREnv.cpp" compile="1" resource="0" file="Source/ADSREnv.cpp"/>
+          <FILE id="JOtz9t" name="ADSREnv.h" compile="0" resource="0" file="Source/ADSREnv.h"/>
           <FILE id="MbRl7O" name="Modulation.cpp" compile="1" resource="0" file="Source/Modulation.cpp"/>
           <FILE id="R6BC12" name="Modulation.h" compile="0" resource="0" file="Source/Modulation.h"/>
           <FILE id="BOtYVw" name="ModulationFactory.cpp" compile="1" resource="0"
@@ -129,8 +130,7 @@
     </GROUP>
   </MAINGROUP>
   <EXPORTFORMATS>
-    <XCODE_MAC targetFolder="Builds/MacOSX" externalLibraries="marsyas&#10;stk"
-               extraCompilerFlags="" extraDefs="">
+    <XCODE_MAC targetFolder="Builds/MacOSX" extraCompilerFlags="" extraDefs="">
       <CONFIGURATIONS>
         <CONFIGURATION name="Debug" isDebug="1" optimisation="1" targetName="Loom" osxCompatibility="10.11 SDK"
                        headerPath="/usr/local/include" libraryPath="/usr/local/lib"/>
@@ -139,38 +139,41 @@
                        libraryPath="/usr/local/lib"/>
       </CONFIGURATIONS>
       <MODULEPATHS>
-        <MODULEPATH id="juce_core" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_events" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_graphics" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_data_structures" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_gui_basics" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_gui_extra" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_cryptography" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_video" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_opengl" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_audio_basics" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_audio_devices" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_audio_formats" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_audio_processors" path="../../../Archive/juce-grapefruit-osx/modules"/>
-        <MODULEPATH id="juce_audio_plugin_client" path="../../../Archive/juce-grapefruit-osx/modules"/>
+        <MODULEPATH id="juce_core" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_events" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_graphics" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_data_structures" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_gui_basics" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_gui_extra" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_cryptography" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_video" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_opengl" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_audio_basics" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_audio_devices" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_audio_formats" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_audio_processors" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_audio_plugin_client" path="../Libraries/JUCE"/>
+        <MODULEPATH id="juce_dsp" path="../Libraries/JUCE/modules"/>
       </MODULEPATHS>
     </XCODE_MAC>
   </EXPORTFORMATS>
   <MODULES>
-    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0"/>
-    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0"/>
+    <MODULE id="juce_audio_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_devices" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_formats" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_audio_plugin_client" showAllCode="1" useLocalCopy="0"
+            useGlobalPath="1"/>
+    <MODULE id="juce_audio_processors" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_core" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_cryptography" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_data_structures" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_dsp" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_events" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_graphics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_basics" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_gui_extra" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_opengl" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
+    <MODULE id="juce_video" showAllCode="1" useLocalCopy="0" useGlobalPath="1"/>
   </MODULES>
   <JUCEOPTIONS JUCE_QUICKTIME="disabled"/>
   <LIVE_SETTINGS>

@@ -79,8 +79,8 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
         noteFreqScale_ = pow(2.0, (midiNoteNumber - sound->midiRootNote_)/12.0f);
 
         env1_ = soundManger_.getModulator("adsr_1");
-        ADSR* adsr;
-        if ((adsr = dynamic_cast<ADSR*>(env1_.get())))
+        ADSREnv* adsr;
+        if ((adsr = dynamic_cast<ADSREnv*>(env1_.get())))
         {
             adsr->triggerAttack();
         }
@@ -94,8 +94,8 @@ void SinusoidalSynthVoice::startNote (const int midiNoteNumber,
 void SinusoidalSynthVoice::stopNote (float /*velocity*/, bool allowTailOff)
 {
     if (allowTailOff) {
-        ADSR* adsr;
-        if ((adsr = dynamic_cast<ADSR*>(env1_.get())))
+        ADSREnv* adsr;
+        if ((adsr = dynamic_cast<ADSREnv*>(env1_.get())))
         {
             adsr->triggerRelease();
         }

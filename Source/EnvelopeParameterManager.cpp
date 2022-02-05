@@ -54,7 +54,7 @@ void EnvelopeParamaterManager::createParameters()
                                        nullptr,
                                        nullptr);
     
-    ADSR* newAdsr = new ADSR(parameters_);
+    ADSREnv* newAdsr = new ADSR(parameters_);
     newAdsr->registerAttackParam("adsr_1_attack");
     newAdsr->registerDecayParam("adsr_1_decay");
     newAdsr->registerSustainParam("adsr_1_sustain");

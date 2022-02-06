@@ -15,7 +15,7 @@ SineElement::SineElement() : freq_(0.0), amp_(0.0), phase_(0.0), track_(-1), tra
 {
 }
 
-SineElement::SineElement(mrs_real freq, mrs_real amp, mrs_real phase) :
+SineElement::SineElement(double freq, double amp, double phase) :
 freq_(freq), amp_(amp), phase_(phase), track_(-1), trackStart_(false)
 {
 }
@@ -24,7 +24,7 @@ SineElement::~SineElement()
 {
 }
 
-void SineElement::setNewTrack(mrs_natural track)
+void SineElement::setNewTrack(int track)
 {
     track_ = track;
     trackStart_ = true;

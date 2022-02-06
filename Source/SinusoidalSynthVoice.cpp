@@ -22,12 +22,12 @@ SinusoidalSynthVoice::SinusoidalSynthVoice(SoundInterfaceManager& s) :
     nyquistBin_ = frameSize_ / 2;
 
     // Inverse FFT of frame size
-    inverseFFT_ = new FFT(std::log2(frameSize_), true);
+    inverseFFT_ = std::make_unique<dsp::FFT>(std::log2(frameSize_));
     spectrum_.resize(frameSize_);
     timeDomain_.resize(frameSize_);
-
-    output_.create(frameSize_);
-    buffer_.create(frameSize_);
+    
+    output_.resize(frameSize_);
+    buffer_.resize(frameSize_);
     
     for (int i = 0; i < soundManger_.size(); i++)
     {
@@ -114,7 +114,7 @@ void SinusoidalSynthVoice::releaseOver()
     hopIndex_ = hopSize_;
     overlapIndex_ = 0;
     readPos_ = 0;
-    buffer_.setval(0.0);
+    std::fill(buffer_.begin(), buffer_.end(), 0.0);
     clearCurrentNote();
 
     if (env1_ != nullptr)
@@ -161,11 +161,11 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                     {
                         if (i < hopSize_)
                         {
-                            buffer_((writePos_ + i) % playingSound->getFrameSize()) = 0.0;
+                            buffer_[(writePos_ + i) % playingSound->getFrameSize()] = 0.0;
                         }
                         else
                         {
-                            buffer_((writePos_ + i) % playingSound->getFrameSize()) += output_(i);
+                            buffer_[(writePos_ + i) % playingSound->getFrameSize()] += output_[i];
                         }
                     }
                 }
@@ -173,7 +173,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
                 {
                     for (int i = 0; i < hopSize_; ++i)
                     {
-                        buffer_(writePos_ + i) = 0.0;
+                        buffer_[writePos_ + i] = 0.0;
                     }
                     clearCurrentNote();
                     env1_->setActive(false);
@@ -187,8 +187,8 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
             }
             else
             {
-                *(outL + numCalculated) += buffer_(readPos_ + hopIndex_);
-                *(outR + numCalculated) += buffer_(readPos_ + hopIndex_);
+                *(outL + numCalculated) += buffer_[readPos_ + hopIndex_];
+                *(outR + numCalculated) += buffer_[readPos_ + hopIndex_];
                 numCalculated++;
                 hopIndex_++;
             }
@@ -197,7 +197,7 @@ void SinusoidalSynthVoice::renderNextBlock (AudioSampleBuffer& outputBuffer, int
 }
 
 //==============================================================================
-bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSynthSound* const sound)
+bool SinusoidalSynthVoice::renderFrames(std::vector<double> &buffer, const SinusoidalSynthSound* const sound)
 {
     // No models to render or the amplitude envelope has completed
     if (std::all_of(isSoundActive_.begin(), isSoundActive_.end(), [](bool a){return !a;}))
@@ -211,20 +211,20 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     }
 
     // Zero out first half of spectrum
-    std::for_each(spectrum_.begin(), spectrum_.begin() + nyquistBin_, [](FFT::Complex& complex){
-        complex.r = 0;
-        complex.i = 0;
+    std::for_each(spectrum_.begin(), spectrum_.begin() + nyquistBin_, [](auto& complex){
+        complex.real(0.0);
+        complex.imag(0.0);
     });
 
     // Declare some variables for use in processing loop
-    mrs_real freq;
-    mrs_real binLoc;
-    mrs_natural binInt;
-    mrs_real binRem;
+    double freq;
+    double binLoc;
+    int binInt;
+    double binRem;
 
     float mag;
     float ampEnv;
-    mrs_real phase;
+    double phase;
 
     float parameterValue;
 
@@ -284,7 +284,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             parameterValue : 1.0f;
 
         // Get the frame closest to the requested time, float factor to be parameterized
-        mrs_real requestedPos = (location_[modelNum] * model->getSampleRate()) / model->getHopSize();
+        double requestedPos = (location_[modelNum] * model->getSampleRate()) / model->getHopSize();
         int requestedFrame = std::round(requestedPos + startTimeOffset);
 
         // Update location
@@ -396,6 +396,7 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             }
             else
             {
+                auto PI = MathConstants<float>::pi;
                 prev->second.phase += (PI * (prev->second.freq + freq) / getSampleRate()) * hopSize_;
                 prev->second.freq = freq;
                 phase = prev->second.phase;
@@ -406,8 +407,12 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             {
                 for (int i = -4; i < 5; ++i)
                 {
-                    spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                    spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                    auto bin = binInt + i;
+                    auto real = spectrum_.at(bin).real();
+                    auto imag = spectrum_.at(bin).imag();
+                    spectrum_.at(bin).real(real + mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase));
+
+                    spectrum_.at(bin).imag(imag + mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase));
                 }
             }
             // Some components will wrap around 0
@@ -418,19 +423,26 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
                     // Complex Conjugate wraps around DC bin
                     if ((binInt + i) < 0)
                     {
-                        spectrum_.at(-1*(binInt + i)).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                        spectrum_.at(-1*(binInt + i)).i += -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                        auto bin = -1*(binInt + i);
+                        auto real = spectrum_.at(bin).real();
+                        auto imag = spectrum_.at(bin).imag();
+                        spectrum_.at(bin).real(real + mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase));
+                        spectrum_.at(bin).imag(imag + -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase));
                     }
                     // Real only at DC bin
                     else if ((binInt + i) == 0)
                     {
-                        spectrum_.at(0).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                        auto real = spectrum_.at(0).real();
+                        spectrum_.at(0).real(real + 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase));
                     }
                     // Regular
                     else
                     {
-                        spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                        spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                        auto bin = binInt + 1;
+                        auto real = spectrum_.at(bin).real();
+                        auto imag = spectrum_.at(bin).imag();
+                        spectrum_.at(bin).real(real + mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase));
+                        spectrum_.at(bin).imag(imag + mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase));
                     }
                 }
             }
@@ -442,21 +454,26 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
                     // Complex Conjugate wraps nyquist bin
                     if ((binInt + i) > nyquistBin_)
                     {
-                        spectrum_.at((binInt + i) - nyquistBin_).r +=
-                        mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                        spectrum_.at((binInt + i) - nyquistBin_).i +=
-                        -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                        auto bin = (binInt + i) - nyquistBin_;
+                        auto real = spectrum_.at(bin).real();
+                        auto imag = spectrum_.at(bin).imag();
+                        spectrum_.at(bin).real(real + mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase));
+                        spectrum_.at(bin).imag(imag + -mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase));
                     }
                     // Real only at Nyquist
                     else if ((binInt + i) == nyquistBin_)
                     {
-                        spectrum_.at(nyquistBin_).r += 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
+                        auto real = spectrum_.at(nyquistBin_).real();
+                        spectrum_.at(nyquistBin_).real(real + 2*mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase));
                     }
                     // Regular
                     else
                     {
-                        spectrum_.at(binInt + i).r += mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase);
-                        spectrum_.at(binInt + i).i += mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase);
+                        auto bin = binInt + i;
+                        auto real = spectrum_.at(bin).real();
+                        auto imag = spectrum_.at(bin).imag();
+                        spectrum_.at(bin).real(real + mag*sound->getBH((int)((binRem+i)*100) + 501)*cos(phase));
+                        spectrum_.at(bin).imag(imag + mag*sound->getBH((int)((binRem+i)*100) + 501)*sin(phase));
                     }
                 }
             }
@@ -485,8 +502,10 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
             noisePhase = random_.nextFloat() * 2 * float_Pi;
 
             // Create noise spectrum
-            spectrum_.at(i).r += noiseMag*cos(noisePhase);
-            spectrum_.at(i).i += noiseMag*sin(noisePhase);
+            auto real = spectrum_.at(i).real();
+            auto imag = spectrum_.at(i).imag();
+            spectrum_.at(i).real(real + noiseMag*cos(noisePhase));
+            spectrum_.at(i).imag(imag + noiseMag*sin(noisePhase));
         }
 
         soundManger_[modelNum]->setVisualize(true);
@@ -498,16 +517,16 @@ bool SinusoidalSynthVoice::renderFrames(mrs_realvec &buffer, const SinusoidalSyn
     // Conjugate for bins above the nyquist frequency
     for (int i = 1; i < nyquistBin_; ++i)
     {
-        spectrum_.at(nyquistBin_ + i).r = spectrum_.at(nyquistBin_ - i).r;
-        spectrum_.at(nyquistBin_ + i).i = -spectrum_.at(nyquistBin_ - i).i;
+        spectrum_.at(nyquistBin_ + i).real(spectrum_.at(nyquistBin_ - i).real());
+        spectrum_.at(nyquistBin_ + i).imag(-spectrum_.at(nyquistBin_ - i).imag());
     }
 
-    inverseFFT_->perform(spectrum_.data(), timeDomain_.data());
+    inverseFFT_->perform(spectrum_.data(), timeDomain_.data(), true);
 
     // Apply synthesis window & shift
     for (int i = 0; i < frameSize_; ++i)
     {
-        buffer(i) = timeDomain_.at((i + (frameSize_ / 2)) % frameSize_).r / frameSize_ * sound->getSynthWindow(i);
+        buffer[i] = timeDomain_.at((i + (frameSize_ / 2)) % frameSize_).real() / frameSize_ * sound->getSynthWindow(i);
     }
 
     return true;

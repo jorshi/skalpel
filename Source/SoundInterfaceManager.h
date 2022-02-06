@@ -41,10 +41,10 @@ public:
     const OwnedArray<SoundInterface>& getSounds() const { return soundInterfaces_; };
     
     // Sound interface begin iterator
-    SoundInterface** begin() const { return soundInterfaces_.begin(); };
+    SoundInterface** begin() { return soundInterfaces_.begin(); };
     
     // Sound interface end iterator
-    SoundInterface** end() const { return soundInterfaces_.end(); };
+    SoundInterface** end() { return soundInterfaces_.end(); };
     
     // Modulator object
     Modulation::Ptr getModulator(const String& id) const;

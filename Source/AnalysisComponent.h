@@ -23,7 +23,7 @@
 class AnalysisComponent :   public Component
 {
 public:
-    AnalysisComponent(ButtonListener* parent, AnalysisParameterManager* p);
+    AnalysisComponent(Button::Listener* parent, AnalysisParameterManager* p);
     ~AnalysisComponent();
 
     void paint (Graphics&) override;

@@ -23,7 +23,7 @@
 class SynthesisComponent    : public Component
 {
 public:
-    SynthesisComponent(ButtonListener* parent, SoundInterface* s);
+    SynthesisComponent(Button::Listener* parent, SoundInterface* s);
     ~SynthesisComponent();
 
     void paint (Graphics&) override;

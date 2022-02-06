@@ -13,7 +13,6 @@
 
 #include "../JuceLibraryCode/JuceHeader.h"
 #include "SineElement.h"
-#include "marsyas/system/MarSystemManager.h"
 #include "SynthesisUtils.h"
 #include "SoundInterface.h"
 #include "SoundInterfaceManager.h"
@@ -40,10 +39,10 @@ public:
     Array<SoundInterface*> getPlayingSounds() const;
     
     // Sample the blackman harris window
-    mrs_real getBH(int index) const { return bh1001_(index); };
+    double getBH(int index) const { return bh1001_[index]; };
     
     // Sample the synthesis window function
-    mrs_real getSynthWindow(int index) const { return synthWindow_(index); };
+    double getSynthWindow(int index) const { return synthWindow_[index]; };
     
     // Get sound interface manager
     SoundInterfaceManager* getSoundInterfaceManager() const { return manager_; };
@@ -57,8 +56,8 @@ private:
     BigInteger midiNotes_;
     int midiRootNote_;
     int frameSize_;
-    mrs_realvec bh1001_;
-    mrs_realvec synthWindow_;
+    std::vector<double> bh1001_;
+    std::vector<double> synthWindow_;
     SoundInterfaceManager* manager_;
     
     JUCE_LEAK_DETECTOR(SinusoidalSynthSound)

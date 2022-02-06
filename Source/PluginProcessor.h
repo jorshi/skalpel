@@ -19,7 +19,7 @@
 #include "AnalysisParameterManager.h"
 #include "Modulation.h"
 #include "ModulationFactory.h"
-#include "ADSR.h"
+#include "ADSREnv.h"
 
 
 //==============================================================================

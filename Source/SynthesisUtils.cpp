@@ -15,63 +15,66 @@
 namespace SynthUtils {
     
     
-    void windowingFillBlackmanHarris(realvec& envelope)
+    void windowingFillBlackmanHarris(std::vector<double>& envelope)
     {
-        mrs_natural N = envelope.getSize();
-        mrs_real a0 = 0.35875, a1 = 0.48829, a2 = 0.14128, a3 = 0.01168;
-        for (mrs_natural t = 0; t < N; t++)
+        auto PI = MathConstants<double>::pi;
+        size_t N = envelope.size();
+        double a0 = 0.35875, a1 = 0.48829, a2 = 0.14128, a3 = 0.01168;
+        for (size_t t = 0; t < N; t++)
         {
-            envelope(t) = a0  - a1 * cos(2.0 * PI * t / (N - 1.0))
+            envelope[t] = a0  - a1 * cos(2.0 * PI * t / (N - 1.0))
             + a2 * cos(4.0 * PI * t / (N - 1.0))
             - a3 * cos(6.0 * PI * t / (N - 1.0));
         }
     }
     
     
-    void windowingFillTriangle(realvec& envelope)
+    void windowingFillTriangle(std::vector<double>& envelope)
     {
-        mrs_natural N = envelope.getSize();
-        for (mrs_natural t = 0; t < N; t++)
+        size_t N = envelope.size();
+        for (size_t t = 0; t < N; t++)
         {
-            envelope(t) = 2.0/N * (N/2.0 - std::abs(t - (N - 1.0)/2.0));
+            envelope[t] = 2.0/N * (N/2.0 - std::abs(t - (N - 1.0)/2.0));
         }
     }
     
-    void windowingFillRaisedCosine(realvec& envelope, mrs_real alpha, mrs_real beta)
+    void windowingFillRaisedCosine(std::vector<double>& envelope, double alpha, double beta)
     {
-        mrs_natural N = envelope.getSize();
-        for (mrs_natural t = 0; t < N; t++)
+        auto PI = MathConstants<double>::pi;
+        size_t N = envelope.size();
+        for (size_t t = 0; t < N; t++)
         {
-            envelope(t) = alpha - beta * cos(2.0 * PI * t / (N - 1.0));
+            envelope[t] = alpha - beta * cos(2.0 * PI * t / (N - 1.0));
         }
     }
     
-    void windowingFillHamming(realvec& envelope)
+    void windowingFillHamming(std::vector<double>& envelope)
     {
         windowingFillRaisedCosine(envelope, 0.54, 0.46);
     }
     
-    void createSynthesisWindow(realvec& envelope, mrs_natural hopSize)
+    void createSynthesisWindow(std::vector<double>& envelope, int hopSize)
     {
         // Create a normalized blackman harris window
         windowingFillBlackmanHarris(envelope);
-        envelope /= envelope.sum();
+        auto sum = std::accumulate(envelope.begin(), envelope.end(), 0.0);
+        std::for_each(envelope.begin(), envelope.end(), [sum](double &c){ c /= sum; });
         
         // Create a triangle window
-        mrs_realvec triangle(hopSize*2);
+        std::vector<double> triangle(hopSize*2);
         windowingFillTriangle(triangle);
         
         // Create a triangle window in the middle of a window twice it's size,
         // divided by a blackman harris window
-        for (int i = 0; i < envelope.getSize(); ++i)
+        for (int i = 0; i < envelope.size(); ++i)
         {
             if (i >= hopSize && i < hopSize*3)
             {
-                envelope(i) = triangle(i-hopSize)/envelope(i);
+                envelope[i] = triangle[i-hopSize]/envelope[i];
             }
             else
             {
-                envelope(i) = 0.0;
+                envelope[i] = 0.0;
             }
         }
     }

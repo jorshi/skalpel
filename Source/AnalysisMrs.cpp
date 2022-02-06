@@ -11,8 +11,6 @@
 #include "AnalysisMrs.h"
 
 
-using namespace Marsyas;
-
 // Default Constructor
 AnalysisMrs::AnalysisMrs(AnalysisParameterManager& params) : params_(params)
 {
@@ -58,22 +56,23 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
         thresh = -80.0;
 
     // Noise Floor
-    const mrs_real noiseFloor = 1e-14;
+    const double noiseFloor = 1e-14;
     
     float sampleRate = reader->sampleRate;
     AudioBuffer<float> inputBuffer(1, frameSize);
     
     // Complex vectors for frequency domain calculations
-    std::vector<FFT::Complex> timeDomain(frameSize);
-    std::vector<FFT::Complex> spectral(frameSize);
+    std::vector<dsp::Complex<float>> timeDomain(frameSize);
+    std::vector<dsp::Complex<float>> spectral(frameSize);
     
     // Forward FFT class
-    FFT forwardFFT(std::log2(frameSize), false);
+    dsp::FFT forwardFFT(std::log2(frameSize));
     
     // Create and normalize a Hamming window
-    mrs_realvec window(frameSize);
+    std::vector<double> window(frameSize);
     SynthUtils::windowingFillHamming(window);
-    window /= window.sum();
+    auto sum = std::accumulate(window.begin(), window.end(), 0.0);
+    std::for_each(window.begin(), window.end(), [sum](auto &c){ c /= sum; });
   
     // Input samples from buffer
     float* inputSamples = inputBuffer.getWritePointer(0);
@@ -89,18 +88,18 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
         // Store input as a complex number for FFT - Do Zero Phasing and apply window
         for (int i = 0; i < frameSize; ++i)
         {
-            timeDomain.at(i).r = inputSamples[(i + (int)(frameSize/2)) % frameSize] *
-                window((i + (int)(frameSize/2)) % frameSize);
+            timeDomain.at(i).real(inputSamples[(i + (int)(frameSize/2)) % frameSize] *
+                window[(i + (int)(frameSize/2)) % frameSize]);
         }
         
         // Perform forward FFT
-        forwardFFT.perform(timeDomain.data(), spectral.data());
+        forwardFFT.perform(timeDomain.data(), spectral.data(), false);
         
-        mrs_realvec phases((int)(frameSize/2));
+        std::vector<double> phases((int)(frameSize/2));
         
-        mrs_real mag = 0.0;
-        mrs_real pMag = 0.0;
-        mrs_real ppMag = 0.0;
+        double mag = 0.0;
+        double pMag = 0.0;
+        double ppMag = 0.0;
         
         // New frame for storing calculated peaks
         std::vector<SineElement> frameElements;
@@ -108,14 +107,14 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
         int i = 0;
         for (auto bin = spectral.begin(); bin != (spectral.end() - (int)frameSize/2); ++bin, ++i)
         {
-            mag = 20*std::log10(std::sqrt(bin->r*bin->r + bin->i*bin->i));
+            mag = 20*std::log10(std::sqrt(bin->real()*bin->real() + bin->imag()*bin->imag()));
             
             // Before calculating phase, clear noise
-            if (std::abs(bin->r) < noiseFloor) { bin->r = 0.0; }
-            if (std::abs(bin->i) < noiseFloor) { bin->i = 0.0; }
+            if (std::abs(bin->real()) < noiseFloor) { bin->real(0.0); }
+            if (std::abs(bin->imag()) < noiseFloor) { bin->imag(0.0); }
             
             // Calclute phase and then unwrap
-            phases(i) = std::atan2(bin->i, bin->r);
+            phases[i] = std::atan2(bin->imag(), bin->real());
             
             // Check if the previous bin had a local maxima
             if (i > 0 && ppMag < pMag && mag < pMag)
@@ -125,28 +124,29 @@ void AnalysisMrs::peakDetection(SineModel::Ptr sineModel, String filename, Audio
                     /* Peak interpolation using Parbolic Interpolation */
                     
                     // Find the interpolated location, in terms of bins
-                    mrs_real ipLoc = (i-1) + (0.5*(ppMag-mag)/(ppMag - 2*pMag + mag));
+                    double ipLoc = (i-1) + (0.5*(ppMag-mag)/(ppMag - 2*pMag + mag));
                     
                     // Convert that location to frequency
-                    mrs_real ipFreq = ipLoc * sampleRate / frameSize;
+                    double ipFreq = ipLoc * sampleRate / frameSize;
                     
                     // Interpolate amplitude
-                    mrs_real ipAmp = pMag - 0.25*(ppMag-mag)*(ipLoc-(i-1));
+                    double ipAmp = pMag - 0.25*(ppMag-mag)*(ipLoc-(i-1));
                     
                     // Phase Interpolation
-                    mrs_natural closestBin = std::round(ipLoc);
-                    mrs_real factor = ipLoc - closestBin;
-                    mrs_natural ipPhaseBin = (factor < 0) ? closestBin - 1 : closestBin + 1;
-                    mrs_real ipPhase;
+                    int closestBin = std::round(ipLoc);
+                    double factor = ipLoc - closestBin;
+                    int ipPhaseBin = (factor < 0) ? closestBin - 1 : closestBin + 1;
+                    double ipPhase;
                     
                     // Only interpolate if there is not a phase jump between bins
-                    if (std::abs(phases(ipPhaseBin) - phases(closestBin)) < PI)
+                    auto PI = MathConstants<double>::pi;
+                    if (std::abs(phases[ipPhaseBin] - phases[closestBin]) < PI)
                     {
-                        ipPhase = factor * phases(ipPhaseBin) + (1-factor)*phases(closestBin);
+                        ipPhase = factor * phases[ipPhaseBin] + (1-factor)*phases[closestBin];
                     }
                     else
                     {
-                        ipPhase = phases(closestBin);
+                        ipPhase = phases[closestBin];
                     }
                     
                     // Save all the detected peaks
@@ -188,7 +188,7 @@ void AnalysisMrs::sineTracking(SineModel::Ptr sineModel)
     if (!params_.getRawValue("analysis_freq_slop", freqDevSlope))
         freqDevSlope = 0.001;
     
-    mrs_natural trackId = 0;
+    int trackId = 0;
     std::vector<std::vector<SineElement>> tracks;
     
     // Iterate through elements of the sine model
@@ -230,7 +230,7 @@ void AnalysisMrs::sineTracking(SineModel::Ptr sineModel)
                     break;
                 
                 // Find the track closest to the frequency of incoming bin
-                std::vector<mrs_real> diff(trackIndexes.size());
+                std::vector<double> diff(trackIndexes.size());
                 std::transform(trackIndexes.begin(), trackIndexes.end(), diff.begin(), [&](int a) {
                     return std::abs(tracks.back().at(a).getFreq() - frame->at(*index).getFreq());
                 });
@@ -289,7 +289,7 @@ void AnalysisMrs::cleanModel(SineModel::Ptr sineModel)
     if(!params_.getRawValue("analysis_sines", numSines))
         numSines = 150;
     
-    mrs_real frameLength = sineModel->getFrameSize()/sineModel->getSampleRate();
+    double frameLength = sineModel->getFrameSize()/sineModel->getSampleRate();
     int minFrames = (int)std::ceil((minDuration/1000)/frameLength);
     
     std::vector<int> trackLengths;

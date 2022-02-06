@@ -12,7 +12,7 @@
 
 
 //==============================================================================
-SynthesisComponent::SynthesisComponent(ButtonListener* parent, SoundInterface* s) : sound(s)
+SynthesisComponent::SynthesisComponent(Button::Listener* parent, SoundInterface* s) : sound(s)
 {
     synthesisParams = sound->getSynthParams();
     setLookAndFeel(&loomLookAndFeel);

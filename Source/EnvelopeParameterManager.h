@@ -15,7 +15,7 @@
 #include "ParameterManager.h"
 #include "ModulationFactory.h"
 #include "Modulation.h"
-#include "ADSR.h"
+#include "ADSREnv.h"
 
 class EnvelopeParamaterManager : public ParameterManager
 {

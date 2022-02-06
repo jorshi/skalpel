@@ -14,7 +14,7 @@
 #include "../JuceLibraryCode/JuceHeader.h"
 #include <map>
 #include "Modulation.h"
-#include "ADSR.h"
+#include "ADSREnv.h"
 
 
 class ModulationFactory

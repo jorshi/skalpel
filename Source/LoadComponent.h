@@ -22,7 +22,7 @@
 class LoadComponent    : public Component, public ActionListener
 {
 public:
-    LoadComponent(ButtonListener* parent, ActionListener* parentAction, SoundInterface* s);
+    LoadComponent(Button::Listener* parent, ActionListener* parentAction, SoundInterface* s);
     ~LoadComponent();
 
     void paint (Graphics&) override;

@@ -8,9 +8,9 @@
   ==============================================================================
 */
 
-#include "ADSR.h"
+#include "ADSREnv.h"
 
-ADSR::ADSR(AudioProcessorValueTreeState* p) : position_(0), parameters_(p), currentPhase_(off)
+ADSREnv::ADSREnv(AudioProcessorValueTreeState* p) : position_(0), parameters_(p), currentPhase_(off)
 {
     attackTime_ = 10.0f;
     decayTime_ = 250.0f;
@@ -21,7 +21,7 @@ ADSR::ADSR(AudioProcessorValueTreeState* p) : position_(0), parameters_(p), curr
 }
 
 
-ADSR::ADSR(const ADSR& c)
+ADSREnv::ADSREnv(const ADSREnv& c)
 {
     currentPhase_ = c.currentPhase_;
     position_ = c.position_;
@@ -38,16 +38,16 @@ ADSR::ADSR(const ADSR& c)
 }
 
 
-Modulation::Ptr ADSR::clone()
+Modulation::Ptr ADSREnv::clone()
 {
-    return new ADSR(*this);
+    return new ADSREnv(*this);
 }
 
 
-void ADSR::apply(float& value)
+void ADSREnv::apply(float& value)
 {
     float length;
-    float* param;
+    std::atomic<float>* param;
     switch (currentPhase_)
     {
         case attack:
@@ -101,7 +101,7 @@ void ADSR::apply(float& value)
     value *= currentLevel_;
 }
 
-void ADSR::increment(int samples)
+void ADSREnv::increment(int samples)
 {
     position_ += samples;
     float timePos = float(position_) / getRate();
@@ -137,14 +137,14 @@ void ADSR::increment(int samples)
     }
 }
 
-void ADSR::turnOff()
+void ADSREnv::turnOff()
 {
     currentPhase_ = off;
     position_ = 0;
 }
 
 
-void ADSR::triggerAttack()
+void ADSREnv::triggerAttack()
 {
     setActive(true);
     currentPhase_ = attack;
@@ -153,7 +153,7 @@ void ADSR::triggerAttack()
 }
 
 
-void ADSR::triggerRelease()
+void ADSREnv::triggerRelease()
 {
     currentPhase_ = release;
     releaseLevel_ = currentLevel_;

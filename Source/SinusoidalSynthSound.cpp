@@ -20,14 +20,14 @@ SinusoidalSynthSound::SinusoidalSynthSound(const BigInteger& notes, int midiNote
 {
 
     // Blackman Harris window for spectral synthesis
-    bh1001_.create(1001);
+    bh1001_.resize(1001);
     for (int i = 0; i < 1001; ++i)
     {
-        bh1001_(i) = SynthUtils::BHCONST.at(i);
+        bh1001_[i] = SynthUtils::BHCONST.at(i);
     }
     
     // Synthesis window for windowing time domain output of signal
-    synthWindow_.create(frameSize_);
+    synthWindow_.resize(frameSize_);
     SynthUtils::createSynthesisWindow(synthWindow_, frameSize_/4);
 };
 

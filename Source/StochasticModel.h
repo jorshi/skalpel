@@ -37,7 +37,7 @@ public:
     void setSampleRate(float rate) { sampleRate_ = rate; };
     
     // Add a new frame from a complex spectrum
-    void addFrame(const std::vector<FFT::Complex>& spectrum);
+    void addFrame(const std::vector<dsp::Complex<float>>& spectrum);
     
     // Get a frame 
     const StochasticModelFrame& getFrame(int index) const { return model_.at(index); };

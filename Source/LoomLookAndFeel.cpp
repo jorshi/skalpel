@@ -49,7 +49,7 @@ const ColourGradient LoomLookAndFeel::gradient = ColourGradient(Colour::fromRGB(
 
 
 // Custom Typeface
-const Typeface::Ptr LoomLookAndFeel::daysOneTypeFace = Typeface::createSystemTypefaceFor(BinaryData::DaysOneRegular_ttf, BinaryData::DaysOneRegular_ttfSize);
+const Typeface::Ptr LoomLookAndFeel::daysOneTypeFace = Typeface::createSystemTypefaceFor(BinaryData::daysone_regular_ttf, BinaryData::daysone_regular_ttfSize);
 
 const Typeface::Ptr LoomLookAndFeel::zapfDingbatsTypeface = Typeface::createSystemTypefaceFor(BinaryData::ZapfDingbats_ttf, BinaryData::ZapfDingbats_ttfSize);
 

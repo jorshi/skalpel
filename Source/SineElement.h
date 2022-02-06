@@ -12,38 +12,36 @@
 #define SINEELEMENT_H_INCLUDED
 
 #include "../JuceLibraryCode/JuceHeader.h"
-#include "marsyas/system/MarSystemManager.h"
 
-using namespace Marsyas;
 
 class SineElement
 {
 public:
     SineElement();
-    SineElement(mrs_real freq, mrs_real amp, mrs_real phase);
+    SineElement(double freq, double amp, double phase);
     ~SineElement();
 
     
     // Getters
-    mrs_real getFreq() const { return freq_; };
-    mrs_real getAmp() const  { return amp_; };
-    mrs_real getPhase() const { return phase_; };
-    mrs_natural getTrack() const { return track_; };
+    double getFreq() const { return freq_; };
+    double getAmp() const  { return amp_; };
+    double getPhase() const { return phase_; };
+    int getTrack() const { return track_; };
     bool isFirstInTrack() const { return trackStart_; };
     
     
     // Setters
-    void setFreq(mrs_real freq) { freq_ = freq; };
-    void setAmp(mrs_real amp) { amp_ = amp; };
-    void setPhase(mrs_real phase) { phase_ = phase; };
-    void setTrack(mrs_natural track) { track_ = track; };
-    void setNewTrack(mrs_natural track);
+    void setFreq(double freq) { freq_ = freq; };
+    void setAmp(double amp) { amp_ = amp; };
+    void setPhase(double phase) { phase_ = phase; };
+    void setTrack(int track) { track_ = track; };
+    void setNewTrack(int track);
 
 private:
-    mrs_real freq_;
-    mrs_real amp_;
-    mrs_real phase_;
-    mrs_natural track_;
+    double freq_;
+    double amp_;
+    double phase_;
+    int track_;
     bool trackStart_;
 };
 
@@ -65,18 +63,18 @@ public:
     ~SineModel();
     
     // Setters
-    void setSampleRate(mrs_real sr) { sampleRate_ = sr; };
-    void setFrameSize(mrs_natural fs) { frameSize_ = fs; };
+    void setSampleRate(double sr) { sampleRate_ = sr; };
+    void setFrameSize(int fs) { frameSize_ = fs; };
     void setSineModel(SineMatrix newModel) { sineModel_ = newModel; };
-    void setHopSize(mrs_natural h) { hopSize_ = h; };
+    void setHopSize(int h) { hopSize_ = h; };
     
     // Add a new frame to the end of the current model
     void addFrame(std::vector<SineElement>);
     
     // Getters
-    mrs_real getSampleRate() const { return sampleRate_; };
-    mrs_natural getFrameSize() const { return frameSize_; };
-    mrs_natural getHopSize() const { return hopSize_; };
+    double getSampleRate() const { return sampleRate_; };
+    int getFrameSize() const { return frameSize_; };
+    int getHopSize() const { return hopSize_; };
     const SineFrame& getFrame(int frame) const { return sineModel_.at(frame); };
     const SineMatrix& getModel() { return sineModel_; };
     const int size() const { return sineModel_.size(); };
@@ -91,9 +89,9 @@ public:
 
 private:
     SineMatrix sineModel_;
-    mrs_real sampleRate_;
-    mrs_natural frameSize_;
-    mrs_natural hopSize_;
+    double sampleRate_;
+    int frameSize_;
+    int hopSize_;
 };
 
 #endif  // SINEELEMENT_H_INCLUDED

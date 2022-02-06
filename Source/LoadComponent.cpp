@@ -12,7 +12,7 @@
 #include "LoadComponent.h"
 
 //==============================================================================
-LoadComponent::LoadComponent(ButtonListener* parent, ActionListener* parentAction, SoundInterface* s) :
+LoadComponent::LoadComponent(Button::Listener* parent, ActionListener* parentAction, SoundInterface* s) :
     soundInterface(s), loomFileDrop(this, s)
 {
     setLookAndFeel(&loomLookAndFeel);

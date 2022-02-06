@@ -12,7 +12,7 @@
 #include "AnalysisComponent.h"
 
 //==============================================================================
-AnalysisComponent::AnalysisComponent(ButtonListener* parent, AnalysisParameterManager* p) : analysisParams(p)
+AnalysisComponent::AnalysisComponent(Button::Listener* parent, AnalysisParameterManager* p) : analysisParams(p)
 {
     analysisButton.setButtonText("Run Analysis");
     analysisButton.setComponentID("run_analysis");
@@ -131,6 +131,6 @@ void AnalysisComponent::addComboBoxOptions(ComboBox* box, const String paramId)
         box->addItem(param->getText(range.convertTo0to1(i), 20), roundToInt(i + 1.0f));
         i += range.interval;
     }
-
-    box->setSelectedItemIndex(roundToInt(*parameters->getRawParameterValue(analysisParams->getParamId(paramId))));
+    
+    box->setSelectedItemIndex(roundToInt((float)*parameters->getRawParameterValue(analysisParams->getParamId(paramId))));
 }
